@@ -114,8 +114,7 @@ function selectLabel(e, index) {
 
 function downloadPDF() {
   html2canvas(document.querySelector(".sheet"), { scale: 4 }).then(canvas => {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
+    const pdf = new window.jspdf.jsPDF({ unit: "mm", format: "a4" });
     pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
     pdf.save('Avery_L6009_Labels.pdf');
   });
