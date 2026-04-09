@@ -1,134 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Avery L6009 Label Editor</title>
+  <link rel="stylesheet" href="css/style.css">
 
-  <!-- External libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-  <style>
-    :root {
-      --top-margin: 16.8mm;
-      --left-margin: 4.8mm;
-      --label-width: 47mm;
-      --label-height: 22.4mm;
-      --col-gap: 4.4mm;
-      --row-gap: 0mm;
-      --font-size: 12px;
-    }
-    body { font-family: Arial, sans-serif; margin: 20px; background-color: #D4B2D8; }
-    .main-layout { display: flex; gap: 30px; align-items: flex-start; }
-    .ui-controls { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 20px; min-width: 320px; max-height: 90vh; overflow-y: auto; }
-    .ui-controls button { display: block; width: 100%; margin: 8px 0; padding: 10px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; }
-    .ui-controls button:hover { background-color: #0056b3; }
-    .secondary-btn { background-color: #6c757d; }
-    .secondary-btn:hover { background-color: #5a6268; }
-    .danger-btn { background-color: #dc3545; }
-    .danger-btn:hover { background-color: #c82333; }
-    .mode-group { display: flex; gap: 10px; margin-bottom: 15px; }
-    .mode-btn { flex: 1; background-color: #e9ecef !important; color: #333 !important; border: 2px solid transparent !important; }
-    .mode-btn.active { background-color: #007bff !important; color: white !important; border: 2px solid #0056b3 !important; }
-    .input-container { margin-bottom: 10px; padding-right: 5px; min-height: 100px; }
-    .data-input { display: block; margin: 5px 0 15px 0; padding: 8px; width: 100%; box-sizing: border-box; font-family: monospace; border: 1px solid #ccc; border-radius: 4px; }
-    .tool-input { width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-    .action-box { background-color: #e9ecef; padding: 15px; border-radius: 6px; margin: 15px 0; }
-    .calibration-panel { background-color: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
-    .calibration-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; }
-    .calibration-row input { width: 70px; padding: 4px; text-align: right; border: 1px solid #ccc; border-radius: 3px; }
-    .sheet { width: 210mm; height: 297mm; background: white; box-shadow: 0 0 15px rgba(0,0,0,0.3); position: relative; box-sizing: border-box; flex-shrink: 0; user-select: none; }
-    .grid { position: absolute; top: var(--top-margin); left: var(--left-margin); display: grid; grid-template-columns: repeat(4, var(--label-width)); grid-auto-rows: var(--label-height); column-gap: var(--col-gap); row-gap: var(--row-gap); }
-    .label { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-sizing: border-box; border: 1px solid transparent; overflow: hidden; padding: 3.5mm; position: relative; cursor: pointer; font-size: var(--font-size); }
-    .label:hover { background-color: #f8f9fa; }
-    .grid.with-label-lines .label { border: 1px solid #ccc; }
-    .grid.align-left .label { align-items: flex-start; text-align: left; }
-    .label.selected { background-color: #e3f2fd; border: 2px solid #007bff !important; z-index: 10; }
-    .label.overridden::before { content: '✏️'; position: absolute; top: 2px; right: 2px; font-size: 10px; opacity: 0.5; }
-    .grid.with-cut-lines .label::after { content: ''; position: absolute; top: 1.5mm; left: 1.5mm; right: 1.5mm; bottom: 1.5mm; border: 1px dashed #888; pointer-events: none; }
-    @media print { @page { size: A4; margin: 0; } body { margin: 0; padding: 0; background-color: white; } .main-layout { display: block; } .ui-controls { display: none !important; } .sheet { box-shadow: none; margin: 0; border: none; } .label.selected { border: 1px solid transparent !important; background-color: transparent !important; } .label.overridden::before { display: none; } }
-  </style>
+  <!-- Local Libraries -->
+  <script src="js/jspdf.umd.min.js"></script>
+  <script src="js/html2canvas.min.js"></script>
 </head>
 <body>
+
 <div class="main-layout">
+
   <div class="sheet">
     <div class="grid with-label-lines" id="grid"></div>
   </div>
 
   <div class="ui-controls">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-      <h2 style="margin:0;">Avery L6009 Label Editor</h2>
-      <button onclick="resetApp()" class="danger-btn">Reset</button>
+
+    <!-- Premade Templates -->
+    <details style="margin-bottom:15px; background:#e3f2fd; padding:10px; border-radius:6px; border:1px solid #90caf9;">
+      <summary style="cursor:pointer; font-size:13px; font-weight:bold; color:#0056b3;">📂 Premade Templates</summary>
+      <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button onclick="loadPremade('WFI_LABELS')" style="margin:0; padding:6px 10px; font-size:12px; background:#0056b3; color:white; border:none; border-radius:4px;">WFI_LABELS</button>
+        <button onclick="loadPremade('MAS_HEAD_LABELS')" style="margin:0; padding:6px 10px; font-size:12px; background:#0056b3; color:white; border:none; border-radius:4px;">MAS_HEAD_LABELS</button>
+      </div>
+    </details>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h2 style="margin:0; font-size:20px; color:#333;">Avery L6009 Label Editor</h2>
+      <button onclick="resetApp()" class="danger-btn" style="width:auto; margin:0; padding:6px 12px; font-size:12px;">Reset</button>
     </div>
-    <label>1. Choose Base Layout:</label>
+
+    <!-- Base Mode -->
+    <label style="font-weight:bold; font-size:13px; color:#555;">1. Choose Base Layout:</label>
     <div class="mode-group">
       <button id="btn-col" class="mode-btn active" onclick="setBaseMode('column')">Columns</button>
       <button id="btn-row" class="mode-btn" onclick="setBaseMode('row')">Rows</button>
       <button id="btn-all" class="mode-btn" onclick="setBaseMode('all')">All</button>
     </div>
-    <label>2. Enter Text</label>
+
+    <!-- Global Font Size -->
+    <label style="font-weight:bold; font-size:13px; color:#555;">2. Enter Text (Click any box to edit individually)</label>
+    <div style="display:flex; gap:8px; margin:10px 0; padding:10px; background:#e9ecef; border-radius:6px; align-items:center;">
+      <label style="font-size:12px; font-weight:bold;">Global Size:</label>
+      <input type="number" id="fontSizeInput" value="12" style="width:50px; padding:4px; border:1px solid #ccc; border-radius:4px;" oninput="updateFontSize()">
+      <span style="font-size:12px; color:#555;">px</span>
+      <div style="flex-grow:1;"></div>
+      <button class="secondary-btn" title="Bold" onclick="insertFormatting('b')">B</button>
+      <button class="secondary-btn" title="Italic" onclick="insertFormatting('i')">I</button>
+    </div>
+    <p style="font-size:10px; color:#666; margin:-5px 0 10px 0; text-align:right;"><em>Highlight a word and click B or I</em></p>
+
+    <!-- Dynamic Inputs -->
     <div id="dynamic-inputs" class="input-container"></div>
 
-    <button onclick="toggleAlignment()">Toggle Alignment</button>
-    <label><input type="checkbox" id="labelLinesToggle" checked onchange="toggleLabelLines()"> Show Label Borders</label>
-    <label><input type="checkbox" id="cutLinesToggle" onchange="toggleCutLines()"> Show Cut Lines</label>
+    <!-- Alignment & Label Settings -->
+    <hr style="border:0; border-top:1px solid #ddd; margin:20px 0;">
+    <button class="secondary-btn" onclick="toggleAlignment()">Toggle Left / Center Alignment</button>
 
+    <div style="margin:15px 0; padding:10px; background:#fff3cd; border:1px solid #ffeeba; border-radius:6px;">
+      <label><input type="checkbox" id="labelLinesToggle" checked onchange="toggleLabelLines()"> Show Label Borders</label>
+      <label><input type="checkbox" id="cutLinesToggle" onchange="toggleCutLines()"> Show Cut Lines</label>
+    </div>
+
+    <!-- Find & Replace -->
+    <div class="action-box">
+      <h4>Find & Replace (All Boxes)</h4>
+      <input type="text" id="findText" class="tool-input" placeholder="Find this text...">
+      <input type="text" id="replaceText" class="tool-input" placeholder="Replace with...">
+      <button onclick="applyFindReplace()" class="secondary-btn">Apply to All</button>
+    </div>
+
+    <!-- Advanced Settings -->
+    <details class="calibration-panel">
+      <summary>⚙️ Advanced Settings (Grid Calibration)</summary>
+      <div class="calibration-row"><label>Top Margin:</label><div><input type="number" id="tMargin" value="16.8" step="0.1" oninput="updateGrid()"> mm</div></div>
+      <div class="calibration-row"><label>Left Margin:</label><div><input type="number" id="lMargin" value="4.8" step="0.05" oninput="updateGrid()"> mm</div></div>
+      <div class="calibration-row"><label>Label Width:</label><div><input type="number" id="lWidth" value="47" step="0.1" oninput="updateGrid()"> mm</div></div>
+      <div class="calibration-row"><label>Label Height:</label><div><input type="number" id="lHeight" value="22.4" step="0.1" oninput="updateGrid()"> mm</div></div>
+      <div class="calibration-row"><label>Column Gap:</label><div><input type="number" id="cGap" value="4.4" step="0.1" oninput="updateGrid()"> mm</div></div>
+      <div class="calibration-row"><label>Row Gap:</label><div><input type="number" id="rGap" value="0.0" step="0.1" oninput="updateGrid()"> mm</div></div>
+    </details>
+
+    <!-- Document Name -->
     <div class="action-box">
       <h4>Document Name</h4>
-      <input type="text" id="docNameInput" value="Avery_L6009_Labels">
+      <input type="text" id="docNameInput" class="tool-input" value="Avery_L6009_Labels">
     </div>
-    <button id="btn-pdf" onclick="downloadPDF()">Download PDF</button>
-    <button onclick="window.print()" class="secondary-btn">Print</button>
+
+    <!-- Save / Load -->
+    <div class="action-box" style="background:#d1ecf1;">
+      <h4>Save / Load Work</h4>
+      <button onclick="saveProject()" style="background:#17a2b8;">💾 Save Project</button>
+      <button onclick="document.getElementById('loadProjectFile').click()" style="background:#17a2b8;">📂 Load Project</button>
+      <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)">
+    </div>
+
+    <!-- PDF / Print -->
+    <button id="btn-pdf" onclick="downloadPDF()">📄 Download PDF</button>
+    <button onclick="window.print()" class="secondary-btn">🖨️ Print Directly</button>
+
+    <div style="text-align:center; color:#888; font-style:italic; margin-top:25px; font-size:12px;">
+      made by Darvin Magundayao
+    </div>
+
   </div>
 </div>
 
-<script>
-  const ROWS=12,COLS=4,TOTAL_LABELS=ROWS*COLS;
-  let baseMode='column',alignment='center',selectedIndices=new Set(),lastFocusedInput=null;
-  let colData=new Array(COLS).fill(''),rowData=new Array(ROWS).fill(''),allData='',overrides=new Array(TOTAL_LABELS).fill(null);
-
-  const { jsPDF } = window.jspdf.jsPDF ? window.jspdf : window.jspdf.default;
-
-  function updateFontSize(){const size=document.getElementById('fontSizeInput')?.value||12;document.documentElement.style.setProperty('--font-size',size+'px');}
-  function resetApp(){colData=new Array(COLS).fill('');rowData=new Array(ROWS).fill('');allData='';overrides=new Array(TOTAL_LABELS).fill(null);selectedIndices.clear();renderInputs();generate();}
-  function toggleLabelLines(){document.getElementById("grid").classList.toggle('with-label-lines',document.getElementById('labelLinesToggle').checked);}
-  function toggleCutLines(){document.getElementById("grid").classList.toggle('with-cut-lines',document.getElementById('cutLinesToggle').checked);}
-  function toggleAlignment(){alignment=(alignment==='center'?'left':'center');document.getElementById("grid").classList.toggle('align-left',alignment==='left');}
-
-  function setBaseMode(mode){baseMode=mode;document.getElementById('btn-col').classList.toggle('active',mode==='column');document.getElementById('btn-row').classList.toggle('active',mode==='row');document.getElementById('btn-all').classList.toggle('active',mode==='all');selectedIndices.clear();lastFocusedInput=null;renderInputs();generate();}
-
-  function renderInputs(){
-    const container=document.getElementById('dynamic-inputs');container.innerHTML='';
-    let inputCount=0,dataArray=null,prefix='';
-    if(baseMode==='column'){inputCount=COLS;prefix='Column';dataArray=colData;}
-    else if(baseMode==='row'){inputCount=ROWS;prefix='Row';dataArray=rowData;}
-    else{inputCount=1;prefix='All Labels';dataArray=[allData];}
-    for(let i=0;i<inputCount;i++){
-      const label=document.createElement('label');label.innerText=baseMode==='all'?prefix:`${prefix} ${i+1}:`;label.style.fontWeight="bold";label.style.fontSize="13px";
-      const input=document.createElement('input');input.className='data-input';input.value=dataArray[i];input.oninput=e=>{if(baseMode==='all'){allData=e.target.value;}else{dataArray[i]=e.target.value;}generate();}
-      container.appendChild(label);container.appendChild(input);
-    }
-  }
-
-  function generate(){
-    const grid=document.getElementById("grid");grid.innerHTML='';
-    for(let r=0;r<ROWS;r++){for(let c=0;c<COLS;c++){
-      let index=r*COLS+c;
-      const div=document.createElement("div");div.className="label";
-      let val=overrides[index]!==null?overrides[index]:(baseMode==='column'?colData[c]:baseMode==='row'?rowData[r]:allData);
-      if(val.trim()!==''){div.innerHTML=val.split(',').map(line=>line.trim()).join('<br>');}
-      grid.appendChild(div);
-    }}
-  }
-
-  async function downloadPDF(){
-    const docName=document.getElementById('docNameInput').value||'Avery_L6009_Labels';
-    const pdf=new jsPDF({unit:'mm',format:'a4'});const sheet=document.querySelector(".sheet");
-    const canvas=await html2canvas(sheet,{scale:4});pdf.addImage(canvas.toDataURL("image/png"),"PNG",0,0,210,297);
-    const a=document.createElement('a');a.href=pdf.output('bloburl');a.download=`${docName}.pdf`;a.click();
-  }
-
-  renderInputs();generate();
-</script>
+<!-- JS Script -->
+<script src="js/main.js"></script>
 </body>
 </html>
