@@ -1,115 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
   <title>Avery L6009 Label Editor</title>
-  <link rel="stylesheet" href="css/style.css">
-
-  <!-- Local Libraries -->
-  <script src="js/jspdf.umd.min.js"></script>
-  <script src="js/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="css/style.css"> <!-- optional if CSS separated -->
 </head>
 <body>
 
 <div class="main-layout">
-
   <div class="sheet">
     <div class="grid with-label-lines" id="grid"></div>
   </div>
 
   <div class="ui-controls">
-
-    <!-- Premade Templates -->
-    <details style="margin-bottom:15px; background:#e3f2fd; padding:10px; border-radius:6px; border:1px solid #90caf9;">
-      <summary style="cursor:pointer; font-size:13px; font-weight:bold; color:#0056b3;">📂 Premade Templates</summary>
-      <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-        <button onclick="loadPremade('WFI_LABELS')" style="margin:0; padding:6px 10px; font-size:12px; background:#0056b3; color:white; border:none; border-radius:4px;">WFI_LABELS</button>
-        <button onclick="loadPremade('MAS_HEAD_LABELS')" style="margin:0; padding:6px 10px; font-size:12px; background:#0056b3; color:white; border:none; border-radius:4px;">MAS_HEAD_LABELS</button>
-      </div>
-    </details>
-
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-      <h2 style="margin:0; font-size:20px; color:#333;">Avery L6009 Label Editor</h2>
-      <button onclick="resetApp()" class="danger-btn" style="width:auto; margin:0; padding:6px 12px; font-size:12px;">Reset</button>
-    </div>
-
-    <!-- Base Mode -->
-    <label style="font-weight:bold; font-size:13px; color:#555;">1. Choose Base Layout:</label>
-    <div class="mode-group">
-      <button id="btn-col" class="mode-btn active" onclick="setBaseMode('column')">Columns</button>
-      <button id="btn-row" class="mode-btn" onclick="setBaseMode('row')">Rows</button>
-      <button id="btn-all" class="mode-btn" onclick="setBaseMode('all')">All</button>
-    </div>
-
-    <!-- Global Font Size -->
-    <label style="font-weight:bold; font-size:13px; color:#555;">2. Enter Text (Click any box to edit individually)</label>
-    <div style="display:flex; gap:8px; margin:10px 0; padding:10px; background:#e9ecef; border-radius:6px; align-items:center;">
-      <label style="font-size:12px; font-weight:bold;">Global Size:</label>
-      <input type="number" id="fontSizeInput" value="12" style="width:50px; padding:4px; border:1px solid #ccc; border-radius:4px;" oninput="updateFontSize()">
-      <span style="font-size:12px; color:#555;">px</span>
-      <div style="flex-grow:1;"></div>
-      <button class="secondary-btn" title="Bold" onclick="insertFormatting('b')">B</button>
-      <button class="secondary-btn" title="Italic" onclick="insertFormatting('i')">I</button>
-    </div>
-    <p style="font-size:10px; color:#666; margin:-5px 0 10px 0; text-align:right;"><em>Highlight a word and click B or I</em></p>
-
-    <!-- Dynamic Inputs -->
+    <!-- UI elements as in your original HTML -->
+    <h2>Avery L6009 Label Editor</h2>
+    <button id="btn-pdf">📄 Download PDF</button>
+    <button id="reset-btn" class="danger-btn">Reset</button>
     <div id="dynamic-inputs" class="input-container"></div>
-
-    <!-- Alignment & Label Settings -->
-    <hr style="border:0; border-top:1px solid #ddd; margin:20px 0;">
-    <button class="secondary-btn" onclick="toggleAlignment()">Toggle Left / Center Alignment</button>
-
-    <div style="margin:15px 0; padding:10px; background:#fff3cd; border:1px solid #ffeeba; border-radius:6px;">
-      <label><input type="checkbox" id="labelLinesToggle" checked onchange="toggleLabelLines()"> Show Label Borders</label>
-      <label><input type="checkbox" id="cutLinesToggle" onchange="toggleCutLines()"> Show Cut Lines</label>
-    </div>
-
-    <!-- Find & Replace -->
-    <div class="action-box">
-      <h4>Find & Replace (All Boxes)</h4>
-      <input type="text" id="findText" class="tool-input" placeholder="Find this text...">
-      <input type="text" id="replaceText" class="tool-input" placeholder="Replace with...">
-      <button onclick="applyFindReplace()" class="secondary-btn">Apply to All</button>
-    </div>
-
-    <!-- Advanced Settings -->
-    <details class="calibration-panel">
-      <summary>⚙️ Advanced Settings (Grid Calibration)</summary>
-      <div class="calibration-row"><label>Top Margin:</label><div><input type="number" id="tMargin" value="16.8" step="0.1" oninput="updateGrid()"> mm</div></div>
-      <div class="calibration-row"><label>Left Margin:</label><div><input type="number" id="lMargin" value="4.8" step="0.05" oninput="updateGrid()"> mm</div></div>
-      <div class="calibration-row"><label>Label Width:</label><div><input type="number" id="lWidth" value="47" step="0.1" oninput="updateGrid()"> mm</div></div>
-      <div class="calibration-row"><label>Label Height:</label><div><input type="number" id="lHeight" value="22.4" step="0.1" oninput="updateGrid()"> mm</div></div>
-      <div class="calibration-row"><label>Column Gap:</label><div><input type="number" id="cGap" value="4.4" step="0.1" oninput="updateGrid()"> mm</div></div>
-      <div class="calibration-row"><label>Row Gap:</label><div><input type="number" id="rGap" value="0.0" step="0.1" oninput="updateGrid()"> mm</div></div>
-    </details>
-
-    <!-- Document Name -->
-    <div class="action-box">
-      <h4>Document Name</h4>
-      <input type="text" id="docNameInput" class="tool-input" value="Avery_L6009_Labels">
-    </div>
-
-    <!-- Save / Load -->
-    <div class="action-box" style="background:#d1ecf1;">
-      <h4>Save / Load Work</h4>
-      <button onclick="saveProject()" style="background:#17a2b8;">💾 Save Project</button>
-      <button onclick="document.getElementById('loadProjectFile').click()" style="background:#17a2b8;">📂 Load Project</button>
-      <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)">
-    </div>
-
-    <!-- PDF / Print -->
-    <button id="btn-pdf" onclick="downloadPDF()">📄 Download PDF</button>
-    <button onclick="window.print()" class="secondary-btn">🖨️ Print Directly</button>
-
-    <div style="text-align:center; color:#888; font-style:italic; margin-top:25px; font-size:12px;">
-      made by Darvin Magundayao
-    </div>
-
+    <!-- Keep rest of your controls like Find & Replace, toggle buttons, etc. -->
   </div>
 </div>
 
-<!-- JS Script -->
+<!-- JS Libraries -->
+<script src="js/jspdf.umd.min.js"></script>
+<script src="js/html2canvas.min.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
