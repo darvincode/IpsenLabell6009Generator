@@ -3,28 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <title>Avery L6009 Label Editor</title>
-  <link rel="stylesheet" href="css/style.css"> <!-- optional if CSS separated -->
+  <style>
+    /* Keep your full CSS here (as in your original HTML) */
+  </style>
 </head>
 <body>
 
+<!-- Your HTML body (grid, UI controls, inputs, etc.) -->
 <div class="main-layout">
-  <div class="sheet">
-    <div class="grid with-label-lines" id="grid"></div>
-  </div>
-
+  <div class="sheet"><div id="grid" class="grid with-label-lines"></div></div>
   <div class="ui-controls">
-    <!-- UI elements as in your original HTML -->
-    <h2>Avery L6009 Label Editor</h2>
-    <button id="btn-pdf">📄 Download PDF</button>
-    <button id="reset-btn" class="danger-btn">Reset</button>
-    <div id="dynamic-inputs" class="input-container"></div>
-    <!-- Keep rest of your controls like Find & Replace, toggle buttons, etc. -->
+    <!-- all controls like your original HTML -->
   </div>
 </div>
 
-<!-- JS Libraries -->
-<script src="js/jspdf.umd.min.js"></script>
-<script src="js/html2canvas.min.js"></script>
+<!-- JS Libraries (load before your main.js) -->
+<script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- Your main JS -->
 <script src="js/main.js"></script>
+
 </body>
 </html>
