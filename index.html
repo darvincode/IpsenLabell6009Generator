@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     :root {
       /* EXACT Avery L6009 Starting Dimensions */
       --top-margin: 16.8mm;
@@ -465,6 +466,256 @@
     }
     .back-button:hover {
       background-color: #5a6268;
+    }
+
+    /* MODERN UI OVERRIDES */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: #111827;
+      background: radial-gradient(circle at top left, rgba(99,102,241,0.18), transparent 24%), linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+    }
+    .screen {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: 30px;
+    }
+    .screen.active {
+      display: flex;
+    }
+    #loginScreen {
+      align-items: center;
+      justify-content: center;
+    }
+    .login-container,
+    .ui-controls,
+    .project-header,
+    .project-card,
+    .new-project-card,
+    .action-box,
+    .calibration-panel {
+      border-radius: 24px;
+    }
+    .login-container {
+      max-width: 440px;
+      border: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 24px 80px rgba(15,23,42,0.12);
+      background: #ffffff;
+    }
+    .login-container h1 {
+      font-size: 2rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      color: #111827;
+    }
+    .login-container input,
+    .login-container button {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .login-container input {
+      border: 1px solid rgba(15,23,42,0.12);
+      background: #fafbff;
+      padding: 14px 16px;
+      font-size: 0.95rem;
+    }
+    .login-container button {
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 0.95rem;
+      box-shadow: 0 14px 30px rgba(79,70,229,0.12);
+    }
+    .login-divider {
+      margin: 24px 0;
+      color: #6b7280;
+    }
+    .login-message {
+      color: #475569;
+    }
+    .project-header {
+      width: min(1200px, 100%);
+      margin: 0 auto 20px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 18px 50px rgba(15,23,42,0.08);
+      padding: 22px 28px;
+    }
+    .project-header h1 {
+      font-size: 1.8rem;
+      margin: 0;
+    }
+    .project-header button {
+      border-radius: 16px;
+      padding: 12px 20px;
+      box-shadow: 0 12px 24px rgba(79,70,229,0.14);
+      background: linear-gradient(135deg, #6366f1, #4338ca);
+      border: none;
+    }
+    .project-grid-container {
+      width: min(1200px, 100%);
+      padding: 0 20px 40px;
+      max-width: 1200px;
+    }
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+    }
+    .project-card,
+    .new-project-card {
+      min-height: 240px;
+      border: 1px solid rgba(15,23,42,0.08);
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      background: #ffffff;
+    }
+    .project-card:hover,
+    .new-project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 22px 50px rgba(15,23,42,0.12);
+    }
+    .project-card-preview {
+      height: 170px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: #ffffff;
+      font-size: 38px;
+      align-items: center;
+      justify-content: center;
+    }
+    .project-card-info {
+      padding: 18px;
+    }
+    .project-card-name {
+      font-size: 1rem;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+    .project-card-date {
+      color: #6b7280;
+      font-size: 0.92rem;
+    }
+    .new-project-card {
+      border-style: dashed;
+      color: #475569;
+      gap: 14px;
+      padding: 24px;
+      text-align: center;
+      justify-content: center;
+    }
+    .new-project-card-icon {
+      font-size: 48px;
+      color: #4f46e5;
+    }
+    .new-project-card-text {
+      font-size: 1.05rem;
+    }
+    .no-projects-message {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      font-size: 1rem;
+      color: #6b7280;
+      background: rgba(255,255,255,0.8);
+      border: 1px solid rgba(15,23,42,0.08);
+      border-radius: 24px;
+      padding: 28px;
+    }
+    #editorScreen {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 28px;
+      padding: 32px;
+    }
+    #editorScreen .sheet {
+      flex: 1;
+      border-radius: 24px;
+      border: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 28px 90px rgba(15,23,42,0.08);
+      margin-bottom: 32px;
+    }
+    #editorScreen .ui-controls {
+      position: sticky;
+      top: 24px;
+      min-width: 360px;
+      padding: 24px;
+      background: #ffffff;
+      border: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 24px 80px rgba(15,23,42,0.08);
+    }
+    .ui-controls button {
+      width: 100%;
+      padding: 14px 18px;
+      margin: 10px 0;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #6366f1, #4338ca);
+      border: none;
+      box-shadow: 0 10px 30px rgba(79,70,229,0.16);
+    }
+    .ui-controls .secondary-btn {
+      background: #f8fafc;
+      color: #111827;
+      box-shadow: none;
+      border: 1px solid rgba(15,23,42,0.08);
+    }
+    .ui-controls .danger-btn {
+      background: #ef4444;
+      box-shadow: none;
+    }
+    .mode-group {
+      gap: 12px;
+    }
+    .mode-btn {
+      background: #f8fafc !important;
+      border: 1px solid rgba(15,23,42,0.08) !important;
+      border-radius: 999px !important;
+      color: #111827 !important;
+      padding: 12px 16px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .mode-btn.active {
+      background: linear-gradient(135deg, #6366f1, #4338ca) !important;
+      color: white !important;
+      border-color: transparent !important;
+    }
+    .data-input,
+    .tool-input,
+    .calibration-row input,
+    .project-header button {
+      border-radius: 14px;
+    }
+    .data-input,
+    .tool-input,
+    .calibration-row input {
+      border: 1px solid rgba(15,23,42,0.08);
+      background: #fbfbff;
+    }
+    .action-box,
+    .calibration-panel {
+      background: #f8fafc;
+      border: 1px solid rgba(15,23,42,0.08);
+      padding: 20px;
+    }
+    .back-button {
+      border-radius: 16px;
+      border: 1px solid rgba(15,23,42,0.08);
+      background-color: #f8fafc;
+      color: #111827;
+      padding: 12px 18px;
+      box-shadow: none;
+      margin-right: 0;
+    }
+    .back-button:hover {
+      background-color: #eef2ff;
+    }
+    .login-container button.secondary-btn,
+    .ui-controls button.secondary-btn {
+      background: #f8fafc;
+      color: #111827;
     }
   </style>
 </head>
