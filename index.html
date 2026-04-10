@@ -10,15 +10,465 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     :root {
+      /* EXACT Avery L6009 Starting Dimensions */
       --top-margin: 16.8mm;
       --left-margin: 4.8mm;
       --label-width: 47mm;
       --label-height: 22.4mm;
       --col-gap: 4.4mm;
       --row-gap: 0.0mm;
+      
+      /* Global Font Size */
       --font-size: 12px;
     }
 
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #D4B2D8; /* Custom Purple Background */
+    }
+    
+    .main-layout {
+      display: flex;
+      flex-direction: row;
+      gap: 30px;
+      align-items: flex-start;
+    }
+
+    .ui-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 20px;
+      min-width: 320px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .ui-controls button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    
+    .ui-controls button:hover { background-color: #0056b3; }
+    .ui-controls .secondary-btn { background-color: #6c757d; }
+    .ui-controls .secondary-btn:hover { background-color: #5a6268; }
+    .ui-controls .danger-btn { background-color: #dc3545; }
+    .ui-controls .danger-btn:hover { background-color: #c82333; }
+
+    .auth-panel,
+    .project-panel {
+      background: #f1f3f5;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #d3d3d3;
+    }
+    .auth-panel h3,
+    .project-panel h3 {
+      margin-top: 0;
+      font-size: 16px;
+      color: #333;
+    }
+    .auth-panel input,
+    .project-panel select,
+    .project-panel input {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .auth-message {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    /* Mode Buttons Styling */
+    .mode-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .mode-btn {
+      flex: 1;
+      background-color: #e9ecef !important;
+      color: #333 !important;
+      border: 2px solid transparent !important;
+    }
+    .mode-btn.active {
+      background-color: #007bff !important;
+      color: white !important;
+      border: 2px solid #0056b3 !important;
+    }
+
+    .input-container {
+      margin-bottom: 10px;
+      padding-right: 5px;
+      min-height: 100px;
+    }
+
+    .data-input {
+      display: block;
+      margin: 5px 0 15px 0;
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      font-family: monospace;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Form Styles */
+    .tool-input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Action Boxes */
+    .action-box {
+      background-color: #e9ecef;
+      padding: 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+    }
+
+    /* Calibration Panel Styling */
+    .calibration-panel {
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+    .calibration-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .calibration-row input { width: 70px; padding: 4px; text-align: right; border: 1px solid #ccc; border-radius: 3px; }
+
+    /* A4 page simulation for screen */
+    .sheet {
+      width: 210mm;
+      height: 297mm;
+      background: white;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      position: relative;
+      box-sizing: border-box; 
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    /* DYNAMIC GRID */
+    .grid {
+      position: absolute;
+      top: var(--top-margin);     
+      left: var(--left-margin);      
+      display: grid;
+      grid-template-columns: repeat(4, var(--label-width)); 
+      grid-auto-rows: var(--label-height);                   
+      column-gap: var(--col-gap);                        
+      row-gap: var(--row-gap);                           
+    }
+
+    .label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;    
+      justify-content: center; 
+      text-align: center;
+      box-sizing: border-box; 
+      border: 1px solid transparent; /* Default to no border */
+      overflow: hidden; 
+      padding: 3.5mm; 
+      position: relative; 
+      cursor: pointer;
+      transition: background-color 0.1s;
+      font-size: var(--font-size);
+    }
+
+    .label:hover {
+      background-color: #f8f9fa;
+    }
+
+    /* TOGGLEABLE BORDERS */
+    .grid.with-label-lines .label {
+      border: 1px solid #ccc;
+    }
+
+    /* ALIGNMENT TOGGLE CLASSES */
+    .grid.align-left .label {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    /* SELECTION STYLING */
+    .label.selected {
+      background-color: #e3f2fd;
+      border: 2px solid #007bff !important;
+      z-index: 10;
+    }
+    .label.overridden::before {
+      content: '✏️';
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      font-size: 10px;
+      opacity: 0.5;
+    }
+
+    /* THE DOTTED CUT-OFF LINE */
+    .grid.with-cut-lines .label::after {
+      content: '';
+      position: absolute;
+      top: 1.5mm; left: 1.5mm; right: 1.5mm; bottom: 1.5mm;
+      border: 1px dashed #888;
+      pointer-events: none; 
+    }
+
+    /* CRITICAL PRINT SETTINGS */
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { margin: 0; padding: 0; background-color: white; }
+      .main-layout { display: block; }
+      .ui-controls { display: none !important; }
+      .sheet { box-shadow: none; margin: 0; border: none; }
+      .label.selected { border: 1px solid transparent !important; background-color: transparent !important; }
+      .label.overridden::before { display: none; } 
+    }
+
+    /* SCREEN CONTAINERS */
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .screen.active {
+      display: flex;
+    }
+
+    /* LOGIN SCREEN */
+    #loginScreen {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+    .login-container {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .login-container h1 {
+      text-align: center;
+      color: #333;
+      margin: 0 0 30px 0;
+      font-size: 28px;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .login-container button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .login-container button:hover {
+      background-color: #0056b3;
+    }
+    .login-container .secondary-btn {
+      background-color: #6c757d;
+    }
+    .login-container .secondary-btn:hover {
+      background-color: #5a6268;
+    }
+    .login-divider {
+      text-align: center;
+      margin: 20px 0;
+      color: #999;
+      font-size: 13px;
+    }
+    .login-message {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* PROJECT SCREEN */
+    #projectScreen {
+      flex-direction: column;
+      background: #f5f5f5;
+    }
+    .project-header {
+      background: white;
+      padding: 20px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #333;
+    }
+    .project-header button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .project-header button:hover {
+      background-color: #0056b3;
+    }
+    .project-grid-container {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .project-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .project-card-preview {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 36px;
+    }
+    .project-card-info {
+      padding: 15px;
+    }
+    .project-card-name {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    .project-card-date {
+      font-size: 12px;
+      color: #999;
+    }
+    .new-project-card {
+      background: white;
+      border-radius: 8px;
+      border: 2px dashed #ddd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 220px;
+    }
+    .new-project-card:hover {
+      border-color: #007bff;
+      background: #f9f9f9;
+    }
+    .new-project-card-content {
+      text-align: center;
+      color: #666;
+    }
+    .new-project-card-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    .new-project-card-text {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .no-projects-message {
+      text-align: center;
+      color: #999;
+      padding: 40px;
+      font-size: 16px;
+    }
+
+    /* EDITOR SCREEN */
+    #editorScreen {
+      flex-direction: row;
+    }
+    #editorScreen .sheet {
+      flex: 1;
+    }
+    #editorScreen .ui-controls {
+      position: sticky;
+    }
+
+    /* BACK BUTTON */
+    .back-button {
+      background-color: #6c757d;
+      padding: 10px 16px;
+      font-size: 13px;
+      width: auto;
+      margin-right: auto;
+    }
+    .back-button:hover {
+      background-color: #5a6268;
+    }
+
+    /* MODERN UI OVERRIDES */
     body {
       margin: 0;
       min-height: 100vh;
@@ -26,268 +476,844 @@
       color: #111827;
       background: radial-gradient(circle at top left, rgba(99,102,241,0.18), transparent 24%), linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
     }
-    
-    .screen { display: none; width: 100%; min-height: 100vh; flex-direction: column; padding: 30px; box-sizing: border-box;}
-    .screen.active { display: flex; }
-
-    .ui-controls {
-      background: white; padding: 24px; border-radius: 24px;
-      box-shadow: 0 24px 80px rgba(15,23,42,0.08); position: sticky;
-      top: 24px; min-width: 360px; max-height: 90vh; overflow-y: auto;
+    .screen {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: 30px;
+    }
+    .screen.active {
+      display: flex;
+    }
+    #loginScreen {
+      align-items: center;
+      justify-content: center;
+    }
+    .login-container,
+    .ui-controls,
+    .project-header,
+    .project-card,
+    .new-project-card,
+    .action-box,
+    .calibration-panel {
+      border-radius: 24px;
+    }
+    .login-container {
+      max-width: 440px;
+      border: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 24px 80px rgba(15,23,42,0.12);
+      background: #ffffff;
+    }
+    .login-container h1 {
+      font-size: 2rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      color: #111827;
+    }
+    .login-container input,
+    .login-container button {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .login-container input {
+      border: 1px solid rgba(15,23,42,0.12);
+      background: #fafbff;
+      padding: 14px 16px;
+      font-size: 0.95rem;
+    }
+    .login-container button {
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 0.95rem;
+      box-shadow: 0 14px 30px rgba(79,70,229,0.12);
+    }
+    .login-divider {
+      margin: 24px 0;
+      color: #6b7280;
+    }
+    .login-message {
+      color: #475569;
+    }
+    .project-header {
+      width: min(1200px, 100%);
+      margin: 0 auto 20px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 18px 50px rgba(15,23,42,0.08);
+      padding: 22px 28px;
+    }
+    .project-header h1 {
+      font-size: 1.8rem;
+      margin: 0;
+    }
+    .project-header button {
+      border-radius: 16px;
+      padding: 12px 20px;
+      box-shadow: 0 12px 24px rgba(79,70,229,0.14);
+      background: linear-gradient(135deg, #6366f1, #4338ca);
+      border: none;
+    }
+    .project-grid-container {
+      width: min(1200px, 100%);
+      padding: 0 20px 40px;
+      max-width: 1200px;
+    }
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+    }
+    .project-card,
+    .new-project-card {
+      min-height: 240px;
+      border: 1px solid rgba(15,23,42,0.08);
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      background: #ffffff;
+    }
+    .project-card:hover,
+    .new-project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 22px 50px rgba(15,23,42,0.12);
+    }
+    .project-card-preview {
+      height: 170px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: #ffffff;
+      font-size: 38px;
+      align-items: center;
+      justify-content: center;
+    }
+    .project-card-info {
+      padding: 18px;
+    }
+    .project-card-name {
+      font-size: 1rem;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+    .project-card-date {
+      color: #6b7280;
+      font-size: 0.92rem;
+    }
+    .new-project-card {
+      border-style: dashed;
+      color: #475569;
+      gap: 14px;
+      padding: 24px;
+      text-align: center;
+      justify-content: center;
+    }
+    .new-project-card-icon {
+      font-size: 48px;
+      color: #4f46e5;
+    }
+    .new-project-card-text {
+      font-size: 1.05rem;
+    }
+    .no-projects-message {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      font-size: 1rem;
+      color: #6b7280;
+      background: rgba(255,255,255,0.8);
+      border: 1px solid rgba(15,23,42,0.08);
+      border-radius: 24px;
+      padding: 28px;
+    }
+    #editorScreen {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 28px;
+      padding: 32px;
+    }
+    #editorScreen .sheet {
+      flex: 1;
+      border-radius: 24px;
+      border: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 28px 90px rgba(15,23,42,0.08);
+      margin-bottom: 32px;
+    }
+    #editorScreen .ui-controls {
+      position: sticky;
+      top: 24px;
+      min-width: 360px;
+      padding: 24px;
+      background: #ffffff;
+      border: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 24px 80px rgba(15,23,42,0.08);
+    }
+    .ui-controls button {
+      width: 100%;
+      padding: 14px 18px;
+      margin: 10px 0;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #6366f1, #4338ca);
+      border: none;
+      box-shadow: 0 10px 30px rgba(79,70,229,0.16);
+    }
+    .ui-controls .secondary-btn {
+      background: #f8fafc;
+      color: #111827;
+      box-shadow: none;
       border: 1px solid rgba(15,23,42,0.08);
     }
-
-    .ui-controls button, .login-container button {
-      display: block; width: 100%; margin: 10px 0; padding: 14px 18px;
-      cursor: pointer; background: linear-gradient(135deg, #6366f1, #4338ca);
-      color: white; border: none; border-radius: 16px; font-weight: bold;
-      transition: opacity 0.2s; box-shadow: 0 10px 30px rgba(79,70,229,0.16);
+    .ui-controls .danger-btn {
+      background: #ef4444;
+      box-shadow: none;
     }
-    
-    .ui-controls button:hover, .login-container button:hover { opacity: 0.9; }
-    .secondary-btn { background: #f8fafc !important; color: #111827 !important; border: 1px solid rgba(15,23,42,0.08) !important; box-shadow: none !important; }
-    .danger-btn { background: #ef4444 !important; box-shadow: none !important; color: white !important; }
-
-    .mode-group { display: flex; gap: 12px; margin-bottom: 15px; }
+    .mode-group {
+      gap: 12px;
+    }
     .mode-btn {
-      flex: 1; background: #f8fafc !important; border: 1px solid rgba(15,23,42,0.08) !important;
-      border-radius: 999px !important; color: #111827 !important; padding: 12px 16px;
-      font-weight: 600; transition: all 0.2s ease;
+      background: #f8fafc !important;
+      border: 1px solid rgba(15,23,42,0.08) !important;
+      border-radius: 999px !important;
+      color: #111827 !important;
+      padding: 12px 16px;
+      font-weight: 600;
+      transition: all 0.2s ease;
     }
-    .mode-btn.active { background: linear-gradient(135deg, #6366f1, #4338ca) !important; color: white !important; border-color: transparent !important; }
-
-    .data-input, .tool-input {
-      display: block; margin: 5px 0 15px 0; padding: 12px; width: 100%;
-      box-sizing: border-box; border: 1px solid rgba(15,23,42,0.08);
-      border-radius: 14px; background: #fbfbff;
+    .mode-btn.active {
+      background: linear-gradient(135deg, #6366f1, #4338ca) !important;
+      color: white !important;
+      border-color: transparent !important;
     }
-
-    .sheet {
-      width: 210mm; height: 297mm; background: white;
-      box-shadow: 0 28px 90px rgba(15,23,42,0.08); position: relative;
-      box-sizing: border-box; flex-shrink: 0; user-select: none;
-      border-radius: 4px; border: 1px solid rgba(15,23,42,0.08);
+    .data-input,
+    .tool-input,
+    .calibration-row input,
+    .project-header button {
+      border-radius: 14px;
     }
-
-    .grid {
-      position: absolute; top: var(--top-margin); left: var(--left-margin);      
-      display: grid; grid-template-columns: repeat(4, var(--label-width)); 
-      grid-auto-rows: var(--label-height); column-gap: var(--col-gap); row-gap: var(--row-gap);                                 
+    .data-input,
+    .tool-input,
+    .calibration-row input {
+      border: 1px solid rgba(15,23,42,0.08);
+      background: #fbfbff;
     }
-
-    .label {
-      display: flex; flex-direction: column; align-items: center; justify-content: center; 
-      text-align: center; box-sizing: border-box; border: 1px solid transparent;
-      overflow: hidden; padding: 3.5mm; position: relative; cursor: pointer;
-      font-size: var(--font-size);
+    .action-box,
+    .calibration-panel {
+      background: #f8fafc;
+      border: 1px solid rgba(15,23,42,0.08);
+      padding: 20px;
     }
-
-    .grid.with-label-lines .label { border: 1px solid #ccc; }
-    .grid.align-left .label { align-items: flex-start; text-align: left; }
-    .label.selected { background-color: #e3f2fd; border: 2px solid #007bff !important; z-index: 10; }
-    
-    .grid.with-cut-lines .label::after {
-      content: ''; position: absolute; top: 1.5mm; left: 1.5mm; right: 1.5mm; bottom: 1.5mm;
-      border: 1px dashed #888; pointer-events: none; 
+    .back-button {
+      border-radius: 16px;
+      border: 1px solid rgba(15,23,42,0.08);
+      background-color: #f8fafc;
+      color: #111827;
+      padding: 12px 18px;
+      box-shadow: none;
+      margin-right: 0;
     }
-
-    #loginScreen { align-items: center; justify-content: center; }
-    .login-container {
-      background: white; border-radius: 24px; padding: 40px; width: 100%;
-      max-width: 440px; box-shadow: 0 24px 80px rgba(15,23,42,0.12);
+    .back-button:hover {
+      background-color: #eef2ff;
     }
-
-    .project-header { 
-      width: min(1200px, 100%); margin: 0 auto 20px; background: white; 
-      border-radius: 24px; display: flex; justify-content: space-between; 
-      align-items: center; padding: 22px 28px; border: 1px solid rgba(15,23,42,0.08);
-    }
-    .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; width: min(1200px, 100%); margin: 0 auto; }
-    .project-card, .new-project-card { min-height: 240px; background: white; border-radius: 24px; border: 1px solid rgba(15,23,42,0.08); overflow: hidden; cursor: pointer; transition: transform 0.2s; }
-    .project-card:hover { transform: translateY(-5px); }
-    .project-card-preview { height: 160px; background: #6366f1; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; }
-    
-    #editorScreen { flex-direction: row; align-items: flex-start; justify-content: center; gap: 28px; }
-
-    @media print {
-      .ui-controls { display: none !important; }
-      .sheet { box-shadow: none; border: none; }
+    .login-container button.secondary-btn,
+    .ui-controls button.secondary-btn {
+      background: #f8fafc;
+      color: #111827;
     }
   </style>
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
 <div id="loginScreen" class="screen active">
   <div class="login-container">
-    <h1 style="text-align: center;">Avery L6009 Editor</h1>
-    <input id="authEmail" type="email" class="tool-input" placeholder="Email address">
-    <input id="authPassword" type="password" class="tool-input" placeholder="Password">
+    <h1>Avery L6009 Label Editor</h1>
+    <input id="authEmail" type="email" placeholder="Email address">
+    <input id="authPassword" type="password" placeholder="Password">
     <button onclick="signInWithEmail()">Sign In</button>
     <button onclick="signUpWithEmail()" class="secondary-btn">Create Account</button>
-    <button onclick="signInWithGoogle()" class="secondary-btn">Sign In with Google</button>
-    <div id="loginMessage" style="text-align: center; margin-top: 15px; font-size: 13px;"></div>
+    <div class="login-divider">or</div>
+    <button onclick="signInWithGoogle(event)" class="secondary-btn">Sign In with Google</button>
+    <div id="loginMessage" class="login-message"></div>
   </div>
 </div>
 
+<!-- PROJECT SELECTION SCREEN -->
 <div id="projectScreen" class="screen">
   <div class="project-header">
     <h1>My Projects</h1>
     <div style="display: flex; gap: 10px;">
-      <button onclick="createNewProject()" style="width: auto; padding: 10px 20px;">+ New Project</button>
-      <button onclick="signOutFromProjects()" class="danger-btn" style="width: auto; padding: 10px 20px;">Sign Out</button>
+      <button onclick="createNewProject()">+ New Project</button>
+      <button onclick="signOutFromProjects()" class="danger-btn" style="background-color: #dc3545; width: auto;">Sign Out</button>
     </div>
   </div>
-  <div id="projectList" class="project-grid"></div>
+  <div class="project-grid-container">
+    <div id="projectList" class="project-grid"></div>
+    <div id="noProjectsMsg" class="no-projects-message" style="display:none;">No projects yet. Create your first project!</div>
+  </div>
 </div>
 
+<!-- EDITOR SCREEN -->
 <div id="editorScreen" class="screen">
   <div class="sheet">
     <div class="grid with-label-lines" id="grid"></div>
   </div>
 
   <div class="ui-controls">
-    <button onclick="backToProjects()" class="secondary-btn">← Back to Projects</button>
-    <hr>
-    <label style="font-weight: bold; font-size: 13px;">Base Layout:</label>
+    
+    <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+      <button onclick="backToProjects()" class="back-button">← Back</button>
+      <h2 style="margin: 0; font-size: 18px; color: #333; flex: 1;">Edit Project</h2>
+      <button onclick="resetApp()" class="danger-btn" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">Reset</button>
+    </div>
+
+    <details style="margin-bottom: 15px; background: #e3f2fd; padding: 10px; border-radius: 6px; border: 1px solid #90caf9;">
+      <summary style="cursor: pointer; font-size: 13px; font-weight: bold; color: #0056b3;">📂 Premade Templates</summary>
+      <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <button onclick="loadPremade('WFI_LABELS')" style="margin: 0; padding: 6px 10px; font-size: 12px; width: auto; background-color: #0056b3; border: none; color: white; border-radius: 4px;">WFI_LABELS</button>
+        <button onclick="loadPremade('MAS_HEAD_LABELS')" style="margin: 0; padding: 6px 10px; font-size: 12px; width: auto; background-color: #0056b3; border: none; color: white; border-radius: 4px;">MAS_HEAD_LABELS</button>
+      </div>
+    </details>
+    
+    <label style="font-weight: bold; font-size: 13px; color: #555;">1. Choose Base Layout:</label>
     <div class="mode-group">
-      <button id="btn-column" class="mode-btn active" onclick="setBaseMode('column')">Cols</button>
+      <button id="btn-col" class="mode-btn active" onclick="setBaseMode('column')">Columns</button>
       <button id="btn-row" class="mode-btn" onclick="setBaseMode('row')">Rows</button>
       <button id="btn-all" class="mode-btn" onclick="setBaseMode('all')">All</button>
     </div>
 
-    <label style="font-weight: bold; font-size: 13px;">Text Size:</label>
-    <input type="number" id="fontSizeInput" class="tool-input" value="12" oninput="updateFontSize()">
+    <label style="font-weight: bold; font-size: 13px; color: #555;">2. Enter Text (Click any box to edit individually)</label>
 
-    <div id="dynamic-inputs"></div>
+    <div style="display: flex; gap: 8px; margin: 10px 0; padding: 10px; background-color: #e9ecef; border-radius: 6px; align-items: center;">
+      <label style="font-size: 12px; font-weight: bold;">Global Size:</label>
+      <input type="number" id="fontSizeInput" value="12" style="width: 50px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;" oninput="updateFontSize()">
+      <span style="font-size: 12px; color: #555;">px</span>
+      
+      <div style="flex-grow: 1;"></div> <button class="secondary-btn" title="Highlight text and click to bold" style="width: 32px; margin: 0; padding: 4px; font-weight: bold; border-radius: 4px;" onclick="insertFormatting('b')">B</button>
+      <button class="secondary-btn" title="Highlight text and click to italicize" style="width: 32px; margin: 0; padding: 4px; font-style: italic; font-family: serif; border-radius: 4px;" onclick="insertFormatting('i')">I</button>
+    </div>
+    <p style="font-size: 10px; color: #666; margin: -5px 0 10px 0; text-align: right;"><em>Highlight a specific word above and click B or I</em></p>
 
-    <button onclick="toggleAlignment()" class="secondary-btn">Toggle Center/Left</button>
-    <button onclick="saveProjectToServer()">☁️ Save to Cloud</button>
-    <button onclick="downloadPDF()">📄 Download PDF</button>
-    <button onclick="window.print()" class="secondary-btn">🖨️ Print (Ctrl+P)</button>
+    <div id="dynamic-inputs" class="input-container">
+      </div>
+
+    <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+
+    <button class="secondary-btn" onclick="toggleAlignment()">Toggle Left / Center Alignment</button>
+    
+    <div style="margin: 15px 0; padding: 10px; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 6px;">
+      <label style="cursor: pointer; font-size: 13px; font-weight: bold; display: block; margin-bottom: 8px;">
+        <input type="checkbox" id="labelLinesToggle" checked onchange="toggleLabelLines()"> Show Label Borders (Grey Box)
+      </label>
+      <label style="cursor: pointer; font-size: 13px; font-weight: bold; display: block;">
+        <input type="checkbox" id="cutLinesToggle" onchange="toggleCutLines()"> Show Cut Lines (Dotted)
+      </label>
+    </div>
+
+    <div class="action-box">
+      <h4 style="margin-top: 0; font-size: 14px;">Find & Replace (All Boxes)</h4>
+      <input type="text" id="findText" class="tool-input" placeholder="Find this text...">
+      <input type="text" id="replaceText" class="tool-input" placeholder="Replace with...">
+      <button onclick="applyFindReplace()" class="secondary-btn" style="margin-bottom: 0;">Apply to All</button>
+    </div>
+
+    <details class="calibration-panel">
+      <summary style="cursor: pointer; font-weight: bold; margin-bottom: 10px; font-size: 13px; color: #0056b3;">⚙️ Advanced Settings (Grid Calibration)</summary>
+      <div class="calibration-row"><label>Top Margin:</label><div><input type="number" id="tMargin" value="16.8" step="0.1" oninput="updateGrid()"> mm</div></div>
+      <div class="calibration-row"><label>Left Margin:</label><div><input type="number" id="lMargin" value="4.8" step="0.05" oninput="updateGrid()"> mm</div></div>
+      <div class="calibration-row"><label>Label Width:</label><div><input type="number" id="lWidth" value="47" step="0.1" oninput="updateGrid()"> mm</div></div>
+      <div class="calibration-row"><label>Label Height:</label><div><input type="number" id="lHeight" value="22.4" step="0.1" oninput="updateGrid()"> mm</div></div>
+      <div class="calibration-row"><label>Column Gap:</label><div><input type="number" id="cGap" value="4.4" step="0.1" oninput="updateGrid()"> mm</div></div>
+      <div class="calibration-row"><label>Row Gap:</label><div><input type="number" id="rGap" value="0.0" step="0.1" oninput="updateGrid()"> mm</div></div>
+    </details>
+
+    <div class="action-box" style="margin-bottom: 15px; background-color: #f1f3f5;">
+      <h4 style="margin-top: 0; font-size: 14px;">Document Name</h4>
+      <input type="text" id="docNameInput" class="tool-input" value="Avery_L6009_Labels" placeholder="e.g. My_Custom_Labels" style="margin-bottom: 0;">
+    </div>
+
+    <div class="action-box" style="background-color: #d1ecf1;">
+      <h4 style="margin-top: 0; font-size: 14px;">Save / Load Work</h4>
+      <button onclick="saveProjectToServer()" style="background-color: #17a2b8; margin-bottom: 5px;">☁️ Save to Cloud</button>
+      <button onclick="saveProject()" style="background-color: #17a2b8; margin-bottom: 5px;">💾 Download as JSON</button>
+      <button onclick="document.getElementById('loadProjectFile').click()" style="background-color: #17a2b8;">📂 Load from File</button>
+      <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)">
+    </div>
+
+    <button id="btn-pdf" onclick="downloadPDF()">📄 Download PDF</button>
+    <button onclick="window.print()" class="secondary-btn">🖨️ Print Directly (Ctrl+P)</button>
+    
+    <div style="text-align: center; color: #888; font-style: italic; margin-top: 25px; font-size: 12px;">
+      made by Darvin Magundayao
+    </div>
   </div>
 </div>
 
 <script>
-// --- GLOBAL INITIALIZATION ---
-const SUPABASE_URL = 'https://pbyekmlrwuyyhzuenazs.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieWVrbWxyd3V5eWh6dWVuYXpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3Mzg4NjMsImV4cCI6MjA5MTMxNDg2M30.Vjs2-BVUCNtldnZF4Vyjg6WUeb7drxznYAh32VzBLTI';
-
-// Create client immediately at the top level
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 const ROWS = 12; 
 const COLS = 4;
+const TOTAL_LABELS = ROWS * COLS;
+
 let baseMode = 'column'; 
 let alignment = 'center';
 let selectedIndices = new Set();
+let lastFocusedInput = null;
 let currentUser = null;
 let currentProjectId = null;
 
+const SUPABASE_URL = 'https://pbyekmlrwuyyhzuenazs.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieWVrbWxyd3V5eWh6dWVuYXpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3Mzg4NjMsImV4cCI6MjA5MTMxNDg2M30.Vjs2-BVUCNtldnZF4Vyjg6WUeb7drxznYAh32VzBLTI';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Data Storage
 let colData = new Array(COLS).fill('');
 let rowData = new Array(ROWS).fill('');
 let allData = '';
-let overrides = new Array(ROWS * COLS).fill(null);
+let overrides = new Array(TOTAL_LABELS).fill(null);
 
-// --- APP LOGIC ---
+// Preset Templates Storage
+const PREMADE_TEMPLATES = {
+  'WFI_LABELS': {
+    "docName": "Avery_L6009_Labels",
+    "baseMode": "column",
+    "alignment": "left",
+    "colData": [
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:"
+    ],
+    "rowData": [
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:",
+      "WFI, CYCLE #:, DATE:, EXPIRY:"
+    ],
+    "allData": "WFI, CYCLE #:, DATE:, EXPIRY:",
+    "overrides": new Array(48).fill(null),
+    "textFormat": { "size": "12" },
+    "labelLines": true,
+    "cutLines": false,
+    "calibration": {
+      "tMargin": "16.8", "lMargin": "4.8", "lWidth": "47",
+      "lHeight": "22.4", "cGap": "4.4", "rGap": "0.0"
+    }
+  },
+  'MAS_HEAD_LABELS': {
+    "docName": "MAS_HEAD_LABELS",
+    "baseMode": "all",
+    "alignment": "left",
+    "colData": [
+      "MAS HEADS, ITEM:, DATE:, EXPIRY:", "", "", ""
+    ],
+    "rowData": [
+      "", "", "", "", "", "", "", "", "", "", "", ""
+    ],
+    "allData": "MAS HEADS, ITEM:, DATE:, EXPIRY:",
+    "overrides": new Array(48).fill(null),
+    "textFormat": { "size": "12" },
+    "labelLines": true,
+    "cutLines": false,
+    "calibration": {
+      "tMargin": "16.8", "lMargin": "4.8", "lWidth": "47",
+      "lHeight": "22.4", "cGap": "4.4", "rGap": "0.0"
+    }
+  }
+};
+
+// Initialize
+initApp();
+
+// SCREEN MANAGEMENT
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+}
+
+// Focus Tracker for targeted text formatting
+document.addEventListener('focusin', function(e) {
+  if(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.target.classList.contains('data-input')) {
+    lastFocusedInput = e.target;
+  }
+});
 
 async function initApp() {
   renderInputs();
   generate();
-  
-  // Check session
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  if (session) onUserLogin(session.user);
-
-  // Listen for changes
-  supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (session) onUserLogin(session.user);
-    else onUserLogout();
+  updateGrid();
+  await checkSession();
+  supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (session && session.user) {
+      await onUserLogin(session.user);
+    } else {
+      onUserLogout();
+    }
   });
 }
 
-function onUserLogin(user) {
-  currentUser = user;
-  showScreen('projectScreen');
-  renderProjectList();
+async function checkSession() {
+  const { data: { session }, error } = await supabaseClient.auth.getSession();
+  if (error) {
+    console.warn('Supabase session check failed:', error.message);
+    return;
+  }
+  if (session && session.user) {
+    await onUserLogin(session.user);
+  } else {
+    onUserLogout();
+  }
+}
+
+function showLoginMessage(message, isError = false) {
+  const msg = document.getElementById('loginMessage');
+  msg.textContent = message;
+  msg.style.color = isError ? '#dc3545' : '#28a745';
 }
 
 function onUserLogout() {
   currentUser = null;
+  currentProjectId = null;
   showScreen('loginScreen');
+  showLoginMessage('Signed out. Sign in to access your projects.', false);
+}
+
+async function onUserLogin(user) {
+  currentUser = user;
+  showScreen('projectScreen');
+  await renderProjectList();
 }
 
 async function signInWithEmail() {
-  const email = document.getElementById('authEmail').value;
+  const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
-  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  if (error) alert(error.message);
+  if (!email || !password) {
+    showLoginMessage('Enter a valid email and password.', true);
+    return;
+  }
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (error) {
+    showLoginMessage(error.message, true);
+    return;
+  }
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPassword').value = '';
+  await onUserLogin(data.user);
 }
 
 async function signUpWithEmail() {
-  const email = document.getElementById('authEmail').value;
+  const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
-  const { error } = await supabaseClient.auth.signUp({ email, password });
-  if (error) alert(error.message);
-  else alert("Check your email!");
+  if (!email || !password) {
+    showLoginMessage('Enter a valid email and password.', true);
+    return;
+  }
+  const { data, error } = await supabaseClient.auth.signUp({ email, password });
+  if (error) {
+    showLoginMessage(error.message, true);
+    return;
+  }
+  showLoginMessage('Account created! Please check your email to confirm.', false);
 }
 
 async function signInWithGoogle() {
-  await supabaseClient.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin + window.location.pathname }
-  });
+  const btn = event.target; // The button you clicked
+  const originalText = btn.innerHTML;
+  
+  try {
+    btn.innerHTML = "Redirecting...";
+    btn.disabled = true;
+
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        // Use your ACTUAL GitHub Pages URL here
+        redirectTo: window.location.origin + window.location.pathname,
+      }
+    });
+
+    if (error) throw error;
+    
+    // If successful, the browser will automatically redirect to Google
+  } catch (error) {
+    console.error("Login Error:", error);
+    showLoginMessage(error.message, true);
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
 }
 
 async function signOutFromProjects() {
   await supabaseClient.auth.signOut();
+  onUserLogout();
 }
 
 async function renderProjectList() {
   const container = document.getElementById('projectList');
+  const noMsg = document.getElementById('noProjectsMsg');
   container.innerHTML = '';
   
-  const { data } = await supabaseClient.from('projects')
-    .select('id,name')
-    .eq('user_id', currentUser.id);
+  if (!currentUser) {
+    noMsg.style.display = 'block';
+    return;
+  }
 
+  const { data, error } = await supabaseClient.from('projects')
+    .select('id,name,updated_at')
+    .eq('user_id', currentUser.id)
+    .order('updated_at', { ascending: false });
+
+  if (error) {
+    console.warn('Failed to load projects:', error);
+    noMsg.textContent = 'Unable to load projects. Please try again.';
+    noMsg.style.display = 'block';
+    return;
+  }
+
+  // Add "New Project" card
   const newCard = document.createElement('div');
   newCard.className = 'new-project-card';
-  newCard.onclick = createNewProject;
-  newCard.innerHTML = `<div style="font-size: 40px;">+</div><div>New Project</div>`;
+  newCard.onclick = () => createNewProject();
+  newCard.innerHTML = `
+    <div class="new-project-card-content">
+      <div class="new-project-card-icon">+</div>
+      <div class="new-project-card-text">New Project</div>
+      <div style="font-size: 12px; color: #999;">Blank project</div>
+    </div>
+  `;
   container.appendChild(newCard);
 
-  if (data) {
-    data.forEach(p => {
+  // Add existing projects
+  if (data && data.length > 0) {
+    data.forEach(project => {
       const card = document.createElement('div');
       card.className = 'project-card';
-      card.onclick = () => loadProjectById(p.id);
-      card.innerHTML = `<div class="project-card-preview">📄</div><div class="project-card-info"><b>${p.name}</b></div>`;
+      card.onclick = () => loadProjectById(project.id);
+      
+      const dateStr = new Date(project.updated_at).toLocaleDateString();
+      card.innerHTML = `
+        <div class="project-card-preview">📄</div>
+        <div class="project-card-info">
+          <div class="project-card-name">${escapeHtml(project.name)}</div>
+          <div class="project-card-date">Updated: ${dateStr}</div>
+        </div>
+      `;
       container.appendChild(card);
     });
+    noMsg.style.display = 'none';
+  } else {
+    noMsg.style.display = 'block';
   }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 async function loadProjectById(id) {
-  const { data } = await supabaseClient.from('projects').select('data').eq('id', id).single();
-  if (data) {
-    const d = data.data;
-    colData = d.colData; rowData = d.rowData; allData = d.allData; overrides = d.overrides;
-    currentProjectId = id;
-    showScreen('editorScreen');
-    generate();
-    renderInputs();
+  const { data, error } = await supabaseClient.from('projects')
+    .select('data')
+    .eq('id', id)
+    .eq('user_id', currentUser.id)
+    .single();
+
+  if (error) {
+    alert('Failed to load the project. Please try again.');
+    console.warn(error);
+    return;
   }
+
+  applyProjectData(data.data);
+  currentProjectId = id;
+  showScreen('editorScreen');
 }
 
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+async function createNewProject() {
+  currentProjectId = null;
+  resetApp();
+  document.getElementById('docNameInput').value = 'New Project';
+  showScreen('editorScreen');
 }
 
-function setBaseMode(m) {
-  baseMode = m;
-  document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-  document.getElementById('btn-' + m).classList.add('active');
+async function backToProjects() {
+  currentProjectId = null;
+  showScreen('projectScreen');
+  await renderProjectList();
+}
+
+async function saveProjectToServer() {
+  if (!currentUser) {
+    alert('Sign in first to save a project.');
+    return;
+  }
+
+  const name = document.getElementById('docNameInput').value.trim() || 'Avery_L6009_Labels';
+  const projectData = {
+    docName: name,
+    baseMode,
+    alignment,
+    colData,
+    rowData,
+    allData,
+    overrides,
+    textFormat: { size: document.getElementById('fontSizeInput').value },
+    labelLines: document.getElementById('labelLinesToggle').checked,
+    cutLines: document.getElementById('cutLinesToggle').checked,
+    calibration: {
+      tMargin: document.getElementById('tMargin').value,
+      lMargin: document.getElementById('lMargin').value,
+      lWidth: document.getElementById('lWidth').value,
+      lHeight: document.getElementById('lHeight').value,
+      cGap: document.getElementById('cGap').value,
+      rGap: document.getElementById('rGap').value
+    }
+  };
+
+  let result;
+  if (currentProjectId) {
+    result = await supabaseClient.from('projects').update({ name, data: projectData })
+      .eq('id', currentProjectId)
+      .eq('user_id', currentUser.id);
+  } else {
+    result = await supabaseClient.from('projects').insert([{
+      user_id: currentUser.id,
+      name,
+      data: projectData
+    }]);
+  }
+
+  if (result.error) {
+    alert('Failed to save project. Please try again.');
+    console.warn(result.error);
+    return;
+  }
+
+  if (!currentProjectId && result.data && result.data.length > 0) {
+    currentProjectId = result.data[0].id;
+  }
+
+  alert('Project saved successfully!');
+}
+
+function insertFormatting(tag) {
+  if(!lastFocusedInput) {
+    alert("Please click inside an input box and highlight a word first!");
+    return;
+  }
+  
+  const start = lastFocusedInput.selectionStart;
+  const end = lastFocusedInput.selectionEnd;
+  const text = lastFocusedInput.value;
+  
+  const openTag = `<${tag}>`;
+  const closeTag = `</${tag}>`;
+  
+  const before = text.substring(0, start);
+  const selected = text.substring(start, end);
+  const after = text.substring(end, text.length);
+  
+  lastFocusedInput.value = before + openTag + selected + closeTag + after;
+  
+  const event = new Event('input', { bubbles: true });
+  lastFocusedInput.dispatchEvent(event);
+  
+  lastFocusedInput.focus();
+  lastFocusedInput.setSelectionRange(start + openTag.length, end + openTag.length);
+}
+
+function updateFontSize() {
+  const root = document.documentElement;
+  const size = document.getElementById('fontSizeInput').value || 12;
+  root.style.setProperty('--font-size', size + 'px');
+}
+
+function resetApp() {
+  if (!confirm("Are you sure you want to reset the grid? All unsaved text will be lost.")) return;
+  colData = new Array(COLS).fill('');
+  rowData = new Array(ROWS).fill('');
+  allData = '';
+  overrides = new Array(TOTAL_LABELS).fill(null);
+  selectedIndices.clear();
+  document.getElementById('docNameInput').value = "Avery_L6009_Labels";
+  
+  document.getElementById('fontSizeInput').value = 12;
+  updateFontSize();
+  
+  renderInputs();
+  generate();
+}
+
+function toggleLabelLines() {
+  document.getElementById("grid").classList.toggle('with-label-lines', document.getElementById('labelLinesToggle').checked);
+}
+
+function toggleCutLines() {
+  document.getElementById("grid").classList.toggle('with-cut-lines', document.getElementById('cutLinesToggle').checked);
+}
+
+function toggleAlignment(forceValue) {
+  if (forceValue) {
+    alignment = forceValue;
+  } else {
+    alignment = (alignment === 'center') ? 'left' : 'center';
+  }
+  document.getElementById("grid").classList.toggle('align-left', alignment === 'left');
+}
+
+function updateGrid() {
+  const root = document.documentElement;
+  root.style.setProperty('--top-margin', document.getElementById('tMargin').value + 'mm');
+  root.style.setProperty('--left-margin', document.getElementById('lMargin').value + 'mm');
+  root.style.setProperty('--label-width', document.getElementById('lWidth').value + 'mm');
+  root.style.setProperty('--label-height', document.getElementById('lHeight').value + 'mm');
+  root.style.setProperty('--col-gap', document.getElementById('cGap').value + 'mm');
+  root.style.setProperty('--row-gap', document.getElementById('rGap').value + 'mm');
+}
+
+function setBaseMode(mode) {
+  baseMode = mode;
+  document.getElementById('btn-col').classList.toggle('active', mode === 'column');
+  document.getElementById('btn-row').classList.toggle('active', mode === 'row');
+  document.getElementById('btn-all').classList.toggle('active', mode === 'all');
+  selectedIndices.clear(); 
+  lastFocusedInput = null; 
+  renderInputs();
+  generate();
+}
+
+function selectLabel(event, index) {
+  if (event.shiftKey || event.ctrlKey || event.metaKey) {
+    if (selectedIndices.has(index)) {
+      selectedIndices.delete(index);
+    } else {
+      selectedIndices.add(index);
+    }
+  } else {
+    if (selectedIndices.size === 1 && selectedIndices.has(index)) {
+      selectedIndices.clear(); 
+    } else {
+      selectedIndices.clear();
+      selectedIndices.add(index);
+    }
+  }
+  renderInputs();
+  generate();
+}
+
+function clearSelection() {
+  selectedIndices.clear();
+  renderInputs();
+  generate();
+}
+
+function clearSelectedOverrides() {
+  selectedIndices.forEach(idx => overrides[idx] = null);
   renderInputs();
   generate();
 }
@@ -295,72 +1321,287 @@ function setBaseMode(m) {
 function renderInputs() {
   const container = document.getElementById('dynamic-inputs');
   container.innerHTML = '';
-  let count = baseMode === 'column' ? COLS : (baseMode === 'row' ? ROWS : 1);
   
-  for (let i = 0; i < count; i++) {
-    const input = document.createElement('input');
-    input.className = 'data-input';
-    input.value = baseMode === 'column' ? colData[i] : (baseMode === 'row' ? rowData[i] : allData);
-    input.oninput = (e) => {
-      if (baseMode === 'column') colData[i] = e.target.value;
-      else if (baseMode === 'row') rowData[i] = e.target.value;
-      else allData = e.target.value;
+  if (selectedIndices.size > 0) {
+    let titleText = selectedIndices.size === 1 ? "Editing 1 Label" : `Editing ${selectedIndices.size} Labels`;
+    const div = document.createElement('div');
+    div.style = "background: #e3f2fd; padding: 15px; border-radius: 6px; border: 1px solid #90caf9;";
+    
+    let html = `<h4 style="margin: 0 0 10px 0; color: #0056b3;">${titleText}</h4>`;
+    html += `<textarea id="ind_input" class="data-input" rows="4"></textarea>`;
+    html += `<div style="display: flex; gap: 8px; margin-top: 10px;">
+               <button class="secondary-btn" onclick="clearSelectedOverrides()" style="margin:0; padding: 6px; font-size: 11px;">Reset to Base Text</button>
+               <button class="secondary-btn" onclick="clearSelection()" style="margin:0; padding: 6px; font-size: 11px;">Deselect All</button>
+             </div>`;
+             
+    div.innerHTML = html;
+    container.appendChild(div);
+
+    const indInput = document.getElementById('ind_input');
+    
+    let arr = Array.from(selectedIndices);
+    let firstVal = overrides[arr[0]];
+    let allMatch = arr.every(idx => overrides[idx] === firstVal);
+
+    if (allMatch && firstVal !== null) {
+      indInput.value = firstVal;
+    } else if (!allMatch) {
+      indInput.placeholder = "(Multiple different values selected) Type here to overwrite all of them.";
+    } else {
+      indInput.placeholder = "Type here to detach these boxes from the main layout...";
+    }
+
+    indInput.oninput = (e) => {
+      selectedIndices.forEach(idx => overrides[idx] = e.target.value);
       generate();
     };
-    container.appendChild(input);
+    
+    if(selectedIndices.size === 1) {
+       indInput.focus();
+       lastFocusedInput = indInput;
+    }
+
+  } else {
+    let inputCount = 0;
+    let prefix = '';
+    let dataArray = null;
+
+    if (baseMode === 'column') {
+      inputCount = COLS; prefix = 'Column'; dataArray = colData;
+    } else if (baseMode === 'row') {
+      inputCount = ROWS; prefix = 'Row'; dataArray = rowData;
+    } else if (baseMode === 'all') {
+      inputCount = 1; prefix = 'All Labels'; dataArray = [allData];
+    }
+
+    for (let i = 0; i < inputCount; i++) {
+      const label = document.createElement('label');
+      label.innerText = baseMode === 'all' ? `${prefix}:` : `${prefix} ${i + 1}:`;
+      label.style.fontWeight = "bold";
+      label.style.fontSize = "13px";
+      
+      const input = document.createElement('input');
+      input.className = "data-input";
+      input.id = `input_${i}`;
+      input.placeholder = `e.g. Line 1, Line 2`;
+      input.value = baseMode === 'all' ? allData : dataArray[i];
+      input.oninput = (e) => {
+        if (baseMode === 'all') {
+          allData = e.target.value;
+        } else {
+          dataArray[i] = e.target.value;
+        }
+        generate();
+      };
+      
+      container.appendChild(label);
+      container.appendChild(input);
+    }
   }
 }
 
 function generate() {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
-      const idx = r * COLS + c;
-      const div = document.createElement('div');
-      div.className = 'label';
-      let val = overrides[idx] || (baseMode === 'column' ? colData[c] : (baseMode === 'row' ? rowData[r] : allData));
-      div.innerHTML = val.split(',').join('<br>');
+      let index = r * COLS + c;
+      const div = document.createElement("div");
+      div.className = "label";
+      
+      if (selectedIndices.has(index)) div.classList.add('selected');
+      if (overrides[index] !== null) div.classList.add('overridden');
+      
+      div.onclick = (e) => selectLabel(e, index);
+      
+      let baseVal = '';
+      if (baseMode === 'column') baseVal = colData[c];
+      else if (baseMode === 'row') baseVal = rowData[r];
+      else if (baseMode === 'all') baseVal = allData;
+
+      let val = overrides[index] !== null ? overrides[index] : baseVal; 
+      
+      if (val.trim() !== "") {
+        div.innerHTML = val.split(',').map(line => line.trim()).join('<br>');
+      }
       grid.appendChild(div);
     }
   }
 }
 
-async function saveProjectToServer() {
-  const name = document.getElementById('docNameInput')?.value || "Untitled Project";
-  const projectData = { colData, rowData, allData, overrides };
-  if (currentProjectId) {
-    await supabaseClient.from('projects').update({ name, data: projectData }).eq('id', currentProjectId);
-  } else {
-    await supabaseClient.from('projects').insert([{ user_id: currentUser.id, name, data: projectData }]);
+function applyFindReplace() {
+  const findTxt = document.getElementById('findText').value;
+  const replaceTxt = document.getElementById('replaceText').value;
+  if (!findTxt) return;
+
+  for (let i = 0; i < COLS; i++) colData[i] = colData[i].replaceAll(findTxt, replaceTxt);
+  for (let i = 0; i < ROWS; i++) rowData[i] = rowData[i].replaceAll(findTxt, replaceTxt);
+  allData = allData.replaceAll(findTxt, replaceTxt);
+  
+  for (let i = 0; i < TOTAL_LABELS; i++) {
+    if (overrides[i] !== null) overrides[i] = overrides[i].replaceAll(findTxt, replaceTxt);
   }
-  alert("Saved to cloud!");
-}
-
-function createNewProject() {
-  currentProjectId = null;
-  colData.fill(''); rowData.fill(''); allData = ''; overrides.fill(null);
-  showScreen('editorScreen');
-  generate();
+  
   renderInputs();
+  generate();
 }
 
-function backToProjects() { showScreen('projectScreen'); renderProjectList(); }
-function updateFontSize() { document.documentElement.style.setProperty('--font-size', document.getElementById('fontSizeInput').value + 'px'); }
-function toggleAlignment() { alignment = alignment === 'center' ? 'left' : 'center'; document.getElementById('grid').classList.toggle('align-left', alignment === 'left'); }
+// --- DATA APPLICATION (Used for Save/Load and Premade Templates) ---
+function applyProjectData(data) {
+  if (data.docName) document.getElementById('docNameInput').value = data.docName;
+  baseMode = data.baseMode || 'column';
+  alignment = data.alignment || 'center';
+  colData = data.colData || new Array(COLS).fill('');
+  rowData = data.rowData || new Array(ROWS).fill('');
+  allData = data.allData || '';
+  overrides = data.overrides || new Array(TOTAL_LABELS).fill(null);
+  
+  document.getElementById('labelLinesToggle').checked = data.labelLines !== false; 
+  document.getElementById('cutLinesToggle').checked = data.cutLines === true;      
+  
+  if (data.textFormat && data.textFormat.size) {
+    document.getElementById('fontSizeInput').value = data.textFormat.size;
+    updateFontSize();
+  }
+
+  if (data.calibration) {
+    document.getElementById('tMargin').value = data.calibration.tMargin;
+    document.getElementById('lMargin').value = data.calibration.lMargin;
+    document.getElementById('lWidth').value = data.calibration.lWidth;
+    document.getElementById('lHeight').value = data.calibration.lHeight;
+    document.getElementById('cGap').value = data.calibration.cGap;
+    document.getElementById('rGap').value = data.calibration.rGap;
+  }
+
+  setBaseMode(baseMode);
+  toggleAlignment(alignment);
+  toggleLabelLines();
+  toggleCutLines();
+  updateGrid();
+}
+
+function loadPremade(key) {
+  if(PREMADE_TEMPLATES[key]) {
+    applyProjectData(PREMADE_TEMPLATES[key]);
+  }
+}
+
+// --- EXPORT UTILITY (Folder Picker Integration & Fallback) ---
+async function exportFile(blob, defaultFilename) {
+  if (window.showSaveFilePicker) {
+    try {
+      const extension = defaultFilename.split('.').pop();
+      const handle = await window.showSaveFilePicker({
+        suggestedName: defaultFilename,
+        types: [{
+          description: extension.toUpperCase() + ' File',
+          accept: { [blob.type || 'application/octet-stream']: [`.${extension}`] },
+        }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return; 
+    } catch (err) {
+      if (err.name === 'AbortError') return; 
+      console.warn("Folder picker blocked/failed, falling back to standard download...", err);
+    }
+  }
+  
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = defaultFilename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// --- SAVE & LOAD SYSTEM ---
+function saveProject() {
+  const docName = document.getElementById('docNameInput').value.trim() || 'label_project';
+  const projectData = {
+    docName, baseMode, alignment, colData, rowData, allData, overrides,
+    textFormat: {
+      size: document.getElementById('fontSizeInput').value
+    },
+    labelLines: document.getElementById('labelLinesToggle').checked,
+    cutLines: document.getElementById('cutLinesToggle').checked,
+    calibration: {
+      tMargin: document.getElementById('tMargin').value,
+      lMargin: document.getElementById('lMargin').value,
+      lWidth: document.getElementById('lWidth').value,
+      lHeight: document.getElementById('lHeight').value,
+      cGap: document.getElementById('cGap').value,
+      rGap: document.getElementById('rGap').value
+    }
+  };
+  const blob = new Blob([JSON.stringify(projectData, null, 2)], {type: "application/json"});
+  exportFile(blob, `${docName}.json`);
+}
+
+function loadProject(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      applyProjectData(data);
+      event.target.value = ""; 
+    } catch (err) {
+      alert("Invalid project file.");
+    }
+  };
+  reader.readAsText(file);
+}
 
 async function downloadPDF() {
+  const showCutLines = document.getElementById('cutLinesToggle').checked;
+  const showLabelLines = document.getElementById('labelLinesToggle').checked;
+
+  if (showCutLines || showLabelLines) {
+    let activeLines = [];
+    if (showLabelLines) activeLines.push("Label Borders (Grey Boxes)");
+    if (showCutLines) activeLines.push("Cut Lines (Dotted Lines)");
+    
+    const confirmMessage = `WARNING: You currently have ${activeLines.join(" and ")} turned ON.\n\nBecause these are visible on the screen, they WILL BE PRINTED onto your final PDF.\n\nIf you are printing onto pre-cut label paper, you probably want these turned OFF so they don't print ink over the edges of your labels.\n\nClick OK to download with the lines visible, or click Cancel to go back and turn them off.`;
+    
+    if (!confirm(confirmMessage)) {
+      return; 
+    }
+  }
+
+  const btn = document.getElementById('btn-pdf');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = "⏳ Generating PDF...";
+  btn.disabled = true;
+
+  const docName = document.getElementById('docNameInput').value.trim() || 'Avery_L6009_Labels';
   const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF('p', 'mm', 'a4');
-  const sheet = document.querySelector('.sheet');
-  const canvas = await html2canvas(sheet, { scale: 3 });
-  pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
-  pdf.save('labels.pdf');
+  const pdf = new jsPDF({ unit: "mm", format: "a4" });
+  const sheet = document.querySelector(".sheet");
+  
+  const originalShadow = sheet.style.boxShadow;
+  sheet.style.boxShadow = 'none';
+  const oldSelected = new Set(selectedIndices);
+  selectedIndices.clear();
+  generate();
+
+  const canvas = await html2canvas(sheet, { scale: 4 }); 
+  
+  sheet.style.boxShadow = originalShadow;
+  selectedIndices = oldSelected; 
+  generate();
+
+  pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, 297);
+  await exportFile(pdf.output('blob'), `${docName}.pdf`);
+  
+  btn.innerHTML = originalText;
+  btn.disabled = false;
 }
-
-// --- INITIALIZE ON LOAD ---
-window.onload = initApp;
-
 </script>
 </body>
 </html>
