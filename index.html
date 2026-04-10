@@ -92,8 +92,8 @@
 
     /* SIDEBAR */
     .sidebar {
-      width: 340px;
-      min-width: 340px;
+      width: 420px;
+      min-width: 420px;
       background: var(--surface);
       border-right: 1px solid var(--border);
       display: flex;
@@ -376,7 +376,7 @@
     .preview-canvas::-webkit-scrollbar-track { background: transparent; }
     .preview-canvas::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
 
-    .sheet-wrapper { display: flex; flex-direction: column; align-items: center; }
+    .sheet-wrapper { display: flex; flex-direction: column; align-items: center; transform-origin: top center; transition: transform 0.2s; }
     .sheet {
       width: 210mm;
       height: 297mm;
@@ -434,9 +434,10 @@
     .pin-error { color: #dc2626; font-size: 11px; font-family: 'DM Mono', monospace; display: none; }
 
     .calib-section {
-      border-top: 1px solid var(--border);
-      padding: 14px 18px;
       background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
     }
     .calib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .calib-field label {
@@ -446,6 +447,34 @@
       letter-spacing: 1px;
       display: block;
       margin-bottom: 3px;
+    }
+
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .zoom-btn {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 5px;
+      color: rgba(255,255,255,0.7);
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .zoom-btn:hover { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.3); color: #fff; }
+    .zoom-level {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      min-width: 40px;
+      text-align: center;
     }
 
     @media print {
@@ -554,36 +583,35 @@
         <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)">
       </div>
 
-    </div>
-
-    <!-- GRID CALIBRATION — PIN LOCKED -->
-    <div class="calib-section">
-      <div id="calib-locked">
-        <div class="pin-gate">
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">🔒 GRID CALIBRATION</div>
-          <div class="pin-row">
-            <input type="password" id="pinInput" class="inp sm" placeholder="Enter PIN..." maxlength="4" style="flex:1;" onkeydown="if(event.key==='Enter')checkPin()">
-            <button class="btn btn-ghost btn-sm" onclick="checkPin()">Unlock</button>
+      <!-- GRID CALIBRATION — PIN LOCKED -->
+      <div class="calib-section">
+        <div id="calib-locked">
+          <div class="pin-gate">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">🔒 GRID CALIBRATION</div>
+            <div class="pin-row">
+              <input type="password" id="pinInput" class="inp sm" placeholder="Enter PIN..." maxlength="4" style="flex:1;" onkeydown="if(event.key==='Enter')checkPin()">
+              <button class="btn btn-ghost btn-sm" onclick="checkPin()">Unlock</button>
+            </div>
+            <div class="pin-error" id="pinError">Incorrect PIN</div>
           </div>
-          <div class="pin-error" id="pinError">Incorrect PIN</div>
+        </div>
+        <div id="calib-unlocked" style="display:none;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--sky);letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+            <span>🔓 GRID CALIBRATION</span>
+            <button class="btn btn-ghost btn-sm" onclick="lockCalib()" style="padding:3px 8px;font-size:9px;">Lock</button>
+          </div>
+          <div class="calib-grid">
+            <div class="calib-field"><label>TOP MARGIN (mm)</label><input type="number" id="tMargin" value="16.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+            <div class="calib-field"><label>LEFT MARGIN (mm)</label><input type="number" id="lMargin" value="4.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+            <div class="calib-field"><label>LABEL WIDTH (mm)</label><input type="number" id="lblWidth" value="47" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+            <div class="calib-field"><label>LABEL HEIGHT (mm)</label><input type="number" id="lblHeight" value="22.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+            <div class="calib-field"><label>COL GAP (mm)</label><input type="number" id="colGap" value="4.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+            <div class="calib-field"><label>ROW GAP (mm)</label><input type="number" id="rowGap" value="0" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+          </div>
         </div>
       </div>
-      <div id="calib-unlocked" style="display:none;">
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--sky);letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
-          <span>🔓 GRID CALIBRATION</span>
-          <button class="btn btn-ghost btn-sm" onclick="lockCalib()" style="padding:3px 8px;font-size:9px;">Lock</button>
-        </div>
-        <div class="calib-grid">
-          <div class="calib-field"><label>TOP MARGIN (mm)</label><input type="number" id="tMargin" value="16.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-          <div class="calib-field"><label>LEFT MARGIN (mm)</label><input type="number" id="lMargin" value="4.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-          <div class="calib-field"><label>LABEL WIDTH (mm)</label><input type="number" id="lblWidth" value="47" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-          <div class="calib-field"><label>LABEL HEIGHT (mm)</label><input type="number" id="lblHeight" value="22.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-          <div class="calib-field"><label>COL GAP (mm)</label><input type="number" id="colGap" value="4.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-          <div class="calib-field"><label>ROW GAP (mm)</label><input type="number" id="rowGap" value="0" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-        </div>
-      </div>
-    </div>
 
+    </div>
     <!-- FOOTER -->
     <div class="sidebar-footer">
       <button class="btn btn-sky btn-full" id="btn-pdf" onclick="downloadPDF()">↓ Export PDF</button>
@@ -599,6 +627,12 @@
       <div class="preview-badge">L6009 · A4</div>
       <div class="preview-info">210mm × 297mm &nbsp;·&nbsp; 4 cols × 12 rows</div>
       <div class="preview-header-spacer"></div>
+      <div class="zoom-controls">
+        <button class="zoom-btn" onclick="adjustZoom(-10)" title="Zoom Out">−</button>
+        <span class="zoom-level" id="zoom-label">100%</span>
+        <button class="zoom-btn" onclick="adjustZoom(10)" title="Zoom In">+</button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom" style="width:auto;padding:0 8px;font-size:11px;">↺</button>
+      </div>
       <div id="preview-sel-badge" style="display:none;">
         <span class="preview-badge" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.4);color:#4ade80;" id="sel-badge-text"></span>
       </div>
@@ -875,6 +909,18 @@ async function downloadPDF() {
     pdf.save(document.getElementById('docNameInput').value + '.pdf');
   } finally { btn.innerHTML = '↓ Export PDF'; btn.disabled = false; }
 }
+let zoomLevel = 100;
+function applyZoom() {
+  const wrapper = document.querySelector('.sheet-wrapper');
+  wrapper.style.transform = `scale(${zoomLevel / 100})`;
+  document.getElementById('zoom-label').textContent = zoomLevel + '%';
+}
+function adjustZoom(delta) {
+  zoomLevel = Math.min(200, Math.max(30, zoomLevel + delta));
+  applyZoom();
+}
+function resetZoom() { zoomLevel = 100; applyZoom(); }
+
 </script>
 </body>
 </html>
