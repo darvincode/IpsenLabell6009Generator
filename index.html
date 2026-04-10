@@ -662,8 +662,8 @@ let overrides = new Array(TOTAL).fill(null);
 
 const PREMADE_TEMPLATES = {
   WFI_TUBING_LABELS: {
-    colData: ["WFI, CYCLE #:, DATE:, EXPIRY:","WFI, CYCLE #:, DATE:, EXPIRY:","WFI, CYCLE #:, DATE:, EXPIRY:","WFI, CYCLE #:, DATE:, EXPIRY:"],
-    rowData: new Array(ROWS).fill(''), allData: '', alignment: 'left', fontSize: '11', defaultTab: 'col'
+    colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''),
+    allData: "WFI, CYCLE#:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all'
   },
   MAS_HEAD_LABELS: {
     colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''),
