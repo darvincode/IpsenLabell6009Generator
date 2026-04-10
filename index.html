@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Avery L6009 | Pro Label Editor</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
@@ -16,94 +19,153 @@
       --col-gap: 4.4mm;
       --row-gap: 0.0mm;
       --font-size: 12px;
-      --navy:        #2b4590;
-      --navy-dark:   #1e3270;
-      --navy-light:  #3a57a8;
-      --sky:         #1da1d8;
-      --sky-dim:     #1585b5;
-      --sky-glow:    rgba(29,161,216,0.12);
-      --cream:       #fffef5;
-      --cream-dark:  #f0efe4;
-      --bg:          #eeeee4;
-      --surface:     #ffffff;
-      --border:      #d8d7c8;
-      --border-mid:  #c4c3b4;
-      --text:        #1a2540;
-      --text-mid:    #4a5680;
-      --muted:       #8a90a8;
-      --success:     #16a34a;
+      --navy: #2b4590;
+      --navy-dark: #1e3270;
+      --navy-light: #3a57a8;
+      --sky: #1da1d8;
+      --sky-dim: #1585b5;
+      --sky-glow: rgba(29, 161, 216, 0.12);
+      --cream: #fffef5;
+      --cream-dark: #f0efe4;
+      --bg: #eeeee4;
+      --surface: #ffffff;
+      --border: #d8d7c8;
+      --border-mid: #c4c3b4;
+      --text: #1a2540;
+      --text-mid: #4a5680;
+      --muted: #8a90a8;
+      --success: #16a34a;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Barlow', sans-serif; font-size: 15px; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    body {
+      font-family: 'Barlow', sans-serif;
+      font-size: 15px;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-    .topbar { background: var(--navy); padding: 0 32px; height: 56px; display: flex; align-items: center; gap: 20px; position: sticky; top: 0; z-index: 200; box-shadow: 0 2px 16px rgba(30,50,112,0.35); }
+    /* ── TOP BAR ── */
+    .topbar {
+      background: var(--navy);
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 16px rgba(30,50,112,0.35);
+    }
     .topbar-logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 24px; letter-spacing: 3px; color: #fff; text-transform: uppercase; }
     .topbar-logo span { color: var(--sky); }
+    /* Project name centered in topbar */
+    .topbar-project {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: #fff;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .topbar-project span { color: var(--sky); }
     .topbar-sub { font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 1px; }
     .topbar-spacer { flex: 1; }
     .topbar-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 4px; color: rgba(255,255,255,0.5); }
 
     .app-body { display: flex; height: calc(100vh - 56px); overflow: hidden; }
 
-    .sidebar { width: 390px; min-width: 390px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 2px 0 20px rgba(43,69,144,0.08); }
-    .sidebar-scroll { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+    /* ── SIDEBAR ── */
+    .sidebar { width: 370px; min-width: 370px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 2px 0 20px rgba(43,69,144,0.08); }
+    .sidebar-scroll { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .sidebar-scroll::-webkit-scrollbar { width: 4px; }
     .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
     .sidebar-scroll::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
-    .sidebar-footer { border-top: 1px solid var(--border); padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; background: var(--cream); }
+    .sidebar-footer { border-top: 1px solid var(--border); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; background: var(--cream); }
 
-    .card { background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 15px; }
-    .card-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--navy); margin-bottom: 13px; display: flex; align-items: center; gap: 8px; }
+    @media print {
+      @page { size: A4; margin: 0; }
+      body { background: white; }
+      .label { font-size: calc(var(--font-size) - 2px); }
+    }
+
+    .card { background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 13px; }
+    .card-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--navy); margin-bottom: 11px; display: flex; align-items: center; gap: 8px; }
     .card-title .dot { width: 7px; height: 7px; background: var(--sky); border-radius: 50%; flex-shrink: 0; }
 
-    /* TEMPLATES TOGGLE */
-    .templates-toggle-btn {
+    /* ── DROPDOWN TOGGLE (shared pattern) ── */
+    .dropdown-toggle-btn {
       width: 100%; display: flex; align-items: center; justify-content: space-between;
-      padding: 11px 14px;
+      padding: 10px 13px;
       font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
       background: var(--cream); border: 1px solid var(--border); border-radius: 8px;
       color: var(--navy); cursor: pointer; transition: all 0.15s;
     }
-    .templates-toggle-btn:hover { border-color: var(--sky); background: var(--sky-glow); }
-    .templates-toggle-btn.open { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
-    .tpl-label { display: flex; align-items: center; gap: 8px; }
-    .tpl-dot { width: 7px; height: 7px; background: var(--sky); border-radius: 50%; }
-    .tpl-caret { font-size: 10px; transition: transform 0.2s; display: inline-block; color: var(--sky); }
-    .templates-toggle-btn.open .tpl-caret { transform: rotate(180deg); }
+    .dropdown-toggle-btn:hover { border-color: var(--sky); background: var(--sky-glow); }
+    .dropdown-toggle-btn.open { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+    .toggle-label-row { display: flex; align-items: center; gap: 8px; }
+    .toggle-dot { width: 7px; height: 7px; background: var(--sky); border-radius: 50%; }
+    .toggle-dot-fmt { background: #7c3aed; }
+    .toggle-caret { font-size: 10px; transition: transform 0.2s; display: inline-block; color: var(--sky); }
+    .dropdown-toggle-btn.open .toggle-caret { transform: rotate(180deg); }
+
+    /* Templates panel */
     .templates-panel {
       display: none; flex-direction: column; gap: 6px;
       background: var(--cream); border: 1px solid var(--border); border-top: none;
       border-radius: 0 0 8px 8px; padding: 10px;
     }
     .templates-panel.open { display: flex; }
-    .template-item { display: flex; align-items: center; justify-content: space-between; padding: 11px 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; transition: all 0.15s; }
+    .template-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; transition: all 0.15s; }
     .template-item:hover { border-color: var(--sky); background: var(--sky-glow); }
     .template-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 1px; color: var(--navy); }
     .template-arrow { color: var(--sky); font-size: 20px; }
 
-    .tab-row { display: flex; gap: 3px; margin-bottom: 13px; background: var(--border); padding: 3px; border-radius: 7px; }
-    .tab-btn { flex: 1; padding: 8px 4px; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; background: transparent; border: none; color: var(--muted); border-radius: 5px; cursor: pointer; transition: all 0.15s; }
+    /* Text Format panel */
+    .textformat-panel {
+      display: none; flex-direction: column; gap: 8px;
+      background: var(--cream); border: 1px solid var(--border); border-top: none;
+      border-radius: 0 0 8px 8px; padding: 10px;
+    }
+    .textformat-panel.open { display: flex; }
+    .fmt-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .fmt-row .size-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); white-space: nowrap; }
+    .fmt-row input { width: 60px; text-align: center; }
+    .fmt-align-row { display: flex; gap: 5px; }
+
+    /* Tabs */
+    .tab-row { display: flex; gap: 3px; margin-bottom: 11px; background: var(--border); padding: 3px; border-radius: 7px; }
+    .tab-btn { flex: 1; padding: 7px 4px; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; background: transparent; border: none; color: var(--muted); border-radius: 5px; cursor: pointer; transition: all 0.15s; }
     .tab-btn:hover { color: var(--text); background: var(--cream-dark); }
     .tab-btn.active { background: var(--navy); color: #fff; }
 
+    /* Layer Panel */
     .layer-panel { display: flex; flex-direction: column; gap: 10px; }
     .layer-section { border: 1px solid var(--border); border-radius: 7px; overflow: hidden; background: var(--surface); }
-    .layer-header { display: flex; align-items: center; gap: 8px; padding: 8px 11px; background: var(--cream-dark); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; color: var(--text-mid); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    .layer-header { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--cream-dark); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; color: var(--text-mid); text-transform: uppercase; border-bottom: 1px solid var(--border); }
     .layer-indicator { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-    .layer-col .layer-indicator   { background: var(--navy); }
-    .layer-row .layer-indicator   { background: #7c3aed; }
-    .layer-all .layer-indicator   { background: var(--sky); }
+    .layer-col .layer-indicator { background: var(--navy); }
+    .layer-row .layer-indicator { background: #7c3aed; }
+    .layer-all .layer-indicator { background: var(--sky); }
     .layer-override .layer-indicator { background: var(--success); }
     .layer-body { padding: 10px; }
     .layer-sub-inputs { display: flex; flex-direction: column; gap: 6px; }
     .layer-sub-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 2px; }
 
+    /* Inputs */
     .inp { background: var(--surface); border: 1px solid var(--border-mid); border-radius: 5px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; padding: 8px 10px; width: 100%; transition: border-color 0.15s, box-shadow 0.15s; resize: none; }
     .inp:focus { outline: none; border-color: var(--sky); box-shadow: 0 0 0 3px var(--sky-glow); }
-    .inp::placeholder { color: var(--muted); }
-    .inp.sm { padding: 7px 9px; font-size: 12px; }
+    .inp.sm { padding: 6px 8px; font-size: 12px; }
 
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 15px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; border: none; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 14px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; border: none; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
     .btn-primary { background: var(--navy); color: white; }
     .btn-primary:hover { background: var(--navy-dark); }
     .btn-sky { background: var(--sky); color: white; }
@@ -113,56 +175,78 @@
     .btn-danger { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
     .btn-danger:hover { background: #fecaca; }
     .btn-full { width: 100%; }
-    .btn-sm { padding: 7px 11px; font-size: 12px; }
-    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+    .btn-sm { padding: 6px 10px; font-size: 12px; }
+    .btn-xs { padding: 5px 9px; font-size: 11px; }
 
-    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); }
-    .toggle-row:last-child { border-bottom: none; }
-    .toggle-label { font-size: 14px; color: var(--text); }
-    .toggle { position: relative; width: 38px; height: 22px; flex-shrink: 0; }
+    /* Toggle switches (small inline) */
+    .toggle { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-track { position: absolute; inset: 0; background: var(--border-mid); border-radius: 22px; cursor: pointer; transition: background 0.2s; }
+    .toggle-track { position: absolute; inset: 0; background: var(--border-mid); border-radius: 20px; cursor: pointer; transition: background 0.2s; }
     .toggle input:checked + .toggle-track { background: var(--sky); }
-    .toggle-track::after { content: ''; position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    .toggle-track::after { content: ''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
     .toggle input:checked + .toggle-track::after { transform: translateX(16px); }
 
-    .font-controls { display: flex; align-items: center; gap: 8px; }
-    .font-controls .size-label { font-size: 13px; color: var(--muted); white-space: nowrap; }
-    .font-controls input { width: 60px; text-align: center; }
+    /* ── Footer toggles inline row ── */
+    .footer-guide-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--cream-dark);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 6px 10px;
+      flex-wrap: wrap;
+    }
+    .guide-toggle-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-mid);
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .guide-divider { width: 1px; height: 18px; background: var(--border-mid); flex-shrink: 0; }
 
+    /* Find & Replace Box */
     .find-replace-box { display: flex; flex-direction: column; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 10px; margin-top: 10px; }
     .find-replace-row { display: flex; gap: 6px; align-items: center; }
     .find-replace-row label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; width: 52px; flex-shrink: 0; }
     .find-replace-row .inp { flex: 1; }
     .fr-status { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--success); min-height: 15px; }
 
-    .page-controls { display: flex; align-items: center; justify-content: space-between; background: var(--cream-dark); border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; margin-bottom: 4px; }
+    /* Page controls */
+    .page-controls { display: flex; align-items: center; justify-content: space-between; background: var(--cream-dark); border: 1px solid var(--border); border-radius: 7px; padding: 7px 11px; margin-bottom: 4px; }
     .page-count-label { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-mid); letter-spacing: 1px; }
     .page-btn-group { display: flex; align-items: center; gap: 6px; }
-    .page-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; background: var(--surface); border: 1px solid var(--border-mid); border-radius: 5px; color: var(--navy); cursor: pointer; transition: all 0.15s; line-height: 1; }
+    .page-btn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 19px; background: var(--surface); border: 1px solid var(--border-mid); border-radius: 5px; color: var(--navy); cursor: pointer; transition: all 0.15s; line-height: 1; }
     .page-btn:hover:not(:disabled) { border-color: var(--sky); color: var(--sky); background: var(--sky-glow); }
     .page-btn:disabled { opacity: 0.3; cursor: not-allowed; background: var(--border); color: var(--muted); border-color: var(--border); }
     .page-total-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--navy); color: #fff; padding: 3px 9px; border-radius: 4px; letter-spacing: 1px; }
 
+    /* PIN / calibration */
     .pin-gate { display: flex; flex-direction: column; gap: 8px; }
     .pin-row { display: flex; gap: 8px; }
     .pin-error { color: #dc2626; font-size: 12px; font-family: 'DM Mono', monospace; display: none; }
-    .calib-section { background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 15px; }
+    .calib-section { background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 13px; }
     .calib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .calib-field label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; display: block; margin-bottom: 3px; }
 
+    /* Project card grid */
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+    /* ── PREVIEW AREA ── */
     .preview-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-    .preview-header { background: var(--navy-dark); padding: 0 28px; height: 46px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+    .preview-header { background: var(--navy-dark); padding: 0 28px; height: 44px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
     .preview-header-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.8); }
     .preview-badge { font-family: 'DM Mono', monospace; font-size: 11px; padding: 3px 9px; border-radius: 3px; background: rgba(29,161,216,0.18); border: 1px solid rgba(29,161,216,0.35); color: #7dd3fc; }
     .preview-info { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.28); }
     .preview-header-spacer { flex: 1; }
     .preview-status { display: flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.35); }
     .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 6px #4ade80; }
-
     .zoom-controls { display: flex; align-items: center; gap: 6px; }
-    .zoom-btn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 5px; color: rgba(255,255,255,0.7); font-size: 17px; cursor: pointer; transition: all 0.15s; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; line-height: 1; }
+    .zoom-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 5px; color: rgba(255,255,255,0.7); font-size: 16px; cursor: pointer; transition: all 0.15s; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; line-height: 1; }
     .zoom-btn:hover { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.3); color: #fff; }
     .zoom-level { font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.5); min-width: 44px; text-align: center; }
 
@@ -171,43 +255,25 @@
     .preview-canvas::-webkit-scrollbar-track { background: transparent; }
     .preview-canvas::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
 
-    .floating-sel-wrap { position: absolute; top: 58px; right: 18px; z-index: 150; }
-    .sel-dropdown-btn {
-      display: flex; align-items: center; gap: 8px; padding: 8px 14px;
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase;
-      background: var(--navy); border: 1px solid rgba(29,161,216,0.5); border-radius: 8px;
-      color: #7dd3fc; cursor: pointer; transition: all 0.15s; white-space: nowrap;
-      box-shadow: 0 4px 18px rgba(27,50,112,0.35);
-    }
+    /* Floating selection */
+    .floating-sel-wrap { position: absolute; top: 56px; right: 18px; z-index: 150; }
+    .sel-dropdown-btn { display: flex; align-items: center; gap: 8px; padding: 7px 13px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; background: var(--navy); border: 1px solid rgba(29,161,216,0.5); border-radius: 8px; color: #7dd3fc; cursor: pointer; transition: all 0.15s; white-space: nowrap; box-shadow: 0 4px 18px rgba(27,50,112,0.35); }
     .sel-dropdown-btn:hover { background: var(--navy-light); border-color: rgba(29,161,216,0.8); color: #bae6fd; }
     .sel-dropdown-btn .caret { font-size: 10px; transition: transform 0.2s; display: inline-block; }
     .sel-dropdown-btn.open .caret { transform: rotate(180deg); }
-
-    .sel-dropdown-menu {
-      display: none; position: absolute; top: calc(100% + 8px); right: 0;
-      width: 310px; background: var(--navy-dark);
-      border: 1px solid rgba(29,161,216,0.3); border-radius: 10px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.45); padding: 10px;
-      z-index: 300; flex-direction: column; gap: 5px;
-    }
+    .sel-dropdown-menu { display: none; position: absolute; top: calc(100% + 8px); right: 0; width: 310px; background: var(--navy-dark); border: 1px solid rgba(29,161,216,0.3); border-radius: 10px; box-shadow: 0 12px 40px rgba(0,0,0,0.45); padding: 10px; z-index: 300; flex-direction: column; gap: 5px; }
     .sel-dropdown-menu.open { display: flex; }
     .sel-menu-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); text-transform: uppercase; padding: 4px 6px 2px; }
-    .sel-menu-btn {
-      display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px;
-      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;
-      color: rgba(255,255,255,0.75); cursor: pointer; transition: all 0.15s; text-align: left;
-    }
+    .sel-menu-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 11px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; color: rgba(255,255,255,0.75); cursor: pointer; transition: all 0.15s; text-align: left; }
     .sel-menu-btn:hover { background: rgba(29,161,216,0.2); border-color: rgba(29,161,216,0.4); color: #fff; }
-    .sel-icon { width: 36px; height: 20px; flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 2px; }
+    .sel-icon { width: 36px; height: 20px; flex-shrink: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
     .sel-icon-cell { border-radius: 2px; }
     .sel-icon-cell.on  { background: var(--sky); }
     .sel-icon-cell.off { background: rgba(255,255,255,0.12); }
     .sel-menu-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 1px; font-weight: 400; letter-spacing: 0; text-transform: none; }
     .sel-menu-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 2px 0; }
-    .sel-icon-2 { width: 24px; height: 20px; flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; }
-    .sel-icon-rows { width: 36px; height: 28px; flex-shrink: 0; display: grid; grid-template-rows: repeat(4,1fr); gap: 2px; }
 
+    /* Sheet and label styles */
     .sheets-container { display: flex; flex-direction: column; align-items: center; gap: 28px; transform-origin: top center; transition: transform 0.2s; }
     .sheet-wrapper { position: relative; }
     .sheet-label-count { position: absolute; top: -22px; left: 0; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-mid); display: flex; align-items: center; gap: 6px; }
@@ -222,26 +288,17 @@
     .grid.align-left .label { align-items: flex-start; text-align: left; }
     .label.selected { background-color: #dbeafe !important; border: 1.5px solid var(--sky) !important; z-index: 10; }
     .grid.with-cut-lines .label::after { content: ''; position: absolute; top: 1mm; left: 1mm; right: 1mm; bottom: 1mm; border: 0.5px dashed var(--sky); pointer-events: none; }
-
-    .footer-toggles { background: var(--cream-dark); border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; }
-
-    @media print {
-      @page { size: A4; margin: 0; }
-      body { background: white; }
-      .sidebar, .topbar, .preview-header, .floating-sel-wrap { display: none !important; }
-      .app-body { height: auto; }
-      .preview-area { overflow: visible; }
-      .preview-canvas { padding: 0; }
-      .sheet { box-shadow: none; }
-      .sheet-label-count { display: none; }
-    }
   </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="topbar-logo">L<span>6009</span></div>
-  <div class="topbar-sub">AVERY LABEL EDITOR - BY DARVIN MAGUNDAYAO</div>
+  <div class="topbar-sub">AVERY EDITOR · DARVIN MAGUNDAYAO</div>
+  <!-- Centered project name in topbar -->
+  <div class="topbar-project" id="topbar-project-display">
+    <span id="topbar-project-text">Avery_L6009_Labels</span>
+  </div>
   <div class="topbar-spacer"></div>
   <div class="topbar-badge" id="topbar-label-count">A4 · 4×12 · 48 LABELS</div>
 </div>
@@ -250,24 +307,21 @@
   <aside class="sidebar">
     <div class="sidebar-scroll">
 
-      <!-- TEMPLATES TOGGLE -->
+      <!-- TEMPLATES DROPDOWN -->
       <div>
-        <button class="templates-toggle-btn" id="tpl-toggle-btn" onclick="toggleTemplates()">
-          <div class="tpl-label"><div class="tpl-dot"></div>Templates</div>
-          <span class="tpl-caret">▾</span>
+        <button class="dropdown-toggle-btn" id="tpl-toggle-btn" onclick="toggleTemplates()">
+          <div class="toggle-label-row"><div class="toggle-dot"></div>Templates</div>
+          <span class="toggle-caret">▾</span>
         </button>
         <div class="templates-panel" id="tpl-panel">
           <div class="template-item" onclick="loadPremade('WFI_TUBING_LABELS')">
-            <div class="template-name">WFI Tubing</div>
-            <div class="template-arrow">→</div>
+            <div class="template-name">WFI Tubing</div><div class="template-arrow">→</div>
           </div>
           <div class="template-item" onclick="loadPremade('MAS_HEAD_LABELS')">
-            <div class="template-name">MAS Heads</div>
-            <div class="template-arrow">→</div>
+            <div class="template-name">MAS Heads</div><div class="template-arrow">→</div>
           </div>
           <div class="template-item" onclick="loadPremade('EM_TURNTABLE')">
-            <div class="template-name">EM Turntable</div>
-            <div class="template-arrow">→</div>
+            <div class="template-name">EM Turntable</div><div class="template-arrow">→</div>
           </div>
         </div>
       </div>
@@ -302,38 +356,37 @@
         </div>
       </div>
 
-      <!-- TEXT FORMAT -->
-      <div class="card">
-        <div class="card-title"><div class="dot"></div>Text Format</div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:13px;">
-          <div class="font-controls">
-            <span class="size-label">Size</span>
-            <input type="number" id="fontSizeInput" value="12" class="inp sm" oninput="updateFontSize()">
+      <!-- TEXT FORMAT DROPDOWN -->
+      <div>
+        <button class="dropdown-toggle-btn" id="textformat-toggle-btn" onclick="toggleTextFormat()">
+          <div class="toggle-label-row"><div class="toggle-dot toggle-dot-fmt"></div>Text Format</div>
+          <span class="toggle-caret" style="color:#7c3aed;">▾</span>
+        </button>
+        <div class="textformat-panel" id="textformat-panel">
+          <div class="fmt-row">
+            <span class="size-label" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);">SIZE</span>
+            <input type="number" id="fontSizeInput" value="12" class="inp sm" style="width:60px;text-align:center;" oninput="updateFontSize()">
+            <button class="btn btn-ghost btn-xs" onclick="insertFormatting('b')"><b>B</b></button>
+            <button class="btn btn-ghost btn-xs" onclick="insertFormatting('i')"><i>I</i></button>
+            <button class="btn btn-ghost btn-xs" onclick="insertFormatting('u')"><u>U</u></button>
           </div>
-          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('b')"><b>B</b></button>
-          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('i')"><i>I</i></button>
-          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('u')"><u>U</u></button>
-        </div>
-        <div class="toggle-row">
-          <span class="toggle-label">Left Align</span>
-          <label class="toggle"><input type="checkbox" id="alignToggle" onchange="setAlignment()"><div class="toggle-track"></div></label>
-        </div>
-        <div style="margin-top:12px;">
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px;">FIND &amp; REPLACE</div>
+          <div class="fmt-row">
+            <span class="size-label" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);">ALIGN</span>
+            <button class="btn btn-ghost btn-xs" onclick="applyAlignment('left')">⬅ Left</button>
+            <button class="btn btn-ghost btn-xs" onclick="applyAlignment('center')">⬌ Ctr</button>
+            <button class="btn btn-ghost btn-xs" onclick="applyAlignment('right')">➡ Right</button>
+          </div>
           <div class="find-replace-box">
             <div class="find-replace-row">
               <label>FIND</label>
-              <input type="text" id="frFind" class="inp sm" placeholder="Find text...">
+              <input type="text" id="frFind" class="inp sm" placeholder="find..." />
             </div>
             <div class="find-replace-row">
               <label>REPLACE</label>
-              <input type="text" id="frReplace" class="inp sm" placeholder="Replace with...">
+              <input type="text" id="frReplace" class="inp sm" placeholder="replace with..." />
             </div>
-            <div style="display:flex;gap:6px;margin-top:2px;">
-              <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="doFindReplace()">Replace All</button>
-              <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="clearFindReplace()">Clear</button>
-            </div>
-            <div class="fr-status" id="fr-status"></div>
+            <button class="btn btn-ghost btn-sm" onclick="doFindReplace()">Run Replace</button>
+            <div class="fr-status" id="frStatus"></div>
           </div>
         </div>
       </div>
@@ -341,59 +394,86 @@
       <!-- PROJECT -->
       <div class="card">
         <div class="card-title"><div class="dot"></div>Project</div>
-        <input type="text" id="docNameInput" class="inp" value="Avery_L6009_Labels" placeholder="Filename...">
+        <input type="text" id="docNameInput" class="inp" value="Avery_L6009_Labels" placeholder="Filename..." oninput="updateProjectTitle()" />
         <div style="height:8px;"></div>
         <div class="btn-grid">
-          <button class="btn btn-ghost" onclick="saveProject()">Save JSON</button>
-          <button class="btn btn-ghost" onclick="document.getElementById('loadProjectFile').click()">Load JSON</button>
+          <button class="btn btn-ghost btn-sm" onclick="saveProject()">Save JSON</button>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('loadProjectFile').click()">Load JSON</button>
         </div>
-        <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)">
+        <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)" />
+        <div style="height:6px;"></div>
+        <button class="btn btn-primary btn-full btn-sm" onclick="exportDocx()">⬇ Export Word Doc</button>
       </div>
 
       <!-- GRID CALIBRATION -->
       <div class="calib-section">
         <div id="calib-locked">
           <div class="pin-gate">
-            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">🔒 GRID CALIBRATION</div>
+            <div style="font-family:'DM Mono', monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">🔒 GRID CALIBRATION</div>
             <div class="pin-row">
-              <input type="password" id="pinInput" class="inp sm" placeholder="Enter PIN..." maxlength="4" style="flex:1;" onkeydown="if(event.key==='Enter')checkPin()">
+              <input type="password" id="pinInput" class="inp sm" placeholder="Enter PIN..." maxlength="4" style="flex:1;" onkeydown="if(event.key==='Enter')checkPin()" />
               <button class="btn btn-ghost btn-sm" onclick="checkPin()">Unlock</button>
             </div>
             <div class="pin-error" id="pinError">Incorrect PIN</div>
           </div>
         </div>
         <div id="calib-unlocked" style="display:none;">
-          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--sky);letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-family:'DM Mono', monospace;font-size:11px;color:var(--sky);letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
             <span>🔓 GRID CALIBRATION</span>
             <button class="btn btn-ghost btn-sm" onclick="lockCalib()" style="padding:3px 8px;font-size:10px;">Lock</button>
           </div>
           <div class="calib-grid">
-            <div class="calib-field"><label>TOP MARGIN (mm)</label><input type="number" id="tMargin" value="16.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-            <div class="calib-field"><label>LEFT MARGIN (mm)</label><input type="number" id="lMargin" value="4.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-            <div class="calib-field"><label>LABEL WIDTH (mm)</label><input type="number" id="lblWidth" value="47" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-            <div class="calib-field"><label>LABEL HEIGHT (mm)</label><input type="number" id="lblHeight" value="22.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-            <div class="calib-field"><label>COL GAP (mm)</label><input type="number" id="colGap" value="4.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-            <div class="calib-field"><label>ROW GAP (mm)</label><input type="number" id="rowGap" value="0" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+            <div class="calib-field">
+              <label>TOP MARGIN (mm)</label>
+              <input type="number" id="tMargin" value="16.8" step="0.1" class="inp sm" oninput="updateGrid()" />
+            </div>
+            <div class="calib-field">
+              <label>LEFT MARGIN (mm)</label>
+              <input type="number" id="lMargin" value="4.8" step="0.1" class="inp sm" oninput="updateGrid()" />
+            </div>
+            <div class="calib-field">
+              <label>LABEL WIDTH (mm)</label>
+              <input type="number" id="lblWidth" value="47" step="0.1" class="inp sm" oninput="updateGrid()" />
+            </div>
+            <div class="calib-field">
+              <label>LABEL HEIGHT (mm)</label>
+              <input type="number" id="lblHeight" value="22.4" step="0.1" class="inp sm" oninput="updateGrid()" />
+            </div>
+            <div class="calib-field">
+              <label>COL GAP (mm)</label>
+              <input type="number" id="colGap" value="4.4" step="0.1" class="inp sm" oninput="updateGrid()" />
+            </div>
+            <div class="calib-field">
+              <label>ROW GAP (mm)</label>
+              <input type="number" id="rowGap" value="0" step="0.1" class="inp sm" oninput="updateGrid()" />
+            </div>
           </div>
         </div>
       </div>
-
     </div>
 
+    <!-- Footer: grid/cut toggles + export on SAME LINE -->
     <div class="sidebar-footer">
-      <div class="footer-toggles">
-        <div class="toggle-row">
-          <span class="toggle-label" style="font-size:13px;">Grid Guides</span>
-          <label class="toggle"><input type="checkbox" id="labelLinesToggle" checked onchange="toggleLabelLines()"><div class="toggle-track"></div></label>
+      <div class="footer-guide-row">
+        <div class="guide-toggle-item">
+          <label class="toggle"><input type="checkbox" id="labelLinesToggle" checked onchange="toggleLabelLines()" /><div class="toggle-track"></div></label>
+          Grid
         </div>
-        <div class="toggle-row" style="border-bottom:none;">
-          <span class="toggle-label" style="font-size:13px;">Cut Lines</span>
-          <label class="toggle"><input type="checkbox" id="cutLinesToggle" onchange="toggleCutLines()"><div class="toggle-track"></div></label>
+        <div class="guide-divider"></div>
+        <div class="guide-toggle-item">
+          <label class="toggle"><input type="checkbox" id="cutLinesToggle" onchange="toggleCutLines()" /><div class="toggle-track"></div></label>
+          Cut Lines
         </div>
       </div>
-      <button class="btn btn-sky btn-full" id="btn-pdf" onclick="downloadPDF()">↓ Export PDF</button>
-      <button class="btn btn-danger btn-sm btn-full" onclick="resetApp()">↺ Reset All</button>
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;">TECH-SPEC v3.4 · DARVIN MAGUNDAYAO</div>
+      <button class="btn btn-sky btn-full" id="btn-pdf" onclick="downloadPDF()">
+        ↓ Export PDF
+      </button>
+      <button class="btn btn-danger btn-sm btn-full" onclick="resetApp()">
+        ↺ Reset All
+      </button>
+      <div style="font-family:'DM Mono', monospace;font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;">
+        TECH-SPEC v3.5 · DARVIN MAGUNDAYAO
+      </div>
     </div>
   </aside>
 
@@ -410,9 +490,11 @@
         <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom" style="width:auto;padding:0 9px;font-size:12px;">↺</button>
       </div>
       <div id="preview-sel-badge" style="display:none;">
-        <span class="preview-badge" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.4);color:#4ade80;" id="sel-badge-text"></span>
+        <span class="preview-badge" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.4);color:#4ade80;" id="sel-badge-text"> </span>
       </div>
-      <div class="preview-status"><div class="status-dot"></div><span>Ready</span></div>
+      <div class="preview-status">
+        <div class="status-dot"></div><span>Ready</span>
+      </div>
     </div>
 
     <!-- FLOATING SELECTION BUTTON -->
@@ -421,84 +503,47 @@
         ◈ Selection <span class="caret">▾</span>
       </button>
       <div class="sel-dropdown-menu" id="sel-dropdown-menu">
-
-        <div class="sel-menu-label">Column Patterns</div>
-        <button class="sel-menu-btn" onclick="selectPattern('cols13')">
-          <div class="sel-icon">
-            <div class="sel-icon-cell on"></div><div class="sel-icon-cell off"></div>
-            <div class="sel-icon-cell on"></div><div class="sel-icon-cell off"></div>
-          </div>
-          <div>Cols 1 &amp; 3<div class="sel-menu-sub">Every label in columns 1 and 3</div></div>
+        <div class="sel-menu-label">Quick Patterns</div>
+        <button class="sel-menu-btn" onclick="selectPattern('all');closeSelDropdown()">
+          <div class="sel-icon" id="si-all"></div>
+          <div><div>Select All</div><div class="sel-menu-sub">All 48 labels</div></div>
         </button>
-        <button class="sel-menu-btn" onclick="selectPattern('cols24')">
-          <div class="sel-icon">
-            <div class="sel-icon-cell off"></div><div class="sel-icon-cell on"></div>
-            <div class="sel-icon-cell off"></div><div class="sel-icon-cell on"></div>
-          </div>
-          <div>Cols 2 &amp; 4<div class="sel-menu-sub">Every label in columns 2 and 4</div></div>
+        <button class="sel-menu-btn" onclick="selectPattern('none');closeSelDropdown()">
+          <div class="sel-icon" id="si-none"></div>
+          <div><div>Select None</div><div class="sel-menu-sub">Clear selection</div></div>
         </button>
-
         <div class="sel-menu-divider"></div>
-
-        <div class="sel-menu-label">Row Patterns</div>
-        <button class="sel-menu-btn" onclick="selectPattern('oddrows')">
-          <div class="sel-icon-rows">
-            <div style="border-radius:2px;background:var(--sky);"></div>
-            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
-            <div style="border-radius:2px;background:var(--sky);"></div>
-            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
-          </div>
-          <div>Odd Rows<div class="sel-menu-sub">Rows 1, 3, 5, 7, 9, 11 — all pages</div></div>
+        <div class="sel-menu-label">Columns</div>
+        <button class="sel-menu-btn" onclick="selectPattern('col1');closeSelDropdown()">
+          <div class="sel-icon" id="si-col1"></div>
+          <div><div>Column 1</div><div class="sel-menu-sub">12 labels</div></div>
         </button>
-        <button class="sel-menu-btn" onclick="selectPattern('evenrows')">
-          <div class="sel-icon-rows">
-            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
-            <div style="border-radius:2px;background:var(--sky);"></div>
-            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
-            <div style="border-radius:2px;background:var(--sky);"></div>
-          </div>
-          <div>Even Rows<div class="sel-menu-sub">Rows 2, 4, 6, 8, 10, 12 — all pages</div></div>
+        <button class="sel-menu-btn" onclick="selectPattern('col2');closeSelDropdown()">
+          <div class="sel-icon" id="si-col2"></div>
+          <div><div>Column 2</div><div class="sel-menu-sub">12 labels</div></div>
         </button>
-        <button class="sel-menu-btn" onclick="selectPattern('everyotherrow')">
-          <div class="sel-icon-rows">
-            <div style="border-radius:2px;background:var(--sky);"></div>
-            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
-            <div style="border-radius:2px;background:var(--sky);"></div>
-            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
-          </div>
-          <div>Every Other Row<div class="sel-menu-sub">Alternating rows from row 1</div></div>
+        <button class="sel-menu-btn" onclick="selectPattern('col3');closeSelDropdown()">
+          <div class="sel-icon" id="si-col3"></div>
+          <div><div>Column 3</div><div class="sel-menu-sub">12 labels</div></div>
         </button>
-
+        <button class="sel-menu-btn" onclick="selectPattern('col4');closeSelDropdown()">
+          <div class="sel-icon" id="si-col4"></div>
+          <div><div>Column 4</div><div class="sel-menu-sub">12 labels</div></div>
+        </button>
         <div class="sel-menu-divider"></div>
-
-        <div class="sel-menu-label">Other Patterns</div>
-        <button class="sel-menu-btn" onclick="selectPattern('evenodd')">
-          <div class="sel-icon">
-            <div class="sel-icon-cell on"></div><div class="sel-icon-cell off"></div>
-            <div class="sel-icon-cell off"></div><div class="sel-icon-cell on"></div>
-          </div>
-          <div>Checkerboard<div class="sel-menu-sub">Even / odd alternating pattern</div></div>
+        <div class="sel-menu-label">Rows</div>
+        <button class="sel-menu-btn" onclick="selectPattern('odd');closeSelDropdown()">
+          <div class="sel-icon" id="si-odd"></div>
+          <div><div>Odd Rows</div><div class="sel-menu-sub">Rows 1,3,5...</div></div>
         </button>
-
-        <div class="sel-menu-divider"></div>
-
-        <button class="sel-menu-btn" onclick="selectPattern('all')">
-          <div class="sel-icon-2" style="width:24px;height:20px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;flex-shrink:0;">
-            <div class="sel-icon-cell on"></div><div class="sel-icon-cell on"></div>
-            <div class="sel-icon-cell on"></div><div class="sel-icon-cell on"></div>
-          </div>
-          <div>Select All<div class="sel-menu-sub">Every label on every page</div></div>
-        </button>
-        <button class="sel-menu-btn" onclick="selectPattern('none')">
-          <div class="sel-icon-2" style="width:24px;height:20px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;flex-shrink:0;">
-            <div class="sel-icon-cell off"></div><div class="sel-icon-cell off"></div>
-            <div class="sel-icon-cell off"></div><div class="sel-icon-cell off"></div>
-          </div>
-          <div>Deselect All<div class="sel-menu-sub">Clear current selection</div></div>
+        <button class="sel-menu-btn" onclick="selectPattern('even');closeSelDropdown()">
+          <div class="sel-icon" id="si-even"></div>
+          <div><div>Even Rows</div><div class="sel-menu-sub">Rows 2,4,6...</div></div>
         </button>
       </div>
     </div>
 
+    <!-- Sheet Preview Canvas -->
     <div class="preview-canvas">
       <div class="sheets-container" id="sheets-container"></div>
     </div>
@@ -506,333 +551,479 @@
 </div>
 
 <script>
-const ROWS = 12, COLS = 4, TOTAL = ROWS * COLS;
-const PIN = '2003';
-
-let viewTab = 'col', alignment = 'center';
-let selectedIndices = new Set(), lastFocusedInput = null;
-let pages = [createPageData()];
-let numPages = 1;
-let templatesOpen = false;
-
-function createPageData() {
-  return { colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''), allData: '', overrides: new Array(TOTAL).fill(null) };
-}
+// ═══════════════════════════════════════════════════════════
+//  CONSTANTS & STATE
+// ═══════════════════════════════════════════════════════════
+const COLS = 4, ROWS = 12, TOTAL = 48;
+const CALIB_PIN = '1234';
 
 const PREMADE_TEMPLATES = {
   WFI_TUBING_LABELS: {
-    colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''),
-    allData: "WFI, CYCLE#:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all'
+    colData: ['WFI Tubing', 'WFI Tubing', 'WFI Tubing', 'WFI Tubing'],
+    rowData: new Array(ROWS).fill(''),
+    allData: '',
+    overrides: new Array(TOTAL).fill(null),
+    alignment: 'center', fontSize: '11', defaultTab: 'col'
   },
   MAS_HEAD_LABELS: {
-    colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''),
-    allData: "MAS HEADS, CYCLE#:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all'
+    colData: ['MAS Head A', 'MAS Head B', 'MAS Head C', 'MAS Head D'],
+    rowData: new Array(ROWS).fill(''),
+    allData: '',
+    overrides: new Array(TOTAL).fill(null),
+    alignment: 'left', fontSize: '12', defaultTab: 'col'
   },
   EM_TURNTABLE: {
-    colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''),
-    allData: '', alignment: 'center', fontSize: '12', defaultTab: 'col',
-    overrides: [
-      "Finger checks, TG1, A", "2051.E1, 1st", null, null,
-      "Finger checks, TG1, B", "2051.E1, 2nd", null, null,
-      "Finger checks, TG2, A", "2051.E1, 3rd", null, null,
-      "Finger checks, TG2, B", "2051.E1, 4th", null, null,
-      "Finger checks, TG3, A", null, null, null,
-      "Finger checks, TG3, B", null, null, null,
-      "Finger checks, TG4, C", null, null, null,
-      "Finger checks, TG4, C", null, null, null,
-      null, null, null, null,
-      null, null, null, null,
-      null, null, null, null,
-      null, null, null, null
-    ]
+    colData: new Array(COLS).fill(''),
+    rowData: new Array(ROWS).fill(''),
+    allData: 'EM Turntable\nBatch No.\nCycle No.\nDate:',
+    overrides: new Array(TOTAL).fill(null),
+    alignment: 'left', fontSize: '11', defaultTab: 'all'
   }
 };
 
-initApp();
-
-function initApp() {
-  renderLayerPanel(); generateAll();
-  document.addEventListener('focusin', e => { if (e.target.classList.contains('inp')) lastFocusedInput = e.target; });
-  document.addEventListener('click', e => { if (!document.getElementById('floating-sel-wrap').contains(e.target)) closeSelDropdown(); });
+function mkPage() {
+  return {
+    colData: new Array(COLS).fill(''),
+    rowData: new Array(ROWS).fill(''),
+    allData: '',
+    overrides: new Array(TOTAL).fill(null)
+  };
 }
 
+let pages = [mkPage()];
+let currentPage = 0;
+let viewTab = 'col';
+let templatesOpen = false;
+let textformatOpen = false;
+let selDropdownOpen = false;
+let selectedLabels = new Set();
+let zoomLevel = 100;
+let alignMode = 'center';
+let calibLocked = true;
+
+// ═══════════════════════════════════════════════════════════
+//  PROJECT TITLE
+// ═══════════════════════════════════════════════════════════
+function updateProjectTitle() {
+  const val = document.getElementById('docNameInput').value.trim() || 'Avery_L6009_Labels';
+  document.getElementById('topbar-project-text').textContent = val;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TOGGLE DROPDOWNS
+// ═══════════════════════════════════════════════════════════
 function toggleTemplates() {
   templatesOpen = !templatesOpen;
   document.getElementById('tpl-panel').classList.toggle('open', templatesOpen);
   document.getElementById('tpl-toggle-btn').classList.toggle('open', templatesOpen);
 }
 
+function toggleTextFormat() {
+  textformatOpen = !textformatOpen;
+  document.getElementById('textformat-panel').classList.toggle('open', textformatOpen);
+  document.getElementById('textformat-toggle-btn').classList.toggle('open', textformatOpen);
+}
+
 function toggleSelDropdown() {
-  const menu = document.getElementById('sel-dropdown-menu');
-  const btn  = document.getElementById('sel-dropdown-btn');
-  const open = menu.classList.contains('open');
-  menu.classList.toggle('open', !open); btn.classList.toggle('open', !open);
+  selDropdownOpen = !selDropdownOpen;
+  document.getElementById('sel-dropdown-menu').classList.toggle('open', selDropdownOpen);
+  document.getElementById('sel-dropdown-btn').classList.toggle('open', selDropdownOpen);
 }
 function closeSelDropdown() {
+  selDropdownOpen = false;
   document.getElementById('sel-dropdown-menu').classList.remove('open');
   document.getElementById('sel-dropdown-btn').classList.remove('open');
 }
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.floating-sel-wrap')) closeSelDropdown();
+});
 
-function selectPattern(pattern) {
-  closeSelDropdown();
-  selectedIndices.clear();
-  if (pattern === 'all') {
-    pages.forEach((_, pi) => { for (let i = 0; i < TOTAL; i++) selectedIndices.add(selKey(pi, i)); });
-  } else if (pattern === 'cols13') {
-    pages.forEach((_, pi) => { for (let r = 0; r < ROWS; r++) [0,2].forEach(c => selectedIndices.add(selKey(pi, r*COLS+c))); });
-  } else if (pattern === 'cols24') {
-    pages.forEach((_, pi) => { for (let r = 0; r < ROWS; r++) [1,3].forEach(c => selectedIndices.add(selKey(pi, r*COLS+c))); });
-  } else if (pattern === 'evenodd') {
-    pages.forEach((_, pi) => {
-      for (let r = 0; r < ROWS; r++)
-        for (let c = 0; c < COLS; c++)
-          if ((r+c) % 2 === 0) selectedIndices.add(selKey(pi, r*COLS+c));
-    });
-  } else if (pattern === 'oddrows') {
-    // Rows 1,3,5,7,9,11 → 0-indexed: 0,2,4,6,8,10
-    pages.forEach((_, pi) => {
-      for (let r = 0; r < ROWS; r += 2)
-        for (let c = 0; c < COLS; c++)
-          selectedIndices.add(selKey(pi, r*COLS+c));
-    });
-  } else if (pattern === 'evenrows') {
-    // Rows 2,4,6,8,10,12 → 0-indexed: 1,3,5,7,9,11
-    pages.forEach((_, pi) => {
-      for (let r = 1; r < ROWS; r += 2)
-        for (let c = 0; c < COLS; c++)
-          selectedIndices.add(selKey(pi, r*COLS+c));
-    });
-  } else if (pattern === 'everyotherrow') {
-    // Alternating from row 1 = same as oddrows
-    pages.forEach((_, pi) => {
-      for (let r = 0; r < ROWS; r += 2)
-        for (let c = 0; c < COLS; c++)
-          selectedIndices.add(selKey(pi, r*COLS+c));
-    });
-  }
-  if (selectedIndices.size > 0) setViewTab('sel'); else renderLayerPanel();
-  generateAll();
+// ═══════════════════════════════════════════════════════════
+//  PAGE MANAGEMENT
+// ═══════════════════════════════════════════════════════════
+function addPage() {
+  pages.push(mkPage());
+  currentPage = pages.length - 1;
+  renderAll();
 }
-
-function resetApp() {
-  if (!confirm('Clear all data and reset to defaults?')) return;
-  viewTab = 'col'; alignment = 'center';
-  selectedIndices = new Set(); lastFocusedInput = null;
-  pages = [createPageData()]; numPages = 1;
-  document.getElementById('fontSizeInput').value = 12;
-  updateFontSize(); applyAlignment('center');
-  document.getElementById('labelLinesToggle').checked = true;
-  document.getElementById('cutLinesToggle').checked = false;
-  document.getElementById('docNameInput').value = 'Avery_L6009_Labels';
-  clearFindReplace(); setViewTab('col'); generateAll(); updatePageControls();
-}
-
-function addPage() { pages.push(createPageData()); numPages = pages.length; updatePageControls(); generateAll(); }
 function removePage() {
-  if (numPages <= 1) return;
-  if (!confirm(`Remove page ${numPages}? All data on that page will be lost.`)) return;
-  pages.pop(); numPages = pages.length;
-  selectedIndices.clear(); updatePageControls(); renderLayerPanel(); generateAll();
+  if (pages.length <= 1) return;
+  pages.pop();
+  if (currentPage >= pages.length) currentPage = pages.length - 1;
+  renderAll();
 }
-function updatePageControls() {
-  document.getElementById('page-total-badge').textContent = numPages === 1 ? '1 PAGE' : `${numPages} PAGES`;
-  document.getElementById('btn-remove-page').disabled = numPages <= 1;
-  document.getElementById('topbar-label-count').textContent = `A4 · 4×12 · ${numPages * TOTAL} LABELS`;
+function updatePageBadge() {
+  const n = pages.length;
+  document.getElementById('page-total-badge').textContent = n + ' PAGE' + (n > 1 ? 'S' : '');
+  document.getElementById('btn-remove-page').disabled = n <= 1;
 }
 
+// ═══════════════════════════════════════════════════════════
+//  LABEL TEXT COMPUTATION
+// ═══════════════════════════════════════════════════════════
+function getLabelText(pageIdx, labelIdx) {
+  const p = pages[pageIdx];
+  if (p.overrides[labelIdx] !== null) return p.overrides[labelIdx];
+  const col = labelIdx % COLS;
+  const row = Math.floor(labelIdx / COLS);
+  const parts = [];
+  if (p.allData.trim()) parts.push(p.allData.trim());
+  if (p.colData[col] && p.colData[col].trim()) parts.push(p.colData[col].trim());
+  if (p.rowData[row] && p.rowData[row].trim()) parts.push(p.rowData[row].trim());
+  return parts.join('\n');
+}
+
+function countFilledLabels(pageIdx) {
+  let count = 0;
+  for (let i = 0; i < TOTAL; i++) {
+    if (getLabelText(pageIdx, i).trim()) count++;
+  }
+  return count;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RENDERING
+// ═══════════════════════════════════════════════════════════
+function renderAll() {
+  updatePageBadge();
+  buildLayerPanel();
+  generateSheets();
+  updateSelCard();
+  updateTopbarCount();
+}
+
+function generateSheets() {
+  const container = document.getElementById('sheets-container');
+  container.innerHTML = '';
+  pages.forEach((_, pi) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'sheet-wrapper';
+
+    const lc = document.createElement('div');
+    lc.className = 'sheet-label-count';
+    const filled = countFilledLabels(pi);
+    lc.innerHTML = `<span class="lc-badge">PAGE ${pi + 1}</span><span class="sheet-page-label">${filled}/${TOTAL} labels filled</span>`;
+    wrapper.appendChild(lc);
+
+    const sheet = document.createElement('div');
+    sheet.className = 'sheet';
+    const grid = document.createElement('div');
+    grid.className = 'grid' + (document.getElementById('labelLinesToggle').checked ? ' with-label-lines' : '') + (document.getElementById('cutLinesToggle').checked ? ' with-cut-lines' : '') + (alignMode === 'left' ? ' align-left' : '');
+    grid.id = `grid-p${pi}`;
+
+    for (let i = 0; i < TOTAL; i++) {
+      const lbl = document.createElement('div');
+      lbl.className = 'label' + (selectedLabels.has(`${pi}-${i}`) ? ' selected' : '');
+      lbl.dataset.page = pi;
+      lbl.dataset.idx = i;
+      lbl.innerHTML = renderLabelHTML(getLabelText(pi, i));
+      lbl.addEventListener('click', (e) => onLabelClick(e, pi, i));
+      grid.appendChild(lbl);
+    }
+    sheet.appendChild(grid);
+    wrapper.appendChild(sheet);
+    container.appendChild(wrapper);
+  });
+  applyZoom();
+}
+
+function renderLabelHTML(text) {
+  if (!text.trim()) return '';
+  return text.split('\n').map(line => {
+    if (!line.trim()) return '<br>';
+    return `<span style="display:block;">${line}</span>`;
+  }).join('');
+}
+
+function updateTopbarCount() {
+  const totalLabels = pages.length * TOTAL;
+  document.getElementById('topbar-label-count').textContent = `A4 · 4×12 · ${totalLabels} LABELS`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LAYER PANEL
+// ═══════════════════════════════════════════════════════════
 function setViewTab(tab) {
   viewTab = tab;
-  ['col','row','all','sel'].forEach(t => document.getElementById('tab-'+t).classList.toggle('active', t === tab));
-  renderLayerPanel();
+  ['col', 'row', 'all', 'sel'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+  });
+  buildLayerPanel();
 }
 
-function renderLayerPanel() {
+function buildLayerPanel() {
   const panel = document.getElementById('layer-panel');
   panel.innerHTML = '';
-  const selCard  = document.getElementById('sel-card');
-  const selBadge = document.getElementById('preview-sel-badge');
-  if (selectedIndices.size > 0) {
-    selCard.style.display = 'block';
-    document.getElementById('sel-info').textContent = `${selectedIndices.size} label(s) selected`;
-    selBadge.style.display = 'block';
-    document.getElementById('sel-badge-text').textContent = `${selectedIndices.size} selected`;
-  } else { selCard.style.display = 'none'; selBadge.style.display = 'none'; }
 
   if (viewTab === 'col') {
-    pages.forEach((pg, pi) => {
-      if (numPages > 1) { const h = el('div'); h.style.cssText='font-family:"DM Mono",monospace;font-size:10px;color:var(--sky);letter-spacing:1.5px;margin-bottom:4px;margin-top:'+(pi>0?'10px':'0px'); h.textContent=`PAGE ${pi+1}`; panel.appendChild(h); }
-      const sec = makeSection('col','Column Layer','Per column');
-      const sub = el('div','layer-sub-inputs');
-      for (let c = 0; c < COLS; c++) {
-        const w = el('div'); w.appendChild(lbl(`COL ${c+1}`));
-        const inp = makeInput('input', pg.colData[c], 'Line1, Line2, ...');
-        const _pi=pi,_c=c; inp.oninput = e => { pages[_pi].colData[_c]=e.target.value; generateAll(); };
-        inp.addEventListener('focus',()=>lastFocusedInput=inp); w.appendChild(inp); sub.appendChild(w);
-      }
-      sec.querySelector('.layer-body').appendChild(sub); panel.appendChild(sec);
-    });
+    for (let c = 0; c < COLS; c++) {
+      panel.appendChild(buildLayerSection('layer-col', `COL ${c + 1}`, buildColInput(c)));
+    }
   } else if (viewTab === 'row') {
-    pages.forEach((pg, pi) => {
-      if (numPages > 1) { const h = el('div'); h.style.cssText='font-family:"DM Mono",monospace;font-size:10px;color:var(--sky);letter-spacing:1.5px;margin-bottom:4px;margin-top:'+(pi>0?'10px':'0px'); h.textContent=`PAGE ${pi+1}`; panel.appendChild(h); }
-      const sec = makeSection('row','Row Layer','Per row');
-      const sub = el('div','layer-sub-inputs');
-      for (let r = 0; r < ROWS; r++) {
-        const w = el('div'); w.appendChild(lbl(`ROW ${r+1}`));
-        const inp = makeInput('input', pg.rowData[r], 'Line1, Line2, ...');
-        const _pi=pi,_r=r; inp.oninput = e => { pages[_pi].rowData[_r]=e.target.value; generateAll(); };
-        inp.addEventListener('focus',()=>lastFocusedInput=inp); w.appendChild(inp); sub.appendChild(w);
-      }
-      sec.querySelector('.layer-body').appendChild(sub); panel.appendChild(sec);
-    });
+    for (let r = 0; r < ROWS; r++) {
+      panel.appendChild(buildLayerSection('layer-row', `ROW ${r + 1}`, buildRowInput(r)));
+    }
   } else if (viewTab === 'all') {
-    pages.forEach((pg, pi) => {
-      if (numPages > 1) { const h = el('div'); h.style.cssText='font-family:"DM Mono",monospace;font-size:10px;color:var(--sky);letter-spacing:1.5px;margin-bottom:4px;margin-top:'+(pi>0?'10px':'0px'); h.textContent=`PAGE ${pi+1}`; panel.appendChild(h); }
-      const sec = makeSection('all','Global Layer','All labels');
-      const body = sec.querySelector('.layer-body'); body.appendChild(lbl('ALL LABELS'));
-      const inp = makeInput('input', pg.allData, 'Line1, Line2, ...');
-      const _pi=pi; inp.oninput = e => { pages[_pi].allData=e.target.value; generateAll(); };
-      inp.addEventListener('focus',()=>lastFocusedInput=inp); body.appendChild(inp); panel.appendChild(sec);
-    });
+    panel.appendChild(buildLayerSection('layer-all', 'ALL LABELS', buildAllInput()));
   } else if (viewTab === 'sel') {
-    if (selectedIndices.size === 0) {
-      const hint = el('div'); hint.style.cssText='font-family:"DM Mono",monospace;font-size:12px;color:var(--muted);padding:8px 0;'; hint.textContent='Click labels on the sheet to select.'; panel.appendChild(hint);
+    if (selectedLabels.size === 0) {
+      panel.innerHTML = '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--muted);padding:8px;">No labels selected. Click labels on the sheet.</div>';
     } else {
-      const arr = Array.from(selectedIndices);
-      const {pageIdx,labelIdx} = decodeSelKey(arr[0]);
-      const sec = makeSection('override','Override Layer',`${arr.length} label(s)`);
-      const body = sec.querySelector('.layer-body'); body.appendChild(lbl('OVERRIDE CONTENT'));
-      const ta = makeInput('textarea','','Override selected labels...'); ta.rows=3; ta.style.resize='none';
-      ta.value = pages[pageIdx].overrides[labelIdx] !== null ? pages[pageIdx].overrides[labelIdx] : '';
-      ta.oninput = e => { arr.forEach(key => { const d=decodeSelKey(key); pages[d.pageIdx].overrides[d.labelIdx]=e.target.value||null; }); generateAll(); };
-      ta.addEventListener('focus',()=>lastFocusedInput=ta); body.appendChild(ta); panel.appendChild(sec);
+      panel.appendChild(buildLayerSection('layer-override', `OVERRIDE (${selectedLabels.size} selected)`, buildSelInput()));
     }
   }
 }
 
-function selKey(pi,li) { return `${pi}:${li}`; }
-function decodeSelKey(k) { const [p,l]=k.split(':').map(Number); return {pageIdx:p,labelIdx:l}; }
-function el(tag,cls) { const e=document.createElement(tag); if(cls) e.className=cls; return e; }
-function lbl(text) { const d=el('div','layer-sub-label'); d.textContent=text; return d; }
-function makeInput(tag,val,ph) { const i=el(tag,'inp sm'); i.value=val; i.placeholder=ph; return i; }
-function makeSection(type,title,desc) {
-  const sec=el('div',`layer-section layer-${type}`);
-  sec.innerHTML=`<div class="layer-header"><div class="layer-indicator"></div><span>${title}</span><span style="margin-left:auto;opacity:0.5;font-size:10px;">${desc}</span></div><div class="layer-body"></div>`;
+function buildLayerSection(cls, title, content) {
+  const sec = document.createElement('div');
+  sec.className = 'layer-section ' + cls;
+  sec.innerHTML = `<div class="layer-header"><div class="layer-indicator"></div>${title}</div>`;
+  const body = document.createElement('div');
+  body.className = 'layer-body';
+  body.appendChild(content);
+  sec.appendChild(body);
   return sec;
 }
 
-function getLabelContent(pg,r,c) {
-  const idx=r*COLS+c;
-  if (pg.overrides[idx]!==null) return pg.overrides[idx];
-  if (pg.colData[c]) return pg.colData[c];
-  if (pg.rowData[r]) return pg.rowData[r];
-  return pg.allData;
+function buildColInput(c) {
+  const ta = document.createElement('textarea');
+  ta.className = 'inp sm';
+  ta.rows = 3;
+  ta.placeholder = `Column ${c + 1} text...`;
+  ta.value = pages[currentPage].colData[c] || '';
+  ta.oninput = () => { pages[currentPage].colData[c] = ta.value; generateSheets(); };
+  return ta;
 }
 
-function generateAll() {
-  const container = document.getElementById('sheets-container');
-  container.innerHTML = '';
-  const showLines = document.getElementById('labelLinesToggle').checked;
-  const showCut   = document.getElementById('cutLinesToggle').checked;
-  const isLeft    = alignment === 'left';
+function buildRowInput(r) {
+  const ta = document.createElement('textarea');
+  ta.className = 'inp sm';
+  ta.rows = 2;
+  ta.placeholder = `Row ${r + 1} text...`;
+  ta.value = pages[currentPage].rowData[r] || '';
+  ta.oninput = () => { pages[currentPage].rowData[r] = ta.value; generateSheets(); };
+  return ta;
+}
 
-  pages.forEach((pg, pi) => {
-    const wrapper = el('div','sheet-wrapper');
-    const countBar = el('div','sheet-label-count');
-    countBar.innerHTML = `<span class="sheet-page-label">PAGE ${pi+1}</span><span class="lc-badge">${countNonEmpty(pg)} / ${TOTAL} LABELS FILLED</span>`;
-    wrapper.appendChild(countBar);
-    const sheet = el('div','sheet');
-    const grid  = el('div','grid');
-    if (showLines) grid.classList.add('with-label-lines');
-    if (showCut)   grid.classList.add('with-cut-lines');
-    if (isLeft)    grid.classList.add('align-left');
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
-        const idx = r*COLS+c, key = selKey(pi,idx);
-        const div = el('div','label');
-        if (selectedIndices.has(key)) div.classList.add('selected');
-        div.onclick = e => {
-          if (!e.shiftKey && !e.ctrlKey) selectedIndices.clear();
-          selectedIndices.has(key) ? selectedIndices.delete(key) : selectedIndices.add(key);
-          if (selectedIndices.size > 0) setViewTab('sel'); else renderLayerPanel();
-          generateAll();
-        };
-        const val = getLabelContent(pg,r,c);
-        div.innerHTML = val ? val.split(',').map(l=>l.trim()).filter(Boolean).join('<br>') : '';
-        grid.appendChild(div);
-      }
+function buildAllInput() {
+  const ta = document.createElement('textarea');
+  ta.className = 'inp sm';
+  ta.rows = 4;
+  ta.placeholder = 'Text for all labels...';
+  ta.value = pages[currentPage].allData || '';
+  ta.oninput = () => { pages[currentPage].allData = ta.value; generateSheets(); };
+  return ta;
+}
+
+function buildSelInput() {
+  const wrap = document.createElement('div');
+  wrap.className = 'layer-sub-inputs';
+  const info = document.createElement('div');
+  info.className = 'layer-sub-label';
+  info.textContent = 'Override text for selected labels';
+  wrap.appendChild(info);
+  const ta = document.createElement('textarea');
+  ta.className = 'inp sm';
+  ta.rows = 3;
+  ta.placeholder = 'Override text...';
+  const firstKey = [...selectedLabels][0];
+  const [fp, fi] = firstKey.split('-').map(Number);
+  ta.value = pages[fp]?.overrides[fi] || '';
+  ta.oninput = () => {
+    selectedLabels.forEach(key => {
+      const [p, i] = key.split('-').map(Number);
+      pages[p].overrides[i] = ta.value;
+    });
+    generateSheets();
+  };
+  wrap.appendChild(ta);
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SELECTION
+// ═══════════════════════════════════════════════════════════
+function onLabelClick(e, pageIdx, labelIdx) {
+  const key = `${pageIdx}-${labelIdx}`;
+  if (e.shiftKey || e.ctrlKey || e.metaKey) {
+    if (selectedLabels.has(key)) selectedLabels.delete(key);
+    else selectedLabels.add(key);
+  } else {
+    if (selectedLabels.size === 1 && selectedLabels.has(key)) {
+      selectedLabels.clear();
+    } else {
+      selectedLabels.clear();
+      selectedLabels.add(key);
     }
-    sheet.appendChild(grid); wrapper.appendChild(sheet); container.appendChild(wrapper);
+  }
+  generateSheets();
+  updateSelCard();
+  if (selectedLabels.size > 0 && viewTab !== 'sel') setViewTab('sel');
+}
+
+function selectPattern(pattern) {
+  selectedLabels.clear();
+  pages.forEach((_, pi) => {
+    for (let i = 0; i < TOTAL; i++) {
+      const col = i % COLS;
+      const row = Math.floor(i / COLS);
+      let sel = false;
+      if (pattern === 'all') sel = true;
+      else if (pattern === 'none') sel = false;
+      else if (pattern === 'col1') sel = col === 0;
+      else if (pattern === 'col2') sel = col === 1;
+      else if (pattern === 'col3') sel = col === 2;
+      else if (pattern === 'col4') sel = col === 3;
+      else if (pattern === 'odd') sel = row % 2 === 0;
+      else if (pattern === 'even') sel = row % 2 === 1;
+      if (sel) selectedLabels.add(`${pi}-${i}`);
+    }
   });
-  updatePageControls();
+  generateSheets();
+  updateSelCard();
 }
 
-function countNonEmpty(pg) {
-  let n=0;
-  for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) if (getLabelContent(pg,r,c)) n++;
-  return n;
+function updateSelCard() {
+  const card = document.getElementById('sel-card');
+  const info = document.getElementById('sel-info');
+  const badge = document.getElementById('preview-sel-badge');
+  const badgeText = document.getElementById('sel-badge-text');
+  if (selectedLabels.size > 0) {
+    card.style.display = '';
+    info.textContent = `${selectedLabels.size} label${selectedLabels.size > 1 ? 's' : ''} selected`;
+    badge.style.display = '';
+    badgeText.textContent = `${selectedLabels.size} selected`;
+  } else {
+    card.style.display = 'none';
+    badge.style.display = 'none';
+  }
 }
 
-function updateFontSize() { document.documentElement.style.setProperty('--font-size', document.getElementById('fontSizeInput').value+'px'); }
-function toggleLabelLines() { generateAll(); }
-function toggleCutLines()  { generateAll(); }
-function setAlignment()    { applyAlignment(document.getElementById('alignToggle').checked ? 'left' : 'center'); }
-function applyAlignment(val) { alignment=val; document.getElementById('alignToggle').checked=val==='left'; generateAll(); }
+function clearSelection() {
+  selectedLabels.clear();
+  generateSheets();
+  updateSelCard();
+  setViewTab('col');
+}
 
-function doFindReplace() {
-  const fv=document.getElementById('frFind').value, rv=document.getElementById('frReplace').value;
-  const st=document.getElementById('fr-status');
-  if (!fv) { st.textContent='Enter text to find.'; st.style.color='#dc2626'; return; }
-  let n=0;
-  pages.forEach(pg => {
-    for (let c=0;c<COLS;c++) if(pg.colData[c].includes(fv)){pg.colData[c]=pg.colData[c].split(fv).join(rv);n++;}
-    for (let r=0;r<ROWS;r++) if(pg.rowData[r].includes(fv)){pg.rowData[r]=pg.rowData[r].split(fv).join(rv);n++;}
-    if(pg.allData.includes(fv)){pg.allData=pg.allData.split(fv).join(rv);n++;}
-    for (let i=0;i<TOTAL;i++) if(pg.overrides[i]!==null&&pg.overrides[i].includes(fv)){pg.overrides[i]=pg.overrides[i].split(fv).join(rv);n++;}
+function clearSelectedOverrides() {
+  selectedLabels.forEach(key => {
+    const [p, i] = key.split('-').map(Number);
+    pages[p].overrides[i] = null;
   });
-  st.style.color = n>0?'var(--success)':'#dc2626';
-  st.textContent  = n>0?`✓ Replaced ${n} occurrence${n>1?'s':''}.`:'No matches found.';
-  renderLayerPanel(); generateAll();
-}
-function clearFindReplace() { document.getElementById('frFind').value=''; document.getElementById('frReplace').value=''; document.getElementById('fr-status').textContent=''; }
-
-function checkPin() {
-  if (document.getElementById('pinInput').value===PIN) {
-    document.getElementById('calib-locked').style.display='none';
-    document.getElementById('calib-unlocked').style.display='block';
-    document.getElementById('pinError').style.display='none';
-  } else { document.getElementById('pinError').style.display='block'; document.getElementById('pinInput').value=''; }
-}
-function lockCalib() {
-  document.getElementById('calib-locked').style.display='block';
-  document.getElementById('calib-unlocked').style.display='none';
-  document.getElementById('pinInput').value=''; document.getElementById('pinError').style.display='none';
-}
-function updateGrid() {
-  const g=id=>document.getElementById(id), r=document.documentElement;
-  if(g('tMargin'))   r.style.setProperty('--top-margin',  g('tMargin').value+'mm');
-  if(g('lMargin'))   r.style.setProperty('--left-margin', g('lMargin').value+'mm');
-  if(g('lblWidth'))  r.style.setProperty('--label-width', g('lblWidth').value+'mm');
-  if(g('lblHeight')) r.style.setProperty('--label-height',g('lblHeight').value+'mm');
-  if(g('colGap'))    r.style.setProperty('--col-gap',     g('colGap').value+'mm');
-  if(g('rowGap'))    r.style.setProperty('--row-gap',     g('rowGap').value+'mm');
+  generateSheets();
+  buildLayerPanel();
 }
 
-function clearSelectedOverrides() { selectedIndices.forEach(k=>{const d=decodeSelKey(k);pages[d.pageIdx].overrides[d.labelIdx]=null;}); generateAll();renderLayerPanel(); }
-function clearSelection() { selectedIndices.clear(); renderLayerPanel(); generateAll(); }
+// ═══════════════════════════════════════════════════════════
+//  FONT & ALIGNMENT
+// ═══════════════════════════════════════════════════════════
+function updateFontSize() {
+  const sz = document.getElementById('fontSizeInput').value;
+  document.documentElement.style.setProperty('--font-size', sz + 'px');
+}
+
+function applyAlignment(mode) {
+  alignMode = mode;
+  generateSheets();
+}
 
 function insertFormatting(tag) {
-  if (!lastFocusedInput) return;
-  const s=lastFocusedInput.selectionStart,e=lastFocusedInput.selectionEnd,t=lastFocusedInput.value;
-  lastFocusedInput.value=t.substring(0,s)+`<${tag}>`+t.substring(s,e)+`</${tag}>`+t.substring(e);
-  lastFocusedInput.dispatchEvent(new Event('input'));
+  // Placeholder for future formatting insertion
 }
 
+// ═══════════════════════════════════════════════════════════
+//  FIND & REPLACE
+// ═══════════════════════════════════════════════════════════
+function doFindReplace() {
+  const find = document.getElementById('frFind').value;
+  const replace = document.getElementById('frReplace').value;
+  const status = document.getElementById('frStatus');
+  if (!find) { status.textContent = 'Enter text to find.'; return; }
+  let count = 0;
+  pages.forEach(p => {
+    for (let c = 0; c < COLS; c++) {
+      if (p.colData[c].includes(find)) { p.colData[c] = p.colData[c].replaceAll(find, replace); count++; }
+    }
+    for (let r = 0; r < ROWS; r++) {
+      if (p.rowData[r].includes(find)) { p.rowData[r] = p.rowData[r].replaceAll(find, replace); count++; }
+    }
+    if (p.allData.includes(find)) { p.allData = p.allData.replaceAll(find, replace); count++; }
+    for (let i = 0; i < TOTAL; i++) {
+      if (p.overrides[i] && p.overrides[i].includes(find)) { p.overrides[i] = p.overrides[i].replaceAll(find, replace); count++; }
+    }
+  });
+  status.textContent = count > 0 ? `Replaced in ${count} field(s).` : 'No matches found.';
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  GRID TOGGLES
+// ═══════════════════════════════════════════════════════════
+function toggleLabelLines() { generateSheets(); }
+function toggleCutLines() { generateSheets(); }
+
+// ═══════════════════════════════════════════════════════════
+//  GRID CALIBRATION
+// ═══════════════════════════════════════════════════════════
+function checkPin() {
+  const pin = document.getElementById('pinInput').value;
+  if (pin === CALIB_PIN) {
+    document.getElementById('calib-locked').style.display = 'none';
+    document.getElementById('calib-unlocked').style.display = '';
+    calibLocked = false;
+  } else {
+    document.getElementById('pinError').style.display = '';
+  }
+}
+function lockCalib() {
+  document.getElementById('calib-locked').style.display = '';
+  document.getElementById('calib-unlocked').style.display = 'none';
+  document.getElementById('pinInput').value = '';
+  document.getElementById('pinError').style.display = 'none';
+  calibLocked = true;
+}
+function updateGrid() {
+  const tM = document.getElementById('tMargin').value;
+  const lM = document.getElementById('lMargin').value;
+  const lW = document.getElementById('lblWidth').value;
+  const lH = document.getElementById('lblHeight').value;
+  const cG = document.getElementById('colGap').value;
+  const rG = document.getElementById('rowGap').value;
+  const root = document.documentElement;
+  root.style.setProperty('--top-margin', tM + 'mm');
+  root.style.setProperty('--left-margin', lM + 'mm');
+  root.style.setProperty('--label-width', lW + 'mm');
+  root.style.setProperty('--label-height', lH + 'mm');
+  root.style.setProperty('--col-gap', cG + 'mm');
+  root.style.setProperty('--row-gap', rG + 'mm');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ZOOM
+// ═══════════════════════════════════════════════════════════
+function adjustZoom(delta) {
+  zoomLevel = Math.max(30, Math.min(200, zoomLevel + delta));
+  applyZoom();
+}
+function resetZoom() { zoomLevel = 100; applyZoom(); }
+function applyZoom() {
+  document.getElementById('sheets-container').style.transform = `scale(${zoomLevel / 100})`;
+  document.getElementById('zoom-label').textContent = zoomLevel + '%';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TEMPLATES
+// ═══════════════════════════════════════════════════════════
 function loadPremade(key) {
   const d = PREMADE_TEMPLATES[key];
-  pages[0].colData   = d.colData   ? [...d.colData]   : new Array(COLS).fill('');
-  pages[0].rowData   = d.rowData   ? [...d.rowData]   : new Array(ROWS).fill('');
-  pages[0].allData   = d.allData   || '';
-  pages[0].overrides = d.overrides ? [...d.overrides] : new Array(TOTAL).fill(null);
+  if (!d) return;
+  pages.forEach(page => {
+    page.colData = d.colData ? [...d.colData] : new Array(COLS).fill('');
+    page.rowData = d.rowData ? [...d.rowData] : new Array(ROWS).fill('');
+    page.allData = d.allData || '';
+    page.overrides = new Array(TOTAL).fill(null);
+  });
   applyAlignment(d.alignment || 'center');
   document.getElementById('fontSizeInput').value = d.fontSize || '12';
   updateFontSize();
@@ -840,54 +1031,160 @@ function loadPremade(key) {
   document.getElementById('tpl-panel').classList.remove('open');
   document.getElementById('tpl-toggle-btn').classList.remove('open');
   setViewTab(d.defaultTab || 'col');
-  generateAll();
+  renderAll();
 }
 
+// ═══════════════════════════════════════════════════════════
+//  SAVE / LOAD PROJECT
+// ═══════════════════════════════════════════════════════════
 function saveProject() {
-  const data={pages,alignment,fontSize:document.getElementById('fontSizeInput').value};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download=document.getElementById('docNameInput').value+'.json'; a.click();
+  const data = { pages, alignMode, fontSize: document.getElementById('fontSizeInput').value };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (document.getElementById('docNameInput').value || 'project') + '.json';
+  a.click();
 }
 function loadProject(event) {
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const d=JSON.parse(e.target.result);
-    if(d.pages){pages=d.pages;numPages=pages.length;}
-    else{pages=[{colData:d.colData||new Array(COLS).fill(''),rowData:d.rowData||new Array(ROWS).fill(''),allData:d.allData||'',overrides:d.overrides||new Array(TOTAL).fill(null)}];numPages=1;}
-    applyAlignment(d.alignment||'center'); document.getElementById('fontSizeInput').value=d.fontSize||12;
-    updateFontSize();setViewTab('col');generateAll();updatePageControls();
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      pages = data.pages || [mkPage()];
+      currentPage = 0;
+      if (data.alignMode) applyAlignment(data.alignMode);
+      if (data.fontSize) { document.getElementById('fontSizeInput').value = data.fontSize; updateFontSize(); }
+      renderAll();
+    } catch { alert('Invalid project file.'); }
   };
-  reader.readAsText(event.target.files[0]);
+  reader.readAsText(file);
+  event.target.value = '';
 }
 
+// ═══════════════════════════════════════════════════════════
+//  RESET
+// ═══════════════════════════════════════════════════════════
+function resetApp() {
+  if (!confirm('Reset all label data?')) return;
+  pages = [mkPage()];
+  currentPage = 0;
+  selectedLabels.clear();
+  alignMode = 'center';
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  EXPORT PDF (html2canvas per sheet)
+// ═══════════════════════════════════════════════════════════
 async function downloadPDF() {
-  const showLines = document.getElementById('labelLinesToggle').checked;
-  const showCut   = document.getElementById('cutLinesToggle').checked;
-  if (showLines || showCut) {
-    const activeWarnings = [];
-    if (showLines) activeWarnings.push('Grid Guides');
-    if (showCut)   activeWarnings.push('Cut Lines');
-    const warningMsg = `⚠ Warning: ${activeWarnings.join(' and ')} ${activeWarnings.length > 1 ? 'are' : 'is'} currently ON.\n\nThese lines WILL appear on your printed labels.\n\nPress OK to export anyway, or Cancel to go back and turn them off.`;
-    if (!confirm(warningMsg)) return;
-  }
-  const btn=document.getElementById('btn-pdf'); btn.innerHTML='⟳ Generating...'; btn.disabled=true;
+  const btn = document.getElementById('btn-pdf');
+  btn.textContent = 'Generating…';
+  btn.disabled = true;
   try {
-    const {jsPDF}=jspdf; const pdf=new jsPDF({unit:'mm',format:'a4'});
-    const sheets=document.querySelectorAll('.sheet');
-    for (let i=0;i<sheets.length;i++) {
-      if(i>0) pdf.addPage();
-      const canvas=await html2canvas(sheets[i],{scale:3,useCORS:true,backgroundColor:'#ffffff'});
-      pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,210,297);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    const sheetEls = document.querySelectorAll('.sheet');
+    for (let i = 0; i < sheetEls.length; i++) {
+      if (i > 0) pdf.addPage();
+      const canvas = await html2canvas(sheetEls[i], { scale: 3, useCORS: true });
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
     }
-    pdf.save(document.getElementById('docNameInput').value+'.pdf');
-  } finally {btn.innerHTML='↓ Export PDF';btn.disabled=false;}
+    const name = document.getElementById('docNameInput').value || 'labels';
+    pdf.save(name + '.pdf');
+  } finally {
+    btn.textContent = '↓ Export PDF';
+    btn.disabled = false;
+  }
 }
 
-let zoomLevel=100;
-function applyZoom(){document.getElementById('sheets-container').style.transform=`scale(${zoomLevel/100})`;document.getElementById('zoom-label').textContent=zoomLevel+'%';}
-function adjustZoom(d){zoomLevel=Math.min(200,Math.max(30,zoomLevel+d));applyZoom();}
-function resetZoom(){zoomLevel=100;applyZoom();}
+// ═══════════════════════════════════════════════════════════
+//  EXPORT WORD DOC — populates the 48-label template
+//  Uses the docx.js library loaded via CDN
+// ═══════════════════════════════════════════════════════════
+async function exportDocx() {
+  // Collect all label texts from page 1 (and page 2 if exists)
+  const labelTexts = [];
+  for (let pi = 0; pi < Math.min(pages.length, 2); pi++) {
+    for (let i = 0; i < TOTAL; i++) {
+      labelTexts.push(getLabelText(pi, i));
+    }
+  }
+  // Pad to 48 if only one page
+  while (labelTexts.length < TOTAL) labelTexts.push('');
+
+  // We'll generate an HTML table formatted to match Avery L6009
+  // then trigger download as .docx via a Blob
+  // Since we can't use docx.js from CDN easily without module bundler,
+  // we'll generate a rich HTML file that opens in Word instead
+  const colW = 186; // approx pt for ~47mm label width
+  const sepW = 10;
+
+  let tableRows = '';
+  for (let row = 0; row < ROWS; row++) {
+    const cells = [];
+    for (let col = 0; col < COLS; col++) {
+      const idx = row * COLS + col;
+      const text = labelTexts[idx] || '';
+      const lines = text.split('\n').map(l => `<p style="margin:0;padding:0;font-size:9pt;font-family:Arial,sans-serif;">${escHtml(l)}</p>`).join('');
+      cells.push(col < COLS - 1
+        ? `<td style="width:${colW}pt;border:none;padding:3pt 4pt;vertical-align:top;">${lines}</td><td style="width:${sepW}pt;border:none;padding:0;"></td>`
+        : `<td style="width:${colW}pt;border:none;padding:3pt 4pt;vertical-align:top;">${lines}</td>`);
+    }
+    tableRows += `<tr style="height:64pt;">${cells.join('')}</tr>`;
+  }
+
+  const html = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<title>Labels</title>
+<!--[if gte mso 9]>
+<xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml>
+<![endif]-->
+<style>
+  @page { size:A4; margin:12mm 3.4mm 10mm 3.4mm; }
+  body { font-family:Arial,sans-serif; font-size:9pt; }
+  table { border-collapse:collapse; width:100%; table-layout:fixed; }
+  td { vertical-align:top; }
+  p { margin:0; line-height:1.3; }
+</style>
+</head>
+<body>
+<table>
+  <colgroup>
+    <col style="width:${colW}pt">
+    <col style="width:${sepW}pt">
+    <col style="width:${colW}pt">
+    <col style="width:${sepW}pt">
+    <col style="width:${colW}pt">
+    <col style="width:${sepW}pt">
+    <col style="width:${colW}pt">
+  </colgroup>
+  ${tableRows}
+</table>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'application/msword' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const name = document.getElementById('docNameInput').value || 'labels';
+  a.download = name + '.doc';
+  a.click();
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+renderAll();
 </script>
 </body>
 </html>
