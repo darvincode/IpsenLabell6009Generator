@@ -15,7 +15,6 @@
       --label-height: 22.4mm;
       --col-gap: 4.4mm;
       --row-gap: 0.0mm;
-      --cols: 4;
       --font-size: 12px;
       
       /* Tech Theme Colors */
@@ -115,78 +114,42 @@
     .sheet {
       width: 210mm;
       height: 297mm;
-      background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(248,250,252,0.92) 100%);
-      box-shadow: 0 28px 70px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.25);
+      background: white;
+      box-shadow: 0 0 40px rgba(0,0,0,0.6);
       position: relative;
       box-sizing: border-box; 
       flex-shrink: 0;
-      border-radius: 22px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.15);
-    }
-
-    .preview-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 18px 22px 10px;
-      background: linear-gradient(135deg, rgba(31,41,55,0.96), rgba(15,23,42,0.96));
-      color: var(--accent-orange);
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .preview-header span {
-      opacity: 0.85;
-      font-size: 12px;
-      letter-spacing: 0.04em;
-      color: #e5e7eb;
     }
 
     /* Grid Setup */
     .grid {
       position: absolute;
-      top: calc(var(--top-margin) + 36px);
-      left: var(--left-margin);
+      top: var(--top-margin);     
+      left: var(--left-margin);      
       display: grid;
-      grid-template-columns: repeat(var(--cols), var(--label-width));
-      grid-auto-rows: var(--label-height);
-      column-gap: var(--col-gap);
-      row-gap: var(--row-gap);
-      padding: 10px;
-      width: calc(100% - 2 * var(--left-margin));
-      height: calc(100% - 36px - var(--top-margin));
+      grid-template-columns: repeat(4, var(--label-width)); 
+      grid-auto-rows: var(--label-height);                   
+      column-gap: var(--col-gap);                         
+      row-gap: var(--row-gap);                           
     }
 
     .label {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      align-items: center;    
+      justify-content: center; 
       text-align: center;
-      color: #111827;
-      box-sizing: border-box;
-      border: 1px solid rgba(31, 41, 55, 0.12);
-      overflow: hidden;
-      padding: 3mm;
-      position: relative;
+      color: #333;
+      box-sizing: border-box; 
+      border: 1px solid transparent;
+      overflow: hidden; 
+      padding: 3.5mm; 
+      position: relative; 
       cursor: crosshair;
       font-size: var(--font-size);
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(4px);
-      border-radius: 10px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
     }
 
-    .label:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
-      background: rgba(255,255,255,0.98);
-    }
+    .label:hover { background-color: #f0f9ff; }
     .grid.with-label-lines .label { border: 1px solid #e5e7eb; }
     .grid.align-left .label { align-items: flex-start; text-align: left; }
 
@@ -222,10 +185,6 @@
 <div class="main-layout">
   
   <div class="sheet">
-    <div class="preview-header">
-      Preview
-      <span id="zoomLabel">100%</span>
-    </div>
     <div class="grid with-label-lines" id="grid"></div>
   </div>
 
@@ -243,35 +202,11 @@
       </div>
     </details>
 
-    <label style="font-weight: bold; font-size: 12px; color: #9ca3af; text-transform: uppercase;">GRID LOCK</label>
-    <div style="display: flex; gap: 8px; margin: 10px 0 20px 0; flex-wrap: wrap;">
-      <input type="password" id="gridPinInput" class="tool-input" placeholder="Enter PIN to unlock grid" style="flex:1 1 180px;" oninput="validatePin()">
-      <div id="gridLockStatus" style="align-self:center; font-size:12px; color:#9ca3af;">Locked</div>
-    </div>
-
-    <details style="margin-bottom: 20px; background: #111827; padding: 12px; border-radius: 8px;">
-      <summary style="cursor: pointer; font-size: 13px; font-weight: bold; color: var(--accent-orange);">GRID CONTROL</summary>
-      <div style="padding-top: 10px; font-size: 12px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <label>Columns<input id="colsInput" type="number" min="1" max="8" value="4" class="tool-input grid-control" disabled onchange="updateGrid()"></label>
-        <label>Rows<input id="rowsInput" type="number" min="1" max="20" value="12" class="tool-input grid-control" disabled onchange="updateGrid()"></label>
-        <label>Width (mm)<input id="labelWidthInput" type="number" min="10" step="0.1" value="47" class="tool-input grid-control" disabled onchange="updateGrid()"></label>
-        <label>Height (mm)<input id="labelHeightInput" type="number" min="5" step="0.1" value="22.4" class="tool-input grid-control" disabled onchange="updateGrid()"></label>
-        <label>Horizontal Gap<input id="colGapInput" type="number" min="0" step="0.1" value="4.4" class="tool-input grid-control" disabled onchange="updateGrid()"></label>
-        <label>Vertical Gap<input id="rowGapInput" type="number" min="0" step="0.1" value="0" class="tool-input grid-control" disabled onchange="updateGrid()"></label>
-      </div>
-    </details>
-
     <label style="font-weight: bold; font-size: 12px; color: #9ca3af; text-transform: uppercase;">1. Layout Mode</label>
-    <div style="display: flex; gap: 8px; margin: 10px 0 10px 0; flex-wrap: wrap;">
+    <div style="display: flex; gap: 8px; margin: 10px 0 20px 0;">
       <button id="btn-col" class="secondary-btn" onclick="setBaseMode('column')">Cols</button>
       <button id="btn-row" class="secondary-btn" onclick="setBaseMode('row')">Rows</button>
       <button id="btn-all" class="secondary-btn" onclick="setBaseMode('all')">All</button>
-    </div>
-
-    <div style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
-      <button class="secondary-btn" style="flex: 1 1 110px;" onclick="updateZoom(-0.1)">Zoom -</button>
-      <button class="secondary-btn" style="flex: 1 1 110px;" onclick="updateZoom(0.1)">Zoom +</button>
-      <button class="secondary-btn" style="flex: 2 1 160px;" onclick="resetZoom()">Reset Zoom</button>
     </div>
 
     <label style="font-weight: bold; font-size: 12px; color: #9ca3af; text-transform: uppercase;">2. Content</label>
@@ -299,9 +234,9 @@
 
     <details style="margin-bottom: 20px;">
       <summary style="cursor: pointer; font-size: 13px; color: #9ca3af;">Grid Calibration</summary>
-      <div style="padding-top: 10px; font-size: 12px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <label>Top Margin (mm)<input type="number" id="tMargin" value="16.8" step="0.1" class="tool-input" oninput="updateGrid()"></label>
-        <label>Left Margin (mm)<input type="number" id="lMargin" value="4.8" step="0.1" class="tool-input" oninput="updateGrid()"></label>
+      <div style="padding-top: 10px; font-size: 12px;">
+        Top: <input type="number" id="tMargin" value="16.8" step="0.1" class="tool-input" oninput="updateGrid()">
+        Left: <input type="number" id="lMargin" value="4.8" step="0.1" class="tool-input" oninput="updateGrid()">
       </div>
     </details>
 
@@ -322,28 +257,30 @@
 </div>
 
 <script>
-let rows = 12;
-let cols = 4;
-let baseMode = 'column';
+const ROWS = 12; 
+const COLS = 4;
+const TOTAL_LABELS = ROWS * COLS;
+
+let baseMode = 'column'; 
 let alignment = 'center';
 let selectedIndices = new Set();
 let lastFocusedInput = null;
-let zoomLevel = 1;
-let gridUnlocked = false;
 
-let colData = new Array(cols).fill('');
-let rowData = new Array(rows).fill('');
+let colData = new Array(COLS).fill('');
+let rowData = new Array(ROWS).fill('');
 let allData = '';
-let overrides = new Array(rows * cols).fill(null);
+let overrides = new Array(TOTAL_LABELS).fill(null);
 
 const PREMADE_TEMPLATES = {
   'WFI_TUBING_LABELS': {
     "baseMode": "column",
+    "alignment": "left",
     "colData": ["WFI, CYCLE #:, DATE:, EXPIRY:", "WFI, CYCLE #:, DATE:, EXPIRY:", "WFI, CYCLE #:, DATE:, EXPIRY:", "WFI, CYCLE #:, DATE:, EXPIRY:"],
     "textFormat": { "size": "11" }
   },
   'MAS_HEAD_LABELS': {
     "baseMode": "all",
+    "alignment": "left",
     "allData": "MAS HEADS, ITEM:, DATE:, EXPIRY:",
     "textFormat": { "size": "11" }
   }
@@ -352,32 +289,12 @@ const PREMADE_TEMPLATES = {
 initApp();
 
 function initApp() {
-  applyAlignment();
   renderInputs();
   generate();
   updateGrid();
-  updateZoom(0);
   document.addEventListener('focusin', e => {
     if(e.target.classList.contains('data-input')) lastFocusedInput = e.target;
   });
-}
-
-function getTotalLabels() {
-  return rows * cols;
-}
-
-function ensureGridArrays() {
-  if (colData.length < cols) colData = colData.concat(Array(cols - colData.length).fill(''));
-  else if (colData.length > cols) colData.length = cols;
-
-  if (rowData.length < rows) rowData = rowData.concat(Array(rows - rowData.length).fill(''));
-  else if (rowData.length > rows) rowData.length = rows;
-
-  const total = getTotalLabels();
-  if (overrides.length < total) overrides = overrides.concat(Array(total - overrides.length).fill(null));
-  else if (overrides.length > total) overrides.length = total;
-
-  selectedIndices = new Set(Array.from(selectedIndices).filter(idx => idx < total));
 }
 
 function renderInputs() {
@@ -397,7 +314,7 @@ function renderInputs() {
       generate();
     };
   } else {
-    let inputs = baseMode === 'column' ? cols : (baseMode === 'row' ? rows : 1);
+    let inputs = baseMode === 'column' ? COLS : (baseMode === 'row' ? ROWS : 1);
     for (let i = 0; i < inputs; i++) {
       const input = document.createElement('input');
       input.className = "data-input";
@@ -417,11 +334,9 @@ function renderInputs() {
 function generate() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
-  ensureGridArrays();
-
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      let index = r * cols + c;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      let index = r * COLS + c;
       const div = document.createElement("div");
       div.className = "label";
       if (selectedIndices.has(index)) div.classList.add('selected');
@@ -438,77 +353,22 @@ function generate() {
   }
 }
 
-function updateFontSize() {
-  document.documentElement.style.setProperty('--font-size', document.getElementById('fontSizeInput').value + 'px');
-}
-
-function toggleLabelLines() {
-  document.getElementById("grid").classList.toggle('with-label-lines', document.getElementById('labelLinesToggle').checked);
-}
-
-function toggleCutLines() {
-  document.getElementById("grid").classList.toggle('with-cut-lines', document.getElementById('cutLinesToggle').checked);
-}
-
-function applyAlignment() {
-  document.getElementById("grid").classList.toggle('align-left', alignment === 'left');
-}
-
+function updateFontSize() { document.documentElement.style.setProperty('--font-size', document.getElementById('fontSizeInput').value + 'px'); }
+function toggleLabelLines() { document.getElementById("grid").classList.toggle('with-label-lines', document.getElementById('labelLinesToggle').checked); }
+function toggleCutLines() { document.getElementById("grid").classList.toggle('with-cut-lines', document.getElementById('cutLinesToggle').checked); }
 function toggleAlignment() { 
   alignment = alignment === 'center' ? 'left' : 'center';
-  applyAlignment();
+  document.getElementById("grid").classList.toggle('align-left', alignment === 'left');
 }
-
-function updateZoom(delta) {
-  zoomLevel = Math.min(2, Math.max(0.6, zoomLevel + delta));
-  const sheet = document.querySelector('.sheet');
-  sheet.style.transform = `scale(${zoomLevel})`;
-  sheet.style.transformOrigin = 'top left';
-  document.getElementById('zoomLabel').textContent = Math.round(zoomLevel * 100) + '%';
-}
-
-function resetZoom() {
-  zoomLevel = 1;
-  updateZoom(0);
-}
-
-function validatePin() {
-  const pin = document.getElementById('gridPinInput').value.trim();
-  gridUnlocked = pin === '2003';
-  document.getElementById('gridLockStatus').textContent = gridUnlocked ? 'Unlocked' : 'Locked';
-  document.getElementById('gridLockStatus').style.color = gridUnlocked ? '#34d399' : '#9ca3af';
-
-  document.querySelectorAll('.grid-control').forEach(el => el.disabled = !gridUnlocked);
-  if (gridUnlocked) updateGrid();
-}
-
 function updateGrid() {
   const root = document.documentElement;
   root.style.setProperty('--top-margin', document.getElementById('tMargin').value + 'mm');
   root.style.setProperty('--left-margin', document.getElementById('lMargin').value + 'mm');
-
-  if (gridUnlocked) {
-    cols = Number(document.getElementById('colsInput').value) || cols;
-    rows = Number(document.getElementById('rowsInput').value) || rows;
-    root.style.setProperty('--cols', cols);
-    root.style.setProperty('--label-width', document.getElementById('labelWidthInput').value + 'mm');
-    root.style.setProperty('--label-height', document.getElementById('labelHeightInput').value + 'mm');
-    root.style.setProperty('--col-gap', document.getElementById('colGapInput').value + 'mm');
-    root.style.setProperty('--row-gap', document.getElementById('rowGapInput').value + 'mm');
-  } else {
-    root.style.setProperty('--cols', cols);
-    root.style.setProperty('--label-width', '47mm');
-    root.style.setProperty('--label-height', '22.4mm');
-    root.style.setProperty('--col-gap', '4.4mm');
-    root.style.setProperty('--row-gap', '0mm');
-  }
-  ensureGridArrays();
-  renderInputs();
-  generate();
 }
 
 function setBaseMode(mode) {
   baseMode = mode;
+  selectedIndices.clear();
   renderInputs();
   generate();
 }
@@ -552,10 +412,9 @@ function loadPremade(key) {
   const d = PREMADE_TEMPLATES[key];
   if(d.colData) colData = d.colData;
   if(d.allData) allData = d.allData;
-  baseMode = d.baseMode;
-  alignment = 'center';
+  baseMode = d.baseMode; alignment = d.alignment;
   document.getElementById('fontSizeInput').value = d.textFormat.size;
-  updateFontSize(); applyAlignment(); setBaseMode(baseMode);
+  updateFontSize(); setBaseMode(baseMode);
 }
 
 async function downloadPDF() {
