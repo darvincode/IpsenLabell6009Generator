@@ -34,38 +34,17 @@
       --success:     #16a34a;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Barlow', sans-serif;
-      font-size: 15px;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+    body { font-family: 'Barlow', sans-serif; font-size: 15px; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-    /* TOPBAR */
-    .topbar {
-      background: var(--navy);
-      padding: 0 32px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      box-shadow: 0 2px 16px rgba(30,50,112,0.35);
-    }
+    .topbar { background: var(--navy); padding: 0 32px; height: 56px; display: flex; align-items: center; gap: 20px; position: sticky; top: 0; z-index: 200; box-shadow: 0 2px 16px rgba(30,50,112,0.35); }
     .topbar-logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 24px; letter-spacing: 3px; color: #fff; text-transform: uppercase; }
     .topbar-logo span { color: var(--sky); }
     .topbar-sub { font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 1px; }
     .topbar-spacer { flex: 1; }
     .topbar-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 4px; color: rgba(255,255,255,0.5); }
 
-    /* APP BODY */
     .app-body { display: flex; height: calc(100vh - 56px); overflow: hidden; }
 
-    /* SIDEBAR */
     .sidebar { width: 390px; min-width: 390px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 2px 0 20px rgba(43,69,144,0.08); }
     .sidebar-scroll { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
     .sidebar-scroll::-webkit-scrollbar { width: 4px; }
@@ -76,6 +55,31 @@
     .card { background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 15px; }
     .card-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--navy); margin-bottom: 13px; display: flex; align-items: center; gap: 8px; }
     .card-title .dot { width: 7px; height: 7px; background: var(--sky); border-radius: 50%; flex-shrink: 0; }
+
+    /* TEMPLATES TOGGLE */
+    .templates-toggle-btn {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 14px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+      background: var(--cream); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--navy); cursor: pointer; transition: all 0.15s;
+    }
+    .templates-toggle-btn:hover { border-color: var(--sky); background: var(--sky-glow); }
+    .templates-toggle-btn.open { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+    .tpl-label { display: flex; align-items: center; gap: 8px; }
+    .tpl-dot { width: 7px; height: 7px; background: var(--sky); border-radius: 50%; }
+    .tpl-caret { font-size: 10px; transition: transform 0.2s; display: inline-block; color: var(--sky); }
+    .templates-toggle-btn.open .tpl-caret { transform: rotate(180deg); }
+    .templates-panel {
+      display: none; flex-direction: column; gap: 6px;
+      background: var(--cream); border: 1px solid var(--border); border-top: none;
+      border-radius: 0 0 8px 8px; padding: 10px;
+    }
+    .templates-panel.open { display: flex; }
+    .template-item { display: flex; align-items: center; justify-content: space-between; padding: 11px 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; transition: all 0.15s; }
+    .template-item:hover { border-color: var(--sky); background: var(--sky-glow); }
+    .template-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 1px; color: var(--navy); }
+    .template-arrow { color: var(--sky); font-size: 20px; }
 
     .tab-row { display: flex; gap: 3px; margin-bottom: 13px; background: var(--border); padding: 3px; border-radius: 7px; }
     .tab-btn { flex: 1; padding: 8px 4px; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; background: transparent; border: none; color: var(--muted); border-radius: 5px; cursor: pointer; transition: all 0.15s; }
@@ -127,21 +131,12 @@
     .font-controls .size-label { font-size: 13px; color: var(--muted); white-space: nowrap; }
     .font-controls input { width: 60px; text-align: center; }
 
-    .template-grid { display: flex; flex-direction: column; gap: 6px; }
-    .template-item { display: flex; align-items: center; justify-content: space-between; padding: 11px 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; transition: all 0.15s; }
-    .template-item:hover { border-color: var(--sky); background: var(--sky-glow); }
-    .template-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 1px; color: var(--navy); }
-    .template-desc { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .template-arrow { color: var(--sky); font-size: 20px; }
-
-    /* Find & Replace */
     .find-replace-box { display: flex; flex-direction: column; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 10px; margin-top: 10px; }
     .find-replace-row { display: flex; gap: 6px; align-items: center; }
     .find-replace-row label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; width: 52px; flex-shrink: 0; }
     .find-replace-row .inp { flex: 1; }
     .fr-status { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--success); min-height: 15px; }
 
-    /* Page controls */
     .page-controls { display: flex; align-items: center; justify-content: space-between; background: var(--cream-dark); border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; margin-bottom: 4px; }
     .page-count-label { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-mid); letter-spacing: 1px; }
     .page-btn-group { display: flex; align-items: center; gap: 6px; }
@@ -157,7 +152,6 @@
     .calib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .calib-field label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; display: block; margin-bottom: 3px; }
 
-    /* PREVIEW */
     .preview-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
     .preview-header { background: var(--navy-dark); padding: 0 28px; height: 46px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
     .preview-header-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.8); }
@@ -177,16 +171,9 @@
     .preview-canvas::-webkit-scrollbar-track { background: transparent; }
     .preview-canvas::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
 
-    /* FLOATING SELECTION BUTTON */
-    .floating-sel-wrap {
-      position: absolute;
-      top: 58px;
-      right: 18px;
-      z-index: 150;
-    }
+    .floating-sel-wrap { position: absolute; top: 58px; right: 18px; z-index: 150; }
     .sel-dropdown-btn {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 14px;
+      display: flex; align-items: center; gap: 8px; padding: 8px 14px;
       font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase;
       background: var(--navy); border: 1px solid rgba(29,161,216,0.5); border-radius: 8px;
       color: #7dd3fc; cursor: pointer; transition: all 0.15s; white-space: nowrap;
@@ -198,7 +185,7 @@
 
     .sel-dropdown-menu {
       display: none; position: absolute; top: calc(100% + 8px); right: 0;
-      width: 280px; background: var(--navy-dark);
+      width: 310px; background: var(--navy-dark);
       border: 1px solid rgba(29,161,216,0.3); border-radius: 10px;
       box-shadow: 0 12px 40px rgba(0,0,0,0.45); padding: 10px;
       z-index: 300; flex-direction: column; gap: 5px;
@@ -206,23 +193,20 @@
     .sel-dropdown-menu.open { display: flex; }
     .sel-menu-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); text-transform: uppercase; padding: 4px 6px 2px; }
     .sel-menu-btn {
-      display: flex; align-items: center; gap: 10px; width: 100%;
-      padding: 9px 12px;
+      display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px;
       font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;
       color: rgba(255,255,255,0.75); cursor: pointer; transition: all 0.15s; text-align: left;
     }
     .sel-menu-btn:hover { background: rgba(29,161,216,0.2); border-color: rgba(29,161,216,0.4); color: #fff; }
-    /* Column icon: 4 cells in a row, 2 highlighted = column pattern */
     .sel-icon { width: 36px; height: 20px; flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 2px; }
     .sel-icon-cell { border-radius: 2px; }
     .sel-icon-cell.on  { background: var(--sky); }
     .sel-icon-cell.off { background: rgba(255,255,255,0.12); }
     .sel-menu-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 1px; font-weight: 400; letter-spacing: 0; text-transform: none; }
     .sel-menu-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 2px 0; }
-
-    /* 2×2 icon for all/none */
     .sel-icon-2 { width: 24px; height: 20px; flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; }
+    .sel-icon-rows { width: 36px; height: 28px; flex-shrink: 0; display: grid; grid-template-rows: repeat(4,1fr); gap: 2px; }
 
     .sheets-container { display: flex; flex-direction: column; align-items: center; gap: 28px; transform-origin: top center; transition: transform 0.2s; }
     .sheet-wrapper { position: relative; }
@@ -239,13 +223,7 @@
     .label.selected { background-color: #dbeafe !important; border: 1.5px solid var(--sky) !important; z-index: 10; }
     .grid.with-cut-lines .label::after { content: ''; position: absolute; top: 1mm; left: 1mm; right: 1mm; bottom: 1mm; border: 0.5px dashed var(--sky); pointer-events: none; }
 
-    /* Footer toggles section */
-    .footer-toggles {
-      background: var(--cream-dark);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 4px 10px;
-    }
+    .footer-toggles { background: var(--cream-dark); border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; }
 
     @media print {
       @page { size: A4; margin: 0; }
@@ -272,16 +250,23 @@
   <aside class="sidebar">
     <div class="sidebar-scroll">
 
-      <!-- TEMPLATES -->
-      <div class="card">
-        <div class="card-title"><div class="dot"></div>Templates</div>
-        <div class="template-grid">
+      <!-- TEMPLATES TOGGLE -->
+      <div>
+        <button class="templates-toggle-btn" id="tpl-toggle-btn" onclick="toggleTemplates()">
+          <div class="tpl-label"><div class="tpl-dot"></div>Templates</div>
+          <span class="tpl-caret">▾</span>
+        </button>
+        <div class="templates-panel" id="tpl-panel">
           <div class="template-item" onclick="loadPremade('WFI_TUBING_LABELS')">
-            <div><div class="template-name">WFI Tubing</div><div class="template-desc">4-col · left-align · size 11</div></div>
+            <div class="template-name">WFI Tubing</div>
             <div class="template-arrow">→</div>
           </div>
           <div class="template-item" onclick="loadPremade('MAS_HEAD_LABELS')">
-            <div><div class="template-name">MAS Heads</div><div class="template-desc">all · left-align · size 11</div></div>
+            <div class="template-name">MAS Heads</div>
+            <div class="template-arrow">→</div>
+          </div>
+          <div class="template-item" onclick="loadPremade('EM_TURNTABLE')">
+            <div class="template-name">EM Turntable</div>
             <div class="template-arrow">→</div>
           </div>
         </div>
@@ -333,7 +318,6 @@
           <span class="toggle-label">Left Align</span>
           <label class="toggle"><input type="checkbox" id="alignToggle" onchange="setAlignment()"><div class="toggle-track"></div></label>
         </div>
-        <!-- Find & Replace -->
         <div style="margin-top:12px;">
           <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px;">FIND &amp; REPLACE</div>
           <div class="find-replace-box">
@@ -396,9 +380,7 @@
 
     </div>
 
-    <!-- SIDEBAR FOOTER -->
     <div class="sidebar-footer">
-      <!-- Grid Guides + Cut Lines moved here, above Export PDF -->
       <div class="footer-toggles">
         <div class="toggle-row">
           <span class="toggle-label" style="font-size:13px;">Grid Guides</span>
@@ -411,11 +393,10 @@
       </div>
       <button class="btn btn-sky btn-full" id="btn-pdf" onclick="downloadPDF()">↓ Export PDF</button>
       <button class="btn btn-danger btn-sm btn-full" onclick="resetApp()">↺ Reset All</button>
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;">TECH-SPEC v3.3 · DARVIN MAGUNDAYAO</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;">TECH-SPEC v3.4 · DARVIN MAGUNDAYAO</div>
     </div>
   </aside>
 
-  <!-- PREVIEW -->
   <div class="preview-area">
     <div class="preview-header">
       <div class="preview-header-title">Sheet Preview</div>
@@ -440,49 +421,63 @@
         ◈ Selection <span class="caret">▾</span>
       </button>
       <div class="sel-dropdown-menu" id="sel-dropdown-menu">
-        <div class="sel-menu-label">Pattern Select</div>
 
-        <!-- Cols 1 & 3: positions 0 and 2 highlighted out of 4 -->
+        <div class="sel-menu-label">Column Patterns</div>
         <button class="sel-menu-btn" onclick="selectPattern('cols13')">
           <div class="sel-icon">
-            <div class="sel-icon-cell on"></div>
-            <div class="sel-icon-cell off"></div>
-            <div class="sel-icon-cell on"></div>
-            <div class="sel-icon-cell off"></div>
+            <div class="sel-icon-cell on"></div><div class="sel-icon-cell off"></div>
+            <div class="sel-icon-cell on"></div><div class="sel-icon-cell off"></div>
           </div>
-          <div>
-            Cols 1 &amp; 3
-            <div class="sel-menu-sub">Every label in columns 1 and 3, all pages</div>
-          </div>
+          <div>Cols 1 &amp; 3<div class="sel-menu-sub">Every label in columns 1 and 3</div></div>
         </button>
-
-        <!-- Cols 2 & 4: positions 1 and 3 highlighted out of 4 -->
         <button class="sel-menu-btn" onclick="selectPattern('cols24')">
           <div class="sel-icon">
-            <div class="sel-icon-cell off"></div>
-            <div class="sel-icon-cell on"></div>
-            <div class="sel-icon-cell off"></div>
-            <div class="sel-icon-cell on"></div>
+            <div class="sel-icon-cell off"></div><div class="sel-icon-cell on"></div>
+            <div class="sel-icon-cell off"></div><div class="sel-icon-cell on"></div>
           </div>
-          <div>
-            Cols 2 &amp; 4
-            <div class="sel-menu-sub">Every label in columns 2 and 4, all pages</div>
-          </div>
+          <div>Cols 2 &amp; 4<div class="sel-menu-sub">Every label in columns 2 and 4</div></div>
         </button>
 
         <div class="sel-menu-divider"></div>
 
+        <div class="sel-menu-label">Row Patterns</div>
+        <button class="sel-menu-btn" onclick="selectPattern('oddrows')">
+          <div class="sel-icon-rows">
+            <div style="border-radius:2px;background:var(--sky);"></div>
+            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
+            <div style="border-radius:2px;background:var(--sky);"></div>
+            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
+          </div>
+          <div>Odd Rows<div class="sel-menu-sub">Rows 1, 3, 5, 7, 9, 11 — all pages</div></div>
+        </button>
+        <button class="sel-menu-btn" onclick="selectPattern('evenrows')">
+          <div class="sel-icon-rows">
+            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
+            <div style="border-radius:2px;background:var(--sky);"></div>
+            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
+            <div style="border-radius:2px;background:var(--sky);"></div>
+          </div>
+          <div>Even Rows<div class="sel-menu-sub">Rows 2, 4, 6, 8, 10, 12 — all pages</div></div>
+        </button>
+        <button class="sel-menu-btn" onclick="selectPattern('everyotherrow')">
+          <div class="sel-icon-rows">
+            <div style="border-radius:2px;background:var(--sky);"></div>
+            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
+            <div style="border-radius:2px;background:var(--sky);"></div>
+            <div style="border-radius:2px;background:rgba(255,255,255,0.12);"></div>
+          </div>
+          <div>Every Other Row<div class="sel-menu-sub">Alternating rows from row 1</div></div>
+        </button>
+
+        <div class="sel-menu-divider"></div>
+
+        <div class="sel-menu-label">Other Patterns</div>
         <button class="sel-menu-btn" onclick="selectPattern('evenodd')">
           <div class="sel-icon">
-            <div class="sel-icon-cell on"></div>
-            <div class="sel-icon-cell off"></div>
-            <div class="sel-icon-cell off"></div>
-            <div class="sel-icon-cell on"></div>
+            <div class="sel-icon-cell on"></div><div class="sel-icon-cell off"></div>
+            <div class="sel-icon-cell off"></div><div class="sel-icon-cell on"></div>
           </div>
-          <div>
-            Even / Odd Alternating
-            <div class="sel-menu-sub">Checkerboard pattern across all labels</div>
-          </div>
+          <div>Checkerboard<div class="sel-menu-sub">Even / odd alternating pattern</div></div>
         </button>
 
         <div class="sel-menu-divider"></div>
@@ -492,21 +487,14 @@
             <div class="sel-icon-cell on"></div><div class="sel-icon-cell on"></div>
             <div class="sel-icon-cell on"></div><div class="sel-icon-cell on"></div>
           </div>
-          <div>
-            Select All
-            <div class="sel-menu-sub">Every label on every page</div>
-          </div>
+          <div>Select All<div class="sel-menu-sub">Every label on every page</div></div>
         </button>
-
         <button class="sel-menu-btn" onclick="selectPattern('none')">
           <div class="sel-icon-2" style="width:24px;height:20px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;flex-shrink:0;">
             <div class="sel-icon-cell off"></div><div class="sel-icon-cell off"></div>
             <div class="sel-icon-cell off"></div><div class="sel-icon-cell off"></div>
           </div>
-          <div>
-            Deselect All
-            <div class="sel-menu-sub">Clear the current selection</div>
-          </div>
+          <div>Deselect All<div class="sel-menu-sub">Clear current selection</div></div>
         </button>
       </div>
     </div>
@@ -525,14 +513,39 @@ let viewTab = 'col', alignment = 'center';
 let selectedIndices = new Set(), lastFocusedInput = null;
 let pages = [createPageData()];
 let numPages = 1;
+let templatesOpen = false;
 
 function createPageData() {
   return { colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''), allData: '', overrides: new Array(TOTAL).fill(null) };
 }
 
 const PREMADE_TEMPLATES = {
-  WFI_TUBING_LABELS: { colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''), allData: "WFI, CYCLE#:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all' },
-  MAS_HEAD_LABELS:   { colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''), allData: "MAS HEADS, CYCLE#:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all' }
+  WFI_TUBING_LABELS: {
+    colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''),
+    allData: "WFI, CYCLE#:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all'
+  },
+  MAS_HEAD_LABELS: {
+    colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''),
+    allData: "MAS HEADS, CYCLE#:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all'
+  },
+  EM_TURNTABLE: {
+    colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''),
+    allData: '', alignment: 'center', fontSize: '12', defaultTab: 'col',
+    overrides: [
+      "Finger checks, TG1, A", "2051.E1, 1st", null, null,
+      "Finger checks, TG1, B", "2051.E1, 2nd", null, null,
+      "Finger checks, TG2, A", "2051.E1, 3rd", null, null,
+      "Finger checks, TG2, B", "2051.E1, 4th", null, null,
+      "Finger checks, TG3, A", null, null, null,
+      "Finger checks, TG3, B", null, null, null,
+      "Finger checks, TG4, C", null, null, null,
+      "Finger checks, TG4, C", null, null, null,
+      null, null, null, null,
+      null, null, null, null,
+      null, null, null, null,
+      null, null, null, null
+    ]
+  }
 };
 
 initApp();
@@ -543,7 +556,12 @@ function initApp() {
   document.addEventListener('click', e => { if (!document.getElementById('floating-sel-wrap').contains(e.target)) closeSelDropdown(); });
 }
 
-/* === SELECTION DROPDOWN === */
+function toggleTemplates() {
+  templatesOpen = !templatesOpen;
+  document.getElementById('tpl-panel').classList.toggle('open', templatesOpen);
+  document.getElementById('tpl-toggle-btn').classList.toggle('open', templatesOpen);
+}
+
 function toggleSelDropdown() {
   const menu = document.getElementById('sel-dropdown-menu');
   const btn  = document.getElementById('sel-dropdown-btn');
@@ -561,32 +579,41 @@ function selectPattern(pattern) {
   if (pattern === 'all') {
     pages.forEach((_, pi) => { for (let i = 0; i < TOTAL; i++) selectedIndices.add(selKey(pi, i)); });
   } else if (pattern === 'cols13') {
-    // Columns 1 and 3 = col indices 0 and 2
-    pages.forEach((_, pi) => {
-      for (let r = 0; r < ROWS; r++) {
-        [0, 2].forEach(c => selectedIndices.add(selKey(pi, r * COLS + c)));
-      }
-    });
+    pages.forEach((_, pi) => { for (let r = 0; r < ROWS; r++) [0,2].forEach(c => selectedIndices.add(selKey(pi, r*COLS+c))); });
   } else if (pattern === 'cols24') {
-    // Columns 2 and 4 = col indices 1 and 3
-    pages.forEach((_, pi) => {
-      for (let r = 0; r < ROWS; r++) {
-        [1, 3].forEach(c => selectedIndices.add(selKey(pi, r * COLS + c)));
-      }
-    });
+    pages.forEach((_, pi) => { for (let r = 0; r < ROWS; r++) [1,3].forEach(c => selectedIndices.add(selKey(pi, r*COLS+c))); });
   } else if (pattern === 'evenodd') {
     pages.forEach((_, pi) => {
       for (let r = 0; r < ROWS; r++)
         for (let c = 0; c < COLS; c++)
-          if ((r + c) % 2 === 0) selectedIndices.add(selKey(pi, r * COLS + c));
+          if ((r+c) % 2 === 0) selectedIndices.add(selKey(pi, r*COLS+c));
+    });
+  } else if (pattern === 'oddrows') {
+    // Rows 1,3,5,7,9,11 → 0-indexed: 0,2,4,6,8,10
+    pages.forEach((_, pi) => {
+      for (let r = 0; r < ROWS; r += 2)
+        for (let c = 0; c < COLS; c++)
+          selectedIndices.add(selKey(pi, r*COLS+c));
+    });
+  } else if (pattern === 'evenrows') {
+    // Rows 2,4,6,8,10,12 → 0-indexed: 1,3,5,7,9,11
+    pages.forEach((_, pi) => {
+      for (let r = 1; r < ROWS; r += 2)
+        for (let c = 0; c < COLS; c++)
+          selectedIndices.add(selKey(pi, r*COLS+c));
+    });
+  } else if (pattern === 'everyotherrow') {
+    // Alternating from row 1 = same as oddrows
+    pages.forEach((_, pi) => {
+      for (let r = 0; r < ROWS; r += 2)
+        for (let c = 0; c < COLS; c++)
+          selectedIndices.add(selKey(pi, r*COLS+c));
     });
   }
-  // 'none' = already cleared
   if (selectedIndices.size > 0) setViewTab('sel'); else renderLayerPanel();
   generateAll();
 }
 
-/* === RESET === */
 function resetApp() {
   if (!confirm('Clear all data and reset to defaults?')) return;
   viewTab = 'col'; alignment = 'center';
@@ -600,7 +627,6 @@ function resetApp() {
   clearFindReplace(); setViewTab('col'); generateAll(); updatePageControls();
 }
 
-/* === PAGES === */
 function addPage() { pages.push(createPageData()); numPages = pages.length; updatePageControls(); generateAll(); }
 function removePage() {
   if (numPages <= 1) return;
@@ -614,14 +640,12 @@ function updatePageControls() {
   document.getElementById('topbar-label-count').textContent = `A4 · 4×12 · ${numPages * TOTAL} LABELS`;
 }
 
-/* === TABS === */
 function setViewTab(tab) {
   viewTab = tab;
   ['col','row','all','sel'].forEach(t => document.getElementById('tab-'+t).classList.toggle('active', t === tab));
   renderLayerPanel();
 }
 
-/* === LAYER PANEL === */
 function renderLayerPanel() {
   const panel = document.getElementById('layer-panel');
   panel.innerHTML = '';
@@ -716,13 +740,11 @@ function generateAll() {
     const countBar = el('div','sheet-label-count');
     countBar.innerHTML = `<span class="sheet-page-label">PAGE ${pi+1}</span><span class="lc-badge">${countNonEmpty(pg)} / ${TOTAL} LABELS FILLED</span>`;
     wrapper.appendChild(countBar);
-
     const sheet = el('div','sheet');
     const grid  = el('div','grid');
     if (showLines) grid.classList.add('with-label-lines');
     if (showCut)   grid.classList.add('with-cut-lines');
     if (isLeft)    grid.classList.add('align-left');
-
     for (let r = 0; r < ROWS; r++) {
       for (let c = 0; c < COLS; c++) {
         const idx = r*COLS+c, key = selKey(pi,idx);
@@ -806,12 +828,19 @@ function insertFormatting(tag) {
 }
 
 function loadPremade(key) {
-  const d=PREMADE_TEMPLATES[key];
-  pages[0].colData=d.colData?[...d.colData]:new Array(COLS).fill('');
-  pages[0].rowData=d.rowData?[...d.rowData]:new Array(ROWS).fill('');
-  pages[0].allData=d.allData||''; pages[0].overrides=new Array(TOTAL).fill(null);
-  applyAlignment(d.alignment||'center'); document.getElementById('fontSizeInput').value=d.fontSize||'12';
-  updateFontSize(); setViewTab(d.defaultTab||'col'); generateAll();
+  const d = PREMADE_TEMPLATES[key];
+  pages[0].colData   = d.colData   ? [...d.colData]   : new Array(COLS).fill('');
+  pages[0].rowData   = d.rowData   ? [...d.rowData]   : new Array(ROWS).fill('');
+  pages[0].allData   = d.allData   || '';
+  pages[0].overrides = d.overrides ? [...d.overrides] : new Array(TOTAL).fill(null);
+  applyAlignment(d.alignment || 'center');
+  document.getElementById('fontSizeInput').value = d.fontSize || '12';
+  updateFontSize();
+  templatesOpen = false;
+  document.getElementById('tpl-panel').classList.remove('open');
+  document.getElementById('tpl-toggle-btn').classList.remove('open');
+  setViewTab(d.defaultTab || 'col');
+  generateAll();
 }
 
 function saveProject() {
@@ -835,18 +864,13 @@ function loadProject(event) {
 async function downloadPDF() {
   const showLines = document.getElementById('labelLinesToggle').checked;
   const showCut   = document.getElementById('cutLinesToggle').checked;
-
   if (showLines || showCut) {
     const activeWarnings = [];
     if (showLines) activeWarnings.push('Grid Guides');
     if (showCut)   activeWarnings.push('Cut Lines');
-    const warningMsg =
-      `⚠ Warning: ${activeWarnings.join(' and ')} ${activeWarnings.length > 1 ? 'are' : 'is'} currently ON.\n\n` +
-      `These lines WILL appear on your printed labels.\n\n` +
-      `Press OK to export anyway, or Cancel to go back and turn them off.`;
+    const warningMsg = `⚠ Warning: ${activeWarnings.join(' and ')} ${activeWarnings.length > 1 ? 'are' : 'is'} currently ON.\n\nThese lines WILL appear on your printed labels.\n\nPress OK to export anyway, or Cancel to go back and turn them off.`;
     if (!confirm(warningMsg)) return;
   }
-
   const btn=document.getElementById('btn-pdf'); btn.innerHTML='⟳ Generating...'; btn.disabled=true;
   try {
     const {jsPDF}=jspdf; const pdf=new jsPDF({unit:'mm',format:'a4'});
