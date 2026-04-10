@@ -190,7 +190,7 @@
 
   <div class="ui-controls">
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <h2>L6009 EDITOR</h2>
+      <h2>AVERY L6009 EDITOR</h2>
       <button onclick="resetApp()" class="danger-btn" style="width: auto; margin: 0; padding: 6px 12px; font-size: 11px;">RESET</button>
     </div>
 
@@ -211,7 +211,7 @@
 
     <label style="font-weight: bold; font-size: 12px; color: #9ca3af; text-transform: uppercase;">2. Content</label>
     <div style="display: flex; gap: 8px; margin: 10px 0; align-items: center;">
-      <span style="font-size: 12px;">Size:</span>
+      <span style="font-size: 14px;">Size:</span>
       <input type="number" id="fontSizeInput" value="12" style="width: 60px;" class="tool-input" oninput="updateFontSize()">
       <button class="secondary-btn" style="width: 40px;" onclick="insertFormatting('b')">B</button>
       <button class="secondary-btn" style="width: 40px;" onclick="insertFormatting('i')">I</button>
@@ -272,7 +272,7 @@ let allData = '';
 let overrides = new Array(TOTAL_LABELS).fill(null);
 
 const PREMADE_TEMPLATES = {
-  'WFI_LABELS': {
+  'WFI_TUBING_LABELS': {
     "baseMode": "column",
     "alignment": "left",
     "colData": ["WFI, CYCLE #:, DATE:, EXPIRY:", "WFI, CYCLE #:, DATE:, EXPIRY:", "WFI, CYCLE #:, DATE:, EXPIRY:", "WFI, CYCLE #:, DATE:, EXPIRY:"],
