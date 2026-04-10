@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Avery L6009 | Pro Label Editor v3.5</title>
+  <title>Avery L6009 | Pro Label Editor</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -16,16 +16,14 @@
       --col-gap: 4.4mm;
       --row-gap: 0.0mm;
       --font-size: 12px;
-
       --navy:        #2b4590;
       --navy-dark:   #1e3270;
       --navy-light:  #3a57a8;
-      --sky:          #1da1d8;
-      --sky-dim:      #1585b5;
+      --sky:         #1da1d8;
+      --sky-dim:     #1585b5;
       --sky-glow:    rgba(29,161,216,0.12);
       --cream:       #fffef5;
       --cream-dark:  #f0efe4;
-
       --bg:          #eeeee4;
       --surface:     #ffffff;
       --border:      #d8d7c8;
@@ -35,410 +33,229 @@
       --muted:       #8a90a8;
       --success:     #16a34a;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Barlow', sans-serif;
+      font-size: 15px;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
+    /* TOPBAR */
     .topbar {
       background: var(--navy);
       padding: 0 32px;
-      height: 52px;
+      height: 56px;
       display: flex;
       align-items: center;
       gap: 20px;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 200;
       box-shadow: 0 2px 16px rgba(30,50,112,0.35);
     }
-    .topbar-logo {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: 22px;
-      letter-spacing: 3px;
-      color: #fff;
-      text-transform: uppercase;
-    }
+    .topbar-logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 24px; letter-spacing: 3px; color: #fff; text-transform: uppercase; }
     .topbar-logo span { color: var(--sky); }
-    .topbar-sub {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: rgba(255,255,255,0.4);
-      letter-spacing: 1px;
-    }
+    .topbar-sub { font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 1px; }
     .topbar-spacer { flex: 1; }
-    .topbar-badge {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      padding: 4px 10px;
-      border-radius: 4px;
-      color: rgba(255,255,255,0.5);
-    }
+    .topbar-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 4px; color: rgba(255,255,255,0.5); }
 
-    .app-body {
-      display: flex;
-      height: calc(100vh - 52px);
-    }
+    /* APP BODY */
+    .app-body { display: flex; height: calc(100vh - 56px); overflow: hidden; }
 
     /* SIDEBAR */
-    .sidebar {
-      width: 400px;
-      min-width: 400px;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: 2px 0 20px rgba(43,69,144,0.08);
-    }
-    .sidebar-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+    .sidebar { width: 390px; min-width: 390px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 2px 0 20px rgba(43,69,144,0.08); }
+    .sidebar-scroll { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
     .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+    .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
     .sidebar-scroll::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
+    .sidebar-footer { border-top: 1px solid var(--border); padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; background: var(--cream); }
 
-    .sidebar-footer {
-      border-top: 1px solid var(--border);
-      padding: 14px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      background: var(--cream);
-    }
+    .card { background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 15px; }
+    .card-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--navy); margin-bottom: 13px; display: flex; align-items: center; gap: 8px; }
+    .card-title .dot { width: 7px; height: 7px; background: var(--sky); border-radius: 50%; flex-shrink: 0; }
 
-    .card {
-      background: var(--cream);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 15px;
-    }
-    .card-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      font-size: 11px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--navy);
-      margin-bottom: 13px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .card-title .dot {
-      width: 6px; height: 6px;
-      background: var(--sky);
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .tab-row {
-      display: flex;
-      gap: 3px;
-      margin-bottom: 13px;
-      background: var(--border);
-      padding: 3px;
-      border-radius: 7px;
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 7px 4px;
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      border-radius: 5px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+    .tab-row { display: flex; gap: 3px; margin-bottom: 13px; background: var(--border); padding: 3px; border-radius: 7px; }
+    .tab-btn { flex: 1; padding: 8px 4px; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; background: transparent; border: none; color: var(--muted); border-radius: 5px; cursor: pointer; transition: all 0.15s; }
     .tab-btn:hover { color: var(--text); background: var(--cream-dark); }
     .tab-btn.active { background: var(--navy); color: #fff; }
 
     .layer-panel { display: flex; flex-direction: column; gap: 10px; }
-    .layer-section {
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      overflow: hidden;
-      background: var(--surface);
-    }
-    .layer-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 11px;
-      background: var(--cream-dark);
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 1px;
-      color: var(--text-mid);
-      text-transform: uppercase;
-      border-bottom: 1px solid var(--border);
-    }
+    .layer-section { border: 1px solid var(--border); border-radius: 7px; overflow: hidden; background: var(--surface); }
+    .layer-header { display: flex; align-items: center; gap: 8px; padding: 8px 11px; background: var(--cream-dark); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; color: var(--text-mid); text-transform: uppercase; border-bottom: 1px solid var(--border); }
     .layer-indicator { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
     .layer-col .layer-indicator   { background: var(--navy); }
     .layer-row .layer-indicator   { background: #7c3aed; }
     .layer-all .layer-indicator   { background: var(--sky); }
     .layer-override .layer-indicator { background: var(--success); }
     .layer-body { padding: 10px; }
-    .layer-sub-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: 1px;
-      margin-bottom: 2px;
-    }
+    .layer-sub-inputs { display: flex; flex-direction: column; gap: 6px; }
+    .layer-sub-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 2px; }
 
-    .inp {
-      background: var(--surface);
-      border: 1px solid var(--border-mid);
-      border-radius: 5px;
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      font-size: 12px;
-      padding: 8px 10px;
-      width: 100%;
-      transition: border-color 0.15s, box-shadow 0.15s;
-      resize: none;
-    }
+    .inp { background: var(--surface); border: 1px solid var(--border-mid); border-radius: 5px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; padding: 8px 10px; width: 100%; transition: border-color 0.15s, box-shadow 0.15s; resize: none; }
     .inp:focus { outline: none; border-color: var(--sky); box-shadow: 0 0 0 3px var(--sky-glow); }
     .inp::placeholder { color: var(--muted); }
-    .inp.sm { padding: 6px 8px; font-size: 11px; }
+    .inp.sm { padding: 7px 9px; font-size: 12px; }
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 9px 14px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      font-size: 13px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 15px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; border: none; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
     .btn-primary { background: var(--navy); color: white; }
     .btn-primary:hover { background: var(--navy-dark); }
     .btn-sky { background: var(--sky); color: white; }
     .btn-sky:hover { background: var(--sky-dim); box-shadow: 0 4px 14px rgba(29,161,216,0.35); }
-    .btn-ghost {
-      background: var(--cream-dark);
-      border: 1px solid var(--border-mid);
-      color: var(--text-mid);
-    }
+    .btn-ghost { background: var(--cream-dark); border: 1px solid var(--border-mid); color: var(--text-mid); }
     .btn-ghost:hover { border-color: var(--sky); color: var(--navy); background: var(--sky-glow); }
     .btn-danger { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
     .btn-danger:hover { background: #fecaca; }
     .btn-full { width: 100%; }
-    .btn-sm { padding: 6px 10px; font-size: 11px; }
+    .btn-sm { padding: 7px 11px; font-size: 12px; }
     .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 
-    /* Page controls specific styles */
-    .page-controls {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 10px;
-        background: var(--surface);
-        padding: 8px;
-        border-radius: 6px;
-        border: 1px solid var(--border);
-    }
-    .page-count-display {
-        font-family: 'DM Mono', monospace;
-        font-weight: 500;
-        font-size: 14px;
-        color: var(--navy);
-    }
-    .btn-page-minus:disabled {
-        opacity: 0.3;
-        cursor: not-allowed;
-        filter: grayscale(1);
-    }
-
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); }
     .toggle-row:last-child { border-bottom: none; }
-    .toggle-label { font-size: 13px; color: var(--text); }
-    .toggle { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+    .toggle-label { font-size: 14px; color: var(--text); }
+    .toggle { position: relative; width: 38px; height: 22px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-track {
-      position: absolute;
-      inset: 0;
-      background: var(--border-mid);
-      border-radius: 20px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+    .toggle-track { position: absolute; inset: 0; background: var(--border-mid); border-radius: 22px; cursor: pointer; transition: background 0.2s; }
     .toggle input:checked + .toggle-track { background: var(--sky); }
-    .toggle-track::after {
-      content: '';
-      position: absolute;
-      width: 14px; height: 14px;
-      background: white;
-      border-radius: 50%;
-      top: 3px; left: 3px;
-      transition: transform 0.2s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-    }
+    .toggle-track::after { content: ''; position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
     .toggle input:checked + .toggle-track::after { transform: translateX(16px); }
 
+    .font-controls { display: flex; align-items: center; gap: 8px; }
+    .font-controls .size-label { font-size: 13px; color: var(--muted); white-space: nowrap; }
+    .font-controls input { width: 60px; text-align: center; }
+
+    .template-grid { display: flex; flex-direction: column; gap: 6px; }
+    .template-item { display: flex; align-items: center; justify-content: space-between; padding: 11px 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; transition: all 0.15s; }
+    .template-item:hover { border-color: var(--sky); background: var(--sky-glow); }
+    .template-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 1px; color: var(--navy); }
+    .template-desc { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .template-arrow { color: var(--sky); font-size: 20px; }
+
+    /* Find & Replace */
+    .find-replace-box { display: flex; flex-direction: column; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 10px; margin-top: 10px; }
+    .find-replace-row { display: flex; gap: 6px; align-items: center; }
+    .find-replace-row label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; width: 52px; flex-shrink: 0; }
+    .find-replace-row .inp { flex: 1; }
+    .fr-status { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--success); min-height: 15px; }
+
+    /* Page controls */
+    .page-controls { display: flex; align-items: center; justify-content: space-between; background: var(--cream-dark); border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; margin-bottom: 4px; }
+    .page-count-label { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-mid); letter-spacing: 1px; }
+    .page-btn-group { display: flex; align-items: center; gap: 6px; }
+    .page-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; background: var(--surface); border: 1px solid var(--border-mid); border-radius: 5px; color: var(--navy); cursor: pointer; transition: all 0.15s; line-height: 1; }
+    .page-btn:hover:not(:disabled) { border-color: var(--sky); color: var(--sky); background: var(--sky-glow); }
+    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; background: var(--border); color: var(--muted); border-color: var(--border); }
+    .page-total-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--navy); color: #fff; padding: 3px 9px; border-radius: 4px; letter-spacing: 1px; }
+
+    .pin-gate { display: flex; flex-direction: column; gap: 8px; }
+    .pin-row { display: flex; gap: 8px; }
+    .pin-error { color: #dc2626; font-size: 12px; font-family: 'DM Mono', monospace; display: none; }
+    .calib-section { background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 15px; }
+    .calib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .calib-field label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; display: block; margin-bottom: 3px; }
+
     /* PREVIEW */
-    .preview-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      background: var(--bg);
-    }
-    .preview-header {
-      background: var(--navy-dark);
-      padding: 0 28px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-shrink: 0;
-    }
-    .label-counter {
-        background: var(--sky);
-        color: white;
-        font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 900;
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-size: 14px;
-        letter-spacing: 1px;
-    }
-    .preview-header-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.8);
-    }
-    .preview-badge {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      padding: 3px 8px;
-      border-radius: 3px;
-      background: rgba(29,161,216,0.18);
-      border: 1px solid rgba(29,161,216,0.35);
-      color: #7dd3fc;
-    }
+    .preview-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    .preview-header { background: var(--navy-dark); padding: 0 28px; height: 46px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+    .preview-header-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.8); }
+    .preview-badge { font-family: 'DM Mono', monospace; font-size: 11px; padding: 3px 9px; border-radius: 3px; background: rgba(29,161,216,0.18); border: 1px solid rgba(29,161,216,0.35); color: #7dd3fc; }
+    .preview-info { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.28); }
     .preview-header-spacer { flex: 1; }
+    .preview-status { display: flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.35); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 6px #4ade80; }
 
-    .preview-canvas {
-      flex: 1;
-      overflow: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px;
-      gap: 40px;
-      background: var(--bg);
-    }
+    .zoom-controls { display: flex; align-items: center; gap: 6px; }
+    .zoom-btn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 5px; color: rgba(255,255,255,0.7); font-size: 17px; cursor: pointer; transition: all 0.15s; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; line-height: 1; }
+    .zoom-btn:hover { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.3); color: #fff; }
+    .zoom-level { font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.5); min-width: 44px; text-align: center; }
 
-    .sheet-wrapper { 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        gap: 40px;
-        transform-origin: top center; 
-        transition: transform 0.2s; 
-    }
-    .sheet {
-      width: 210mm;
-      height: 297mm;
-      background: white;
-      box-shadow: 0 8px 40px rgba(43,69,144,0.16), 0 2px 8px rgba(43,69,144,0.08);
-      position: relative;
-      box-sizing: border-box;
-      flex-shrink: 0;
-    }
-    /* Page Number indicator on sheet */
-    .sheet::before {
-        content: "PAGE " attr(data-page);
-        position: absolute;
-        top: 5mm;
-        right: 10mm;
-        font-family: 'DM Mono', monospace;
-        font-size: 10px;
-        color: #ccc;
-    }
+    .preview-canvas { flex: 1; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 28px 32px; background: var(--bg); position: relative; }
+    .preview-canvas::-webkit-scrollbar { width: 8px; height: 8px; }
+    .preview-canvas::-webkit-scrollbar-track { background: transparent; }
+    .preview-canvas::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
 
-    .grid {
+    /* FLOATING SELECTION BUTTON */
+    .floating-sel-wrap {
       position: absolute;
-      top: var(--top-margin);
-      left: var(--left-margin);
-      display: grid;
-      grid-template-columns: repeat(4, var(--label-width));
-      grid-auto-rows: var(--label-height);
-      column-gap: var(--col-gap);
-      row-gap: var(--row-gap);
+      top: 58px;
+      right: 18px;
+      z-index: 150;
     }
-    .label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #1a1a1a;
-      box-sizing: border-box;
-      border: 1px solid transparent;
-      overflow: hidden;
-      padding: 3.5mm;
-      position: relative;
-      cursor: crosshair;
-      font-size: var(--font-size);
-      transition: background 0.1s;
-      line-height: 1.4;
-      white-space: pre-wrap;
+    .sel-dropdown-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 14px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase;
+      background: var(--navy); border: 1px solid rgba(29,161,216,0.5); border-radius: 8px;
+      color: #7dd3fc; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+      box-shadow: 0 4px 18px rgba(27,50,112,0.35);
     }
+    .sel-dropdown-btn:hover { background: var(--navy-light); border-color: rgba(29,161,216,0.8); color: #bae6fd; }
+    .sel-dropdown-btn .caret { font-size: 10px; transition: transform 0.2s; display: inline-block; }
+    .sel-dropdown-btn.open .caret { transform: rotate(180deg); }
+
+    .sel-dropdown-menu {
+      display: none; position: absolute; top: calc(100% + 8px); right: 0;
+      width: 280px; background: var(--navy-dark);
+      border: 1px solid rgba(29,161,216,0.3); border-radius: 10px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.45); padding: 10px;
+      z-index: 300; flex-direction: column; gap: 5px;
+    }
+    .sel-dropdown-menu.open { display: flex; }
+    .sel-menu-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); text-transform: uppercase; padding: 4px 6px 2px; }
+    .sel-menu-btn {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      padding: 9px 12px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;
+      color: rgba(255,255,255,0.75); cursor: pointer; transition: all 0.15s; text-align: left;
+    }
+    .sel-menu-btn:hover { background: rgba(29,161,216,0.2); border-color: rgba(29,161,216,0.4); color: #fff; }
+    /* Column icon: 4 cells in a row, 2 highlighted = column pattern */
+    .sel-icon { width: 36px; height: 20px; flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 2px; }
+    .sel-icon-cell { border-radius: 2px; }
+    .sel-icon-cell.on  { background: var(--sky); }
+    .sel-icon-cell.off { background: rgba(255,255,255,0.12); }
+    .sel-menu-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 1px; font-weight: 400; letter-spacing: 0; text-transform: none; }
+    .sel-menu-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 2px 0; }
+
+    /* 2×2 icon for all/none */
+    .sel-icon-2 { width: 24px; height: 20px; flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; }
+
+    .sheets-container { display: flex; flex-direction: column; align-items: center; gap: 28px; transform-origin: top center; transition: transform 0.2s; }
+    .sheet-wrapper { position: relative; }
+    .sheet-label-count { position: absolute; top: -22px; left: 0; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-mid); display: flex; align-items: center; gap: 6px; }
+    .sheet-label-count .lc-badge { background: var(--navy); color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 10px; letter-spacing: 1px; }
+    .sheet-page-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+
+    .sheet { width: 210mm; height: 297mm; background: white; box-shadow: 0 8px 40px rgba(43,69,144,0.16), 0 2px 8px rgba(43,69,144,0.08); position: relative; box-sizing: border-box; flex-shrink: 0; }
+    .grid { position: absolute; top: var(--top-margin); left: var(--left-margin); display: grid; grid-template-columns: repeat(4, var(--label-width)); grid-auto-rows: var(--label-height); column-gap: var(--col-gap); row-gap: var(--row-gap); }
+    .label { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #1a1a1a; box-sizing: border-box; border: 1px solid transparent; overflow: hidden; padding: 3.5mm; position: relative; cursor: crosshair; font-size: var(--font-size); transition: background 0.1s; line-height: 1.4; }
     .label:hover { background-color: #dff0f9; }
     .grid.with-label-lines .label { border: 1px solid #cdd6e8; }
     .grid.align-left .label { align-items: flex-start; text-align: left; }
-    .label.selected {
-      background-color: #dbeafe !important;
-      border: 1.5px solid var(--sky) !important;
-      z-index: 10;
+    .label.selected { background-color: #dbeafe !important; border: 1.5px solid var(--sky) !important; z-index: 10; }
+    .grid.with-cut-lines .label::after { content: ''; position: absolute; top: 1mm; left: 1mm; right: 1mm; bottom: 1mm; border: 0.5px dashed var(--sky); pointer-events: none; }
+
+    /* Footer toggles section */
+    .footer-toggles {
+      background: var(--cream-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 10px;
     }
 
     @media print {
       @page { size: A4; margin: 0; }
-      body { background: white; overflow: visible; }
-      .sidebar, .topbar, .preview-header { display: none !important; }
+      body { background: white; }
+      .sidebar, .topbar, .preview-header, .floating-sel-wrap { display: none !important; }
       .app-body { height: auto; }
       .preview-area { overflow: visible; }
-      .preview-canvas { padding: 0; gap: 0; display: block; }
-      .sheet { box-shadow: none; margin: 0; page-break-after: always; }
-      .sheet-wrapper { transform: none !important; gap: 0; }
+      .preview-canvas { padding: 0; }
+      .sheet { box-shadow: none; }
+      .sheet-label-count { display: none; }
     }
   </style>
 </head>
@@ -446,27 +263,41 @@
 
 <div class="topbar">
   <div class="topbar-logo">L<span>6009</span></div>
-  <div class="topbar-sub">AVERY LABEL EDITOR</div>
+  <div class="topbar-sub">AVERY LABEL EDITOR - BY DARVIN MAGUNDAYAO</div>
   <div class="topbar-spacer"></div>
-  <div class="topbar-badge">A4 · 4×12 · 48 PER PAGE</div>
+  <div class="topbar-badge" id="topbar-label-count">A4 · 4×12 · 48 LABELS</div>
 </div>
 
 <div class="app-body">
-
   <aside class="sidebar">
     <div class="sidebar-scroll">
 
+      <!-- TEMPLATES -->
       <div class="card">
-        <div class="card-title"><div class="dot" style="background: #7c3aed"></div>Page Management</div>
-        <div class="page-controls">
-            <button class="btn btn-ghost btn-sm btn-page-minus" id="btn-minus-page" onclick="changePageCount(-1)">− Page</button>
-            <div class="page-count-display"><span id="page-count-val">1</span> Sheet(s)</div>
-            <button class="btn btn-ghost btn-sm" onclick="changePageCount(1)">+ Page</button>
+        <div class="card-title"><div class="dot"></div>Templates</div>
+        <div class="template-grid">
+          <div class="template-item" onclick="loadPremade('WFI_TUBING_LABELS')">
+            <div><div class="template-name">WFI Tubing</div><div class="template-desc">4-col · left-align · size 11</div></div>
+            <div class="template-arrow">→</div>
+          </div>
+          <div class="template-item" onclick="loadPremade('MAS_HEAD_LABELS')">
+            <div><div class="template-name">MAS Heads</div><div class="template-desc">all · left-align · size 11</div></div>
+            <div class="template-arrow">→</div>
+          </div>
         </div>
       </div>
 
+      <!-- CONTENT LAYERS -->
       <div class="card">
         <div class="card-title"><div class="dot"></div>Content Layers</div>
+        <div class="page-controls">
+          <span class="page-count-label">PAGES</span>
+          <div class="page-btn-group">
+            <button class="page-btn" id="btn-remove-page" onclick="removePage()" disabled title="Remove last page">−</button>
+            <span class="page-total-badge" id="page-total-badge">1 PAGE</span>
+            <button class="page-btn" onclick="addPage()" title="Add page">+</button>
+          </div>
+        </div>
         <div class="tab-row">
           <button class="tab-btn active" id="tab-col" onclick="setViewTab('col')">Cols</button>
           <button class="tab-btn" id="tab-row" onclick="setViewTab('row')">Rows</button>
@@ -476,46 +307,54 @@
         <div class="layer-panel" id="layer-panel"></div>
       </div>
 
-      <div class="card">
-        <div class="card-title"><div class="dot"></div>Text Format</div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:13px;">
-          <div class="font-controls">
-            <span class="size-label">Size</span>
-            <input type="number" id="fontSizeInput" value="12" class="inp sm" oninput="updateFontSize()" style="width:50px">
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('b')"><b>B</b></button>
-          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('i')"><i>I</i></button>
-          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('u')"><u>U</u></button>
-        </div>
-        
-        <div style="border-top:1px solid var(--border); padding-top:12px; margin-top:5px;">
-            <div class="layer-sub-label">FIND & REPLACE</div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:5px;">
-                <input type="text" id="findInput" class="inp sm" placeholder="Find...">
-                <input type="text" id="replaceInput" class="inp sm" placeholder="Replace...">
-            </div>
-            <button class="btn btn-ghost btn-full btn-sm" onclick="findAndReplace()">Apply to All Labels</button>
-        </div>
-
-        <div class="toggle-row" style="margin-top:12px;">
-          <span class="toggle-label">Left Align</span>
-          <label class="toggle"><input type="checkbox" id="alignToggle" onchange="setAlignment()"><div class="toggle-track"></div></label>
-        </div>
-        <div class="toggle-row">
-          <span class="toggle-label">Grid Guides</span>
-          <label class="toggle"><input type="checkbox" id="labelLinesToggle" checked onchange="toggleLabelLines()"><div class="toggle-track"></div></label>
-        </div>
-      </div>
-
+      <!-- SELECTION CARD -->
       <div class="card" id="sel-card" style="display:none;">
         <div class="card-title"><div class="dot" style="background:#16a34a"></div>Selection</div>
-        <div id="sel-info" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:10px;"></div>
+        <div id="sel-info" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:10px;"></div>
         <button class="btn btn-ghost btn-full btn-sm" onclick="clearSelectedOverrides()">↺ Reset to Base</button>
         <div style="margin-top:7px;">
           <button class="btn btn-ghost btn-full btn-sm" onclick="clearSelection()">✕ Deselect All</button>
         </div>
       </div>
 
+      <!-- TEXT FORMAT -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Text Format</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:13px;">
+          <div class="font-controls">
+            <span class="size-label">Size</span>
+            <input type="number" id="fontSizeInput" value="12" class="inp sm" oninput="updateFontSize()">
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('b')"><b>B</b></button>
+          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('i')"><i>I</i></button>
+          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('u')"><u>U</u></button>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Left Align</span>
+          <label class="toggle"><input type="checkbox" id="alignToggle" onchange="setAlignment()"><div class="toggle-track"></div></label>
+        </div>
+        <!-- Find & Replace -->
+        <div style="margin-top:12px;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:6px;">FIND &amp; REPLACE</div>
+          <div class="find-replace-box">
+            <div class="find-replace-row">
+              <label>FIND</label>
+              <input type="text" id="frFind" class="inp sm" placeholder="Find text...">
+            </div>
+            <div class="find-replace-row">
+              <label>REPLACE</label>
+              <input type="text" id="frReplace" class="inp sm" placeholder="Replace with...">
+            </div>
+            <div style="display:flex;gap:6px;margin-top:2px;">
+              <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="doFindReplace()">Replace All</button>
+              <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="clearFindReplace()">Clear</button>
+            </div>
+            <div class="fr-status" id="fr-status"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECT -->
       <div class="card">
         <div class="card-title"><div class="dot"></div>Project</div>
         <input type="text" id="docNameInput" class="inp" value="Avery_L6009_Labels" placeholder="Filename...">
@@ -527,296 +366,504 @@
         <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)">
       </div>
 
+      <!-- GRID CALIBRATION -->
+      <div class="calib-section">
+        <div id="calib-locked">
+          <div class="pin-gate">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">🔒 GRID CALIBRATION</div>
+            <div class="pin-row">
+              <input type="password" id="pinInput" class="inp sm" placeholder="Enter PIN..." maxlength="4" style="flex:1;" onkeydown="if(event.key==='Enter')checkPin()">
+              <button class="btn btn-ghost btn-sm" onclick="checkPin()">Unlock</button>
+            </div>
+            <div class="pin-error" id="pinError">Incorrect PIN</div>
+          </div>
+        </div>
+        <div id="calib-unlocked" style="display:none;">
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--sky);letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+            <span>🔓 GRID CALIBRATION</span>
+            <button class="btn btn-ghost btn-sm" onclick="lockCalib()" style="padding:3px 8px;font-size:10px;">Lock</button>
+          </div>
+          <div class="calib-grid">
+            <div class="calib-field"><label>TOP MARGIN (mm)</label><input type="number" id="tMargin" value="16.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+            <div class="calib-field"><label>LEFT MARGIN (mm)</label><input type="number" id="lMargin" value="4.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+            <div class="calib-field"><label>LABEL WIDTH (mm)</label><input type="number" id="lblWidth" value="47" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+            <div class="calib-field"><label>LABEL HEIGHT (mm)</label><input type="number" id="lblHeight" value="22.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+            <div class="calib-field"><label>COL GAP (mm)</label><input type="number" id="colGap" value="4.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+            <div class="calib-field"><label>ROW GAP (mm)</label><input type="number" id="rowGap" value="0" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
-    
+
+    <!-- SIDEBAR FOOTER -->
     <div class="sidebar-footer">
+      <!-- Grid Guides + Cut Lines moved here, above Export PDF -->
+      <div class="footer-toggles">
+        <div class="toggle-row">
+          <span class="toggle-label" style="font-size:13px;">Grid Guides</span>
+          <label class="toggle"><input type="checkbox" id="labelLinesToggle" checked onchange="toggleLabelLines()"><div class="toggle-track"></div></label>
+        </div>
+        <div class="toggle-row" style="border-bottom:none;">
+          <span class="toggle-label" style="font-size:13px;">Cut Lines</span>
+          <label class="toggle"><input type="checkbox" id="cutLinesToggle" onchange="toggleCutLines()"><div class="toggle-track"></div></label>
+        </div>
+      </div>
       <button class="btn btn-sky btn-full" id="btn-pdf" onclick="downloadPDF()">↓ Export PDF</button>
       <button class="btn btn-danger btn-sm btn-full" onclick="resetApp()">↺ Reset All</button>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;">TECH-SPEC v3.3 · DARVIN MAGUNDAYAO</div>
     </div>
   </aside>
 
+  <!-- PREVIEW -->
   <div class="preview-area">
     <div class="preview-header">
-      <div class="label-counter" id="total-label-count">48 LABELS</div>
-      <div class="preview-header-title" style="margin-left:10px;">Sheet Preview</div>
+      <div class="preview-header-title">Sheet Preview</div>
+      <div class="preview-badge">L6009 · A4</div>
+      <div class="preview-info">210mm × 297mm &nbsp;·&nbsp; 4 cols × 12 rows</div>
       <div class="preview-header-spacer"></div>
-      
-      <div style="display:flex; align-items:center; gap:10px; margin-right:20px;">
-          <button class="btn btn-ghost btn-sm" onclick="adjustZoom(-10)" style="padding:4px 8px;">−</button>
-          <span id="zoom-label" style="color:white; font-family:'DM Mono'; font-size:11px; min-width:35px;">100%</span>
-          <button class="btn btn-ghost btn-sm" onclick="adjustZoom(10)" style="padding:4px 8px;">+</button>
+      <div class="zoom-controls">
+        <button class="zoom-btn" onclick="adjustZoom(-10)" title="Zoom Out">−</button>
+        <span class="zoom-level" id="zoom-label">100%</span>
+        <button class="zoom-btn" onclick="adjustZoom(10)" title="Zoom In">+</button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom" style="width:auto;padding:0 9px;font-size:12px;">↺</button>
       </div>
-
-      <div class="preview-status"><div class="status-dot"></div><span>System Ready</span></div>
+      <div id="preview-sel-badge" style="display:none;">
+        <span class="preview-badge" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.4);color:#4ade80;" id="sel-badge-text"></span>
+      </div>
+      <div class="preview-status"><div class="status-dot"></div><span>Ready</span></div>
     </div>
-    
+
+    <!-- FLOATING SELECTION BUTTON -->
+    <div class="floating-sel-wrap" id="floating-sel-wrap">
+      <button class="sel-dropdown-btn" id="sel-dropdown-btn" onclick="toggleSelDropdown()">
+        ◈ Selection <span class="caret">▾</span>
+      </button>
+      <div class="sel-dropdown-menu" id="sel-dropdown-menu">
+        <div class="sel-menu-label">Pattern Select</div>
+
+        <!-- Cols 1 & 3: positions 0 and 2 highlighted out of 4 -->
+        <button class="sel-menu-btn" onclick="selectPattern('cols13')">
+          <div class="sel-icon">
+            <div class="sel-icon-cell on"></div>
+            <div class="sel-icon-cell off"></div>
+            <div class="sel-icon-cell on"></div>
+            <div class="sel-icon-cell off"></div>
+          </div>
+          <div>
+            Cols 1 &amp; 3
+            <div class="sel-menu-sub">Every label in columns 1 and 3, all pages</div>
+          </div>
+        </button>
+
+        <!-- Cols 2 & 4: positions 1 and 3 highlighted out of 4 -->
+        <button class="sel-menu-btn" onclick="selectPattern('cols24')">
+          <div class="sel-icon">
+            <div class="sel-icon-cell off"></div>
+            <div class="sel-icon-cell on"></div>
+            <div class="sel-icon-cell off"></div>
+            <div class="sel-icon-cell on"></div>
+          </div>
+          <div>
+            Cols 2 &amp; 4
+            <div class="sel-menu-sub">Every label in columns 2 and 4, all pages</div>
+          </div>
+        </button>
+
+        <div class="sel-menu-divider"></div>
+
+        <button class="sel-menu-btn" onclick="selectPattern('evenodd')">
+          <div class="sel-icon">
+            <div class="sel-icon-cell on"></div>
+            <div class="sel-icon-cell off"></div>
+            <div class="sel-icon-cell off"></div>
+            <div class="sel-icon-cell on"></div>
+          </div>
+          <div>
+            Even / Odd Alternating
+            <div class="sel-menu-sub">Checkerboard pattern across all labels</div>
+          </div>
+        </button>
+
+        <div class="sel-menu-divider"></div>
+
+        <button class="sel-menu-btn" onclick="selectPattern('all')">
+          <div class="sel-icon-2" style="width:24px;height:20px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;flex-shrink:0;">
+            <div class="sel-icon-cell on"></div><div class="sel-icon-cell on"></div>
+            <div class="sel-icon-cell on"></div><div class="sel-icon-cell on"></div>
+          </div>
+          <div>
+            Select All
+            <div class="sel-menu-sub">Every label on every page</div>
+          </div>
+        </button>
+
+        <button class="sel-menu-btn" onclick="selectPattern('none')">
+          <div class="sel-icon-2" style="width:24px;height:20px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;flex-shrink:0;">
+            <div class="sel-icon-cell off"></div><div class="sel-icon-cell off"></div>
+            <div class="sel-icon-cell off"></div><div class="sel-icon-cell off"></div>
+          </div>
+          <div>
+            Deselect All
+            <div class="sel-menu-sub">Clear the current selection</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
     <div class="preview-canvas">
-      <div class="sheet-wrapper" id="master-sheet-wrapper">
-        </div>
+      <div class="sheets-container" id="sheets-container"></div>
     </div>
   </div>
-
 </div>
 
 <script>
-const ROWS = 12, COLS = 4, LABELS_PER_PAGE = ROWS * COLS;
+const ROWS = 12, COLS = 4, TOTAL = ROWS * COLS;
 const PIN = '2003';
 
 let viewTab = 'col', alignment = 'center';
 let selectedIndices = new Set(), lastFocusedInput = null;
-let colData = new Array(COLS).fill('');
-let rowData = new Array(ROWS).fill('');
-let allData = '';
-let overrides = {}; // Changed to object for multi-page support
-let pageCount = 1;
-let zoomLevel = 80;
+let pages = [createPageData()];
+let numPages = 1;
+
+function createPageData() {
+  return { colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''), allData: '', overrides: new Array(TOTAL).fill(null) };
+}
+
+const PREMADE_TEMPLATES = {
+  WFI_TUBING_LABELS: { colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''), allData: "WFI, CYCLE#:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all' },
+  MAS_HEAD_LABELS:   { colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''), allData: "MAS HEADS, CYCLE#:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all' }
+};
 
 initApp();
 
 function initApp() {
-  renderLayerPanel();
-  generate();
-  applyZoom();
+  renderLayerPanel(); generateAll();
   document.addEventListener('focusin', e => { if (e.target.classList.contains('inp')) lastFocusedInput = e.target; });
+  document.addEventListener('click', e => { if (!document.getElementById('floating-sel-wrap').contains(e.target)) closeSelDropdown(); });
 }
 
-function changePageCount(delta) {
-    const newCount = pageCount + delta;
-    if (newCount < 1) return;
-    pageCount = newCount;
-    document.getElementById('page-count-val').textContent = pageCount;
-    document.getElementById('btn-minus-page').disabled = (pageCount === 1);
-    document.getElementById('total-label-count').textContent = (pageCount * LABELS_PER_PAGE) + " LABELS";
-    generate();
+/* === SELECTION DROPDOWN === */
+function toggleSelDropdown() {
+  const menu = document.getElementById('sel-dropdown-menu');
+  const btn  = document.getElementById('sel-dropdown-btn');
+  const open = menu.classList.contains('open');
+  menu.classList.toggle('open', !open); btn.classList.toggle('open', !open);
+}
+function closeSelDropdown() {
+  document.getElementById('sel-dropdown-menu').classList.remove('open');
+  document.getElementById('sel-dropdown-btn').classList.remove('open');
 }
 
+function selectPattern(pattern) {
+  closeSelDropdown();
+  selectedIndices.clear();
+  if (pattern === 'all') {
+    pages.forEach((_, pi) => { for (let i = 0; i < TOTAL; i++) selectedIndices.add(selKey(pi, i)); });
+  } else if (pattern === 'cols13') {
+    // Columns 1 and 3 = col indices 0 and 2
+    pages.forEach((_, pi) => {
+      for (let r = 0; r < ROWS; r++) {
+        [0, 2].forEach(c => selectedIndices.add(selKey(pi, r * COLS + c)));
+      }
+    });
+  } else if (pattern === 'cols24') {
+    // Columns 2 and 4 = col indices 1 and 3
+    pages.forEach((_, pi) => {
+      for (let r = 0; r < ROWS; r++) {
+        [1, 3].forEach(c => selectedIndices.add(selKey(pi, r * COLS + c)));
+      }
+    });
+  } else if (pattern === 'evenodd') {
+    pages.forEach((_, pi) => {
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if ((r + c) % 2 === 0) selectedIndices.add(selKey(pi, r * COLS + c));
+    });
+  }
+  // 'none' = already cleared
+  if (selectedIndices.size > 0) setViewTab('sel'); else renderLayerPanel();
+  generateAll();
+}
+
+/* === RESET === */
 function resetApp() {
   if (!confirm('Clear all data and reset to defaults?')) return;
   viewTab = 'col'; alignment = 'center';
-  selectedIndices.clear(); 
-  colData = new Array(COLS).fill('');
-  rowData = new Array(ROWS).fill('');
-  allData = ''; overrides = {};
-  pageCount = 1;
-  document.getElementById('page-count-val').textContent = 1;
-  document.getElementById('btn-minus-page').disabled = true;
+  selectedIndices = new Set(); lastFocusedInput = null;
+  pages = [createPageData()]; numPages = 1;
   document.getElementById('fontSizeInput').value = 12;
-  updateFontSize();
-  applyAlignment('center');
-  setViewTab('col');
-  generate();
+  updateFontSize(); applyAlignment('center');
+  document.getElementById('labelLinesToggle').checked = true;
+  document.getElementById('cutLinesToggle').checked = false;
+  document.getElementById('docNameInput').value = 'Avery_L6009_Labels';
+  clearFindReplace(); setViewTab('col'); generateAll(); updatePageControls();
 }
 
+/* === PAGES === */
+function addPage() { pages.push(createPageData()); numPages = pages.length; updatePageControls(); generateAll(); }
+function removePage() {
+  if (numPages <= 1) return;
+  if (!confirm(`Remove page ${numPages}? All data on that page will be lost.`)) return;
+  pages.pop(); numPages = pages.length;
+  selectedIndices.clear(); updatePageControls(); renderLayerPanel(); generateAll();
+}
+function updatePageControls() {
+  document.getElementById('page-total-badge').textContent = numPages === 1 ? '1 PAGE' : `${numPages} PAGES`;
+  document.getElementById('btn-remove-page').disabled = numPages <= 1;
+  document.getElementById('topbar-label-count').textContent = `A4 · 4×12 · ${numPages * TOTAL} LABELS`;
+}
+
+/* === TABS === */
 function setViewTab(tab) {
   viewTab = tab;
   ['col','row','all','sel'].forEach(t => document.getElementById('tab-'+t).classList.toggle('active', t === tab));
   renderLayerPanel();
 }
 
+/* === LAYER PANEL === */
 function renderLayerPanel() {
   const panel = document.getElementById('layer-panel');
   panel.innerHTML = '';
-  const selCard = document.getElementById('sel-card');
-  
+  const selCard  = document.getElementById('sel-card');
+  const selBadge = document.getElementById('preview-sel-badge');
   if (selectedIndices.size > 0) {
     selCard.style.display = 'block';
     document.getElementById('sel-info').textContent = `${selectedIndices.size} label(s) selected`;
-  } else {
-    selCard.style.display = 'none';
-  }
+    selBadge.style.display = 'block';
+    document.getElementById('sel-badge-text').textContent = `${selectedIndices.size} selected`;
+  } else { selCard.style.display = 'none'; selBadge.style.display = 'none'; }
 
   if (viewTab === 'col') {
-    const sec = makeSection('col', 'Column Layer', 'Applied to every page');
-    const sub = el('div', 'layer-sub-inputs');
-    for (let c = 0; c < COLS; c++) {
-      const w = el('div'); w.appendChild(lbl(`COL ${c+1}`));
-      const inp = makeInput('input', colData[c], 'Line1, Line2...');
-      inp.oninput = e => { colData[c] = e.target.value; generate(); };
-      w.appendChild(inp); sub.appendChild(w);
-    }
-    sec.querySelector('.layer-body').appendChild(sub);
-    panel.appendChild(sec);
+    pages.forEach((pg, pi) => {
+      if (numPages > 1) { const h = el('div'); h.style.cssText='font-family:"DM Mono",monospace;font-size:10px;color:var(--sky);letter-spacing:1.5px;margin-bottom:4px;margin-top:'+(pi>0?'10px':'0px'); h.textContent=`PAGE ${pi+1}`; panel.appendChild(h); }
+      const sec = makeSection('col','Column Layer','Per column');
+      const sub = el('div','layer-sub-inputs');
+      for (let c = 0; c < COLS; c++) {
+        const w = el('div'); w.appendChild(lbl(`COL ${c+1}`));
+        const inp = makeInput('input', pg.colData[c], 'Line1, Line2, ...');
+        const _pi=pi,_c=c; inp.oninput = e => { pages[_pi].colData[_c]=e.target.value; generateAll(); };
+        inp.addEventListener('focus',()=>lastFocusedInput=inp); w.appendChild(inp); sub.appendChild(w);
+      }
+      sec.querySelector('.layer-body').appendChild(sub); panel.appendChild(sec);
+    });
   } else if (viewTab === 'row') {
-    const sec = makeSection('row', 'Row Layer', 'Applied to every page');
-    const sub = el('div', 'layer-sub-inputs');
-    for (let r = 0; r < ROWS; r++) {
-      const w = el('div'); w.appendChild(lbl(`ROW ${r+1}`));
-      const inp = makeInput('input', rowData[r], 'Line1, Line2...');
-      inp.oninput = e => { rowData[r] = e.target.value; generate(); };
-      w.appendChild(inp); sub.appendChild(w);
-    }
-    sec.querySelector('.layer-body').appendChild(sub);
-    panel.appendChild(sec);
+    pages.forEach((pg, pi) => {
+      if (numPages > 1) { const h = el('div'); h.style.cssText='font-family:"DM Mono",monospace;font-size:10px;color:var(--sky);letter-spacing:1.5px;margin-bottom:4px;margin-top:'+(pi>0?'10px':'0px'); h.textContent=`PAGE ${pi+1}`; panel.appendChild(h); }
+      const sec = makeSection('row','Row Layer','Per row');
+      const sub = el('div','layer-sub-inputs');
+      for (let r = 0; r < ROWS; r++) {
+        const w = el('div'); w.appendChild(lbl(`ROW ${r+1}`));
+        const inp = makeInput('input', pg.rowData[r], 'Line1, Line2, ...');
+        const _pi=pi,_r=r; inp.oninput = e => { pages[_pi].rowData[_r]=e.target.value; generateAll(); };
+        inp.addEventListener('focus',()=>lastFocusedInput=inp); w.appendChild(inp); sub.appendChild(w);
+      }
+      sec.querySelector('.layer-body').appendChild(sub); panel.appendChild(sec);
+    });
   } else if (viewTab === 'all') {
-    const sec = makeSection('all', 'Global Layer', 'Base for all labels');
-    const body = sec.querySelector('.layer-body');
-    body.appendChild(lbl('ALL LABELS'));
-    const inp = makeInput('input', allData, 'Global content...');
-    inp.oninput = e => { allData = e.target.value; generate(); };
-    body.appendChild(inp);
-    panel.appendChild(sec);
+    pages.forEach((pg, pi) => {
+      if (numPages > 1) { const h = el('div'); h.style.cssText='font-family:"DM Mono",monospace;font-size:10px;color:var(--sky);letter-spacing:1.5px;margin-bottom:4px;margin-top:'+(pi>0?'10px':'0px'); h.textContent=`PAGE ${pi+1}`; panel.appendChild(h); }
+      const sec = makeSection('all','Global Layer','All labels');
+      const body = sec.querySelector('.layer-body'); body.appendChild(lbl('ALL LABELS'));
+      const inp = makeInput('input', pg.allData, 'Line1, Line2, ...');
+      const _pi=pi; inp.oninput = e => { pages[_pi].allData=e.target.value; generateAll(); };
+      inp.addEventListener('focus',()=>lastFocusedInput=inp); body.appendChild(inp); panel.appendChild(sec);
+    });
   } else if (viewTab === 'sel') {
     if (selectedIndices.size === 0) {
-      const hint = el('div');
-      hint.style.cssText = 'font-family:"DM Mono",monospace;font-size:11px;color:var(--muted);padding:8px 0;';
-      hint.textContent = 'Click labels on the sheet to select.';
-      panel.appendChild(hint);
+      const hint = el('div'); hint.style.cssText='font-family:"DM Mono",monospace;font-size:12px;color:var(--muted);padding:8px 0;'; hint.textContent='Click labels on the sheet to select.'; panel.appendChild(hint);
     } else {
-      const sec = makeSection('override', 'Override Layer', `${selectedIndices.size} selected`);
-      const body = sec.querySelector('.layer-body');
-      body.appendChild(lbl('OVERRIDE CONTENT'));
-      const ta = makeInput('textarea', '', 'Override content...');
-      ta.rows = 3;
       const arr = Array.from(selectedIndices);
-      ta.value = overrides[arr[0]] || '';
-      ta.oninput = e => { selectedIndices.forEach(i => { if(e.target.value) overrides[i] = e.target.value; else delete overrides[i]; }); generate(); };
-      body.appendChild(ta);
-      panel.appendChild(sec);
+      const {pageIdx,labelIdx} = decodeSelKey(arr[0]);
+      const sec = makeSection('override','Override Layer',`${arr.length} label(s)`);
+      const body = sec.querySelector('.layer-body'); body.appendChild(lbl('OVERRIDE CONTENT'));
+      const ta = makeInput('textarea','','Override selected labels...'); ta.rows=3; ta.style.resize='none';
+      ta.value = pages[pageIdx].overrides[labelIdx] !== null ? pages[pageIdx].overrides[labelIdx] : '';
+      ta.oninput = e => { arr.forEach(key => { const d=decodeSelKey(key); pages[d.pageIdx].overrides[d.labelIdx]=e.target.value||null; }); generateAll(); };
+      ta.addEventListener('focus',()=>lastFocusedInput=ta); body.appendChild(ta); panel.appendChild(sec);
     }
   }
 }
 
-function findAndReplace() {
-    const f = document.getElementById('findInput').value;
-    const r = document.getElementById('replaceInput').value;
-    if (!f) return;
-
-    const rep = (str) => str.split(f).join(r);
-
-    allData = rep(allData);
-    colData = colData.map(rep);
-    rowData = rowData.map(rep);
-    for (let key in overrides) {
-        overrides[key] = rep(overrides[key]);
-    }
-    
-    generate();
-    renderLayerPanel();
-    alert('Find and Replace complete across all pages.');
-}
-
-function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
-function lbl(text) { const d = el('div','layer-sub-label'); d.textContent = text; return d; }
-function makeInput(tag, val, ph) {
-  const i = el(tag, 'inp sm'); i.value = val; i.placeholder = ph; return i;
-}
-function makeSection(type, title, desc) {
-  const sec = el('div', `layer-section layer-${type}`);
-  sec.innerHTML = `<div class="layer-header"><div class="layer-indicator"></div><span>${title}</span><span style="margin-left:auto;opacity:0.5;font-size:9px;">${desc}</span></div><div class="layer-body"></div>`;
+function selKey(pi,li) { return `${pi}:${li}`; }
+function decodeSelKey(k) { const [p,l]=k.split(':').map(Number); return {pageIdx:p,labelIdx:l}; }
+function el(tag,cls) { const e=document.createElement(tag); if(cls) e.className=cls; return e; }
+function lbl(text) { const d=el('div','layer-sub-label'); d.textContent=text; return d; }
+function makeInput(tag,val,ph) { const i=el(tag,'inp sm'); i.value=val; i.placeholder=ph; return i; }
+function makeSection(type,title,desc) {
+  const sec=el('div',`layer-section layer-${type}`);
+  sec.innerHTML=`<div class="layer-header"><div class="layer-indicator"></div><span>${title}</span><span style="margin-left:auto;opacity:0.5;font-size:10px;">${desc}</span></div><div class="layer-body"></div>`;
   return sec;
 }
 
-function getLabelContent(absoluteIdx, r, c) {
-  if (overrides[absoluteIdx]) return overrides[absoluteIdx];
-  if (colData[c]) return colData[c];
-  if (rowData[r]) return rowData[r];
-  return allData;
+function getLabelContent(pg,r,c) {
+  const idx=r*COLS+c;
+  if (pg.overrides[idx]!==null) return pg.overrides[idx];
+  if (pg.colData[c]) return pg.colData[c];
+  if (pg.rowData[r]) return pg.rowData[r];
+  return pg.allData;
 }
 
-function generate() {
-  const wrapper = document.getElementById('master-sheet-wrapper');
-  wrapper.innerHTML = '';
-  
-  for (let p = 0; p < pageCount; p++) {
-    const sheet = el('div', 'sheet');
-    sheet.setAttribute('data-page', p + 1);
-    const grid = el('div', 'grid');
-    if (document.getElementById('labelLinesToggle').checked) grid.classList.add('with-label-lines');
-    if (alignment === 'left') grid.classList.add('align-left');
-    
+function generateAll() {
+  const container = document.getElementById('sheets-container');
+  container.innerHTML = '';
+  const showLines = document.getElementById('labelLinesToggle').checked;
+  const showCut   = document.getElementById('cutLinesToggle').checked;
+  const isLeft    = alignment === 'left';
+
+  pages.forEach((pg, pi) => {
+    const wrapper = el('div','sheet-wrapper');
+    const countBar = el('div','sheet-label-count');
+    countBar.innerHTML = `<span class="sheet-page-label">PAGE ${pi+1}</span><span class="lc-badge">${countNonEmpty(pg)} / ${TOTAL} LABELS FILLED</span>`;
+    wrapper.appendChild(countBar);
+
+    const sheet = el('div','sheet');
+    const grid  = el('div','grid');
+    if (showLines) grid.classList.add('with-label-lines');
+    if (showCut)   grid.classList.add('with-cut-lines');
+    if (isLeft)    grid.classList.add('align-left');
+
     for (let r = 0; r < ROWS; r++) {
       for (let c = 0; c < COLS; c++) {
-        const absIdx = (p * LABELS_PER_PAGE) + (r * COLS + c);
-        const div = el('div', 'label');
-        if (selectedIndices.has(absIdx)) div.classList.add('selected');
-        
+        const idx = r*COLS+c, key = selKey(pi,idx);
+        const div = el('div','label');
+        if (selectedIndices.has(key)) div.classList.add('selected');
         div.onclick = e => {
           if (!e.shiftKey && !e.ctrlKey) selectedIndices.clear();
-          selectedIndices.has(absIdx) ? selectedIndices.delete(absIdx) : selectedIndices.add(absIdx);
-          if (selectedIndices.size > 0) setViewTab('sel');
-          else renderLayerPanel();
-          generate();
+          selectedIndices.has(key) ? selectedIndices.delete(key) : selectedIndices.add(key);
+          if (selectedIndices.size > 0) setViewTab('sel'); else renderLayerPanel();
+          generateAll();
         };
-        
-        const val = getLabelContent(absIdx, r, c);
-        div.innerHTML = val ? val.split(',').map(l => l.trim()).filter(Boolean).join('<br>') : '';
+        const val = getLabelContent(pg,r,c);
+        div.innerHTML = val ? val.split(',').map(l=>l.trim()).filter(Boolean).join('<br>') : '';
         grid.appendChild(div);
       }
     }
-    sheet.appendChild(grid);
-    wrapper.appendChild(sheet);
-  }
+    sheet.appendChild(grid); wrapper.appendChild(sheet); container.appendChild(wrapper);
+  });
+  updatePageControls();
 }
 
-function updateFontSize() { document.documentElement.style.setProperty('--font-size', document.getElementById('fontSizeInput').value + 'px'); }
-function toggleLabelLines() { generate(); }
-function setAlignment() { applyAlignment(document.getElementById('alignToggle').checked ? 'left' : 'center'); }
-function applyAlignment(val) {
-  alignment = val;
-  document.getElementById('alignToggle').checked = val === 'left';
-  generate();
+function countNonEmpty(pg) {
+  let n=0;
+  for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) if (getLabelContent(pg,r,c)) n++;
+  return n;
 }
 
-function clearSelectedOverrides() { selectedIndices.forEach(i => delete overrides[i]); generate(); renderLayerPanel(); }
-function clearSelection() { selectedIndices.clear(); renderLayerPanel(); generate(); }
+function updateFontSize() { document.documentElement.style.setProperty('--font-size', document.getElementById('fontSizeInput').value+'px'); }
+function toggleLabelLines() { generateAll(); }
+function toggleCutLines()  { generateAll(); }
+function setAlignment()    { applyAlignment(document.getElementById('alignToggle').checked ? 'left' : 'center'); }
+function applyAlignment(val) { alignment=val; document.getElementById('alignToggle').checked=val==='left'; generateAll(); }
+
+function doFindReplace() {
+  const fv=document.getElementById('frFind').value, rv=document.getElementById('frReplace').value;
+  const st=document.getElementById('fr-status');
+  if (!fv) { st.textContent='Enter text to find.'; st.style.color='#dc2626'; return; }
+  let n=0;
+  pages.forEach(pg => {
+    for (let c=0;c<COLS;c++) if(pg.colData[c].includes(fv)){pg.colData[c]=pg.colData[c].split(fv).join(rv);n++;}
+    for (let r=0;r<ROWS;r++) if(pg.rowData[r].includes(fv)){pg.rowData[r]=pg.rowData[r].split(fv).join(rv);n++;}
+    if(pg.allData.includes(fv)){pg.allData=pg.allData.split(fv).join(rv);n++;}
+    for (let i=0;i<TOTAL;i++) if(pg.overrides[i]!==null&&pg.overrides[i].includes(fv)){pg.overrides[i]=pg.overrides[i].split(fv).join(rv);n++;}
+  });
+  st.style.color = n>0?'var(--success)':'#dc2626';
+  st.textContent  = n>0?`✓ Replaced ${n} occurrence${n>1?'s':''}.`:'No matches found.';
+  renderLayerPanel(); generateAll();
+}
+function clearFindReplace() { document.getElementById('frFind').value=''; document.getElementById('frReplace').value=''; document.getElementById('fr-status').textContent=''; }
+
+function checkPin() {
+  if (document.getElementById('pinInput').value===PIN) {
+    document.getElementById('calib-locked').style.display='none';
+    document.getElementById('calib-unlocked').style.display='block';
+    document.getElementById('pinError').style.display='none';
+  } else { document.getElementById('pinError').style.display='block'; document.getElementById('pinInput').value=''; }
+}
+function lockCalib() {
+  document.getElementById('calib-locked').style.display='block';
+  document.getElementById('calib-unlocked').style.display='none';
+  document.getElementById('pinInput').value=''; document.getElementById('pinError').style.display='none';
+}
+function updateGrid() {
+  const g=id=>document.getElementById(id), r=document.documentElement;
+  if(g('tMargin'))   r.style.setProperty('--top-margin',  g('tMargin').value+'mm');
+  if(g('lMargin'))   r.style.setProperty('--left-margin', g('lMargin').value+'mm');
+  if(g('lblWidth'))  r.style.setProperty('--label-width', g('lblWidth').value+'mm');
+  if(g('lblHeight')) r.style.setProperty('--label-height',g('lblHeight').value+'mm');
+  if(g('colGap'))    r.style.setProperty('--col-gap',     g('colGap').value+'mm');
+  if(g('rowGap'))    r.style.setProperty('--row-gap',     g('rowGap').value+'mm');
+}
+
+function clearSelectedOverrides() { selectedIndices.forEach(k=>{const d=decodeSelKey(k);pages[d.pageIdx].overrides[d.labelIdx]=null;}); generateAll();renderLayerPanel(); }
+function clearSelection() { selectedIndices.clear(); renderLayerPanel(); generateAll(); }
 
 function insertFormatting(tag) {
   if (!lastFocusedInput) return;
-  const s = lastFocusedInput.selectionStart, e = lastFocusedInput.selectionEnd, t = lastFocusedInput.value;
-  lastFocusedInput.value = t.substring(0,s) + `<${tag}>` + t.substring(s,e) + `</${tag}>` + t.substring(e);
+  const s=lastFocusedInput.selectionStart,e=lastFocusedInput.selectionEnd,t=lastFocusedInput.value;
+  lastFocusedInput.value=t.substring(0,s)+`<${tag}>`+t.substring(s,e)+`</${tag}>`+t.substring(e);
   lastFocusedInput.dispatchEvent(new Event('input'));
 }
 
-function saveProject() {
-  const data = { colData, rowData, allData, overrides, alignment, fontSize: document.getElementById('fontSizeInput').value, pageCount };
-  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = document.getElementById('docNameInput').value + '.json'; a.click();
+function loadPremade(key) {
+  const d=PREMADE_TEMPLATES[key];
+  pages[0].colData=d.colData?[...d.colData]:new Array(COLS).fill('');
+  pages[0].rowData=d.rowData?[...d.rowData]:new Array(ROWS).fill('');
+  pages[0].allData=d.allData||''; pages[0].overrides=new Array(TOTAL).fill(null);
+  applyAlignment(d.alignment||'center'); document.getElementById('fontSizeInput').value=d.fontSize||'12';
+  updateFontSize(); setViewTab(d.defaultTab||'col'); generateAll();
 }
 
+function saveProject() {
+  const data={pages,alignment,fontSize:document.getElementById('fontSizeInput').value};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=document.getElementById('docNameInput').value+'.json'; a.click();
+}
 function loadProject(event) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    const d = JSON.parse(e.target.result);
-    colData   = d.colData   || new Array(COLS).fill('');
-    rowData   = d.rowData   || new Array(ROWS).fill('');
-    allData   = d.allData   || '';
-    overrides = d.overrides || {};
-    pageCount = d.pageCount || 1;
-    applyAlignment(d.alignment || 'center');
-    document.getElementById('fontSizeInput').value = d.fontSize || 12;
-    document.getElementById('page-count-val').textContent = pageCount;
-    updateFontSize(); generate();
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const d=JSON.parse(e.target.result);
+    if(d.pages){pages=d.pages;numPages=pages.length;}
+    else{pages=[{colData:d.colData||new Array(COLS).fill(''),rowData:d.rowData||new Array(ROWS).fill(''),allData:d.allData||'',overrides:d.overrides||new Array(TOTAL).fill(null)}];numPages=1;}
+    applyAlignment(d.alignment||'center'); document.getElementById('fontSizeInput').value=d.fontSize||12;
+    updateFontSize();setViewTab('col');generateAll();updatePageControls();
   };
   reader.readAsText(event.target.files[0]);
 }
 
 async function downloadPDF() {
-  const btn = document.getElementById('btn-pdf');
-  btn.innerHTML = '⟳ Processing...'; btn.disabled = true;
+  const showLines = document.getElementById('labelLinesToggle').checked;
+  const showCut   = document.getElementById('cutLinesToggle').checked;
+
+  if (showLines || showCut) {
+    const activeWarnings = [];
+    if (showLines) activeWarnings.push('Grid Guides');
+    if (showCut)   activeWarnings.push('Cut Lines');
+    const warningMsg =
+      `⚠ Warning: ${activeWarnings.join(' and ')} ${activeWarnings.length > 1 ? 'are' : 'is'} currently ON.\n\n` +
+      `These lines WILL appear on your printed labels.\n\n` +
+      `Press OK to export anyway, or Cancel to go back and turn them off.`;
+    if (!confirm(warningMsg)) return;
+  }
+
+  const btn=document.getElementById('btn-pdf'); btn.innerHTML='⟳ Generating...'; btn.disabled=true;
   try {
-    const pdf = new jspdf.jsPDF({unit:'mm', format:'a4'});
-    const sheets = document.querySelectorAll('.sheet');
-    
-    for (let i = 0; i < sheets.length; i++) {
-        if (i > 0) pdf.addPage();
-        const canvas = await html2canvas(sheets[i], {scale:3, useCORS:true, backgroundColor:'#ffffff'});
-        pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,210,297);
+    const {jsPDF}=jspdf; const pdf=new jsPDF({unit:'mm',format:'a4'});
+    const sheets=document.querySelectorAll('.sheet');
+    for (let i=0;i<sheets.length;i++) {
+      if(i>0) pdf.addPage();
+      const canvas=await html2canvas(sheets[i],{scale:3,useCORS:true,backgroundColor:'#ffffff'});
+      pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,210,297);
     }
-    
-    pdf.save(document.getElementById('docNameInput').value + '.pdf');
-  } finally { btn.innerHTML = '↓ Export PDF'; btn.disabled = false; }
+    pdf.save(document.getElementById('docNameInput').value+'.pdf');
+  } finally {btn.innerHTML='↓ Export PDF';btn.disabled=false;}
 }
 
-function adjustZoom(delta) {
-  zoomLevel = Math.min(150, Math.max(20, zoomLevel + delta));
-  applyZoom();
-}
-function applyZoom() {
-  document.getElementById('master-sheet-wrapper').style.transform = `scale(${zoomLevel / 100})`;
-  document.getElementById('zoom-label').textContent = zoomLevel + '%';
-}
-
+let zoomLevel=100;
+function applyZoom(){document.getElementById('sheets-container').style.transform=`scale(${zoomLevel/100})`;document.getElementById('zoom-label').textContent=zoomLevel+'%';}
+function adjustZoom(d){zoomLevel=Math.min(200,Math.max(30,zoomLevel+d));applyZoom();}
+function resetZoom(){zoomLevel=100;applyZoom();}
 </script>
 </body>
 </html>
