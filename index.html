@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Avery L6009 | Pro Label Editor</title>
+  <title>Avery L6009 | Pro Label Editor v3.5</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -20,8 +20,8 @@
       --navy:        #2b4590;
       --navy-dark:   #1e3270;
       --navy-light:  #3a57a8;
-      --sky:         #1da1d8;
-      --sky-dim:     #1585b5;
+      --sky:          #1da1d8;
+      --sky-dim:      #1585b5;
       --sky-glow:    rgba(29,161,216,0.12);
       --cream:       #fffef5;
       --cream-dark:  #f0efe4;
@@ -43,7 +43,7 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     .topbar {
@@ -87,13 +87,12 @@
     .app-body {
       display: flex;
       height: calc(100vh - 52px);
-      overflow: hidden;
     }
 
     /* SIDEBAR */
     .sidebar {
-      width: 420px;
-      min-width: 420px;
+      width: 400px;
+      min-width: 400px;
       background: var(--surface);
       border-right: 1px solid var(--border);
       display: flex;
@@ -110,7 +109,6 @@
       gap: 14px;
     }
     .sidebar-scroll::-webkit-scrollbar { width: 4px; }
-    .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
     .sidebar-scroll::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
 
     .sidebar-footer {
@@ -199,7 +197,6 @@
     .layer-all .layer-indicator   { background: var(--sky); }
     .layer-override .layer-indicator { background: var(--success); }
     .layer-body { padding: 10px; }
-    .layer-sub-inputs { display: flex; flex-direction: column; gap: 6px; }
     .layer-sub-label {
       font-family: 'DM Mono', monospace;
       font-size: 9px;
@@ -256,6 +253,29 @@
     .btn-sm { padding: 6px 10px; font-size: 11px; }
     .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
+    /* Page controls specific styles */
+    .page-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 10px;
+        background: var(--surface);
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+    }
+    .page-count-display {
+        font-family: 'DM Mono', monospace;
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--navy);
+    }
+    .btn-page-minus:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        filter: grayscale(1);
+    }
+
     .toggle-row {
       display: flex;
       align-items: center;
@@ -288,42 +308,32 @@
     }
     .toggle input:checked + .toggle-track::after { transform: translateX(16px); }
 
-    .font-controls { display: flex; align-items: center; gap: 8px; }
-    .font-controls .size-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
-    .font-controls input { width: 56px; text-align: center; }
-
-    .template-grid { display: flex; flex-direction: column; gap: 6px; }
-    .template-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 12px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .template-item:hover { border-color: var(--sky); background: var(--sky-glow); }
-    .template-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 1px; color: var(--navy); }
-    .template-desc { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
-    .template-arrow { color: var(--sky); font-size: 18px; }
-
     /* PREVIEW */
     .preview-area {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      background: var(--bg);
     }
     .preview-header {
       background: var(--navy-dark);
       padding: 0 28px;
-      height: 44px;
+      height: 48px;
       display: flex;
       align-items: center;
       gap: 14px;
       flex-shrink: 0;
+    }
+    .label-counter {
+        background: var(--sky);
+        color: white;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 900;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        letter-spacing: 1px;
     }
     .preview-header-title {
       font-family: 'Barlow Condensed', sans-serif;
@@ -342,41 +352,27 @@
       border: 1px solid rgba(29,161,216,0.35);
       color: #7dd3fc;
     }
-    .preview-info {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: rgba(255,255,255,0.28);
-    }
     .preview-header-spacer { flex: 1; }
-    .preview-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      color: rgba(255,255,255,0.35);
-    }
-    .status-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #4ade80;
-      box-shadow: 0 0 6px #4ade80;
-    }
 
     .preview-canvas {
       flex: 1;
       overflow: auto;
       display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 32px;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+      gap: 40px;
       background: var(--bg);
     }
-    .preview-canvas::-webkit-scrollbar { width: 8px; height: 8px; }
-    .preview-canvas::-webkit-scrollbar-track { background: transparent; }
-    .preview-canvas::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
 
-    .sheet-wrapper { display: flex; flex-direction: column; align-items: center; transform-origin: top center; transition: transform 0.2s; }
+    .sheet-wrapper { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        gap: 40px;
+        transform-origin: top center; 
+        transition: transform 0.2s; 
+    }
     .sheet {
       width: 210mm;
       height: 297mm;
@@ -386,6 +382,17 @@
       box-sizing: border-box;
       flex-shrink: 0;
     }
+    /* Page Number indicator on sheet */
+    .sheet::before {
+        content: "PAGE " attr(data-page);
+        position: absolute;
+        top: 5mm;
+        right: 10mm;
+        font-family: 'DM Mono', monospace;
+        font-size: 10px;
+        color: #ccc;
+    }
+
     .grid {
       position: absolute;
       top: var(--top-margin);
@@ -412,6 +419,7 @@
       font-size: var(--font-size);
       transition: background 0.1s;
       line-height: 1.4;
+      white-space: pre-wrap;
     }
     .label:hover { background-color: #dff0f9; }
     .grid.with-label-lines .label { border: 1px solid #cdd6e8; }
@@ -421,70 +429,16 @@
       border: 1.5px solid var(--sky) !important;
       z-index: 10;
     }
-    .grid.with-cut-lines .label::after {
-      content: '';
-      position: absolute;
-      top: 1mm; left: 1mm; right: 1mm; bottom: 1mm;
-      border: 0.5px dashed var(--sky);
-      pointer-events: none;
-    }
-
-    .pin-gate { display: flex; flex-direction: column; gap: 8px; }
-    .pin-row { display: flex; gap: 8px; }
-    .pin-error { color: #dc2626; font-size: 11px; font-family: 'DM Mono', monospace; display: none; }
-
-    .calib-section {
-      background: var(--cream);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 15px;
-    }
-    .calib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .calib-field label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: 1px;
-      display: block;
-      margin-bottom: 3px;
-    }
-
-    .zoom-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .zoom-btn {
-      width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 5px;
-      color: rgba(255,255,255,0.7);
-      font-size: 16px;
-      cursor: pointer;
-      transition: all 0.15s;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      line-height: 1;
-    }
-    .zoom-btn:hover { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.3); color: #fff; }
-    .zoom-level {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: rgba(255,255,255,0.5);
-      min-width: 40px;
-      text-align: center;
-    }
 
     @media print {
       @page { size: A4; margin: 0; }
-      body { background: white; }
+      body { background: white; overflow: visible; }
       .sidebar, .topbar, .preview-header { display: none !important; }
       .app-body { height: auto; }
       .preview-area { overflow: visible; }
-      .preview-canvas { padding: 0; }
-      .sheet { box-shadow: none; }
+      .preview-canvas { padding: 0; gap: 0; display: block; }
+      .sheet { box-shadow: none; margin: 0; page-break-after: always; }
+      .sheet-wrapper { transform: none !important; gap: 0; }
     }
   </style>
 </head>
@@ -492,9 +446,9 @@
 
 <div class="topbar">
   <div class="topbar-logo">L<span>6009</span></div>
-  <div class="topbar-sub">AVERY LABEL EDITOR - BY DARVIN MAGUNDAYAO</div>
+  <div class="topbar-sub">AVERY LABEL EDITOR</div>
   <div class="topbar-spacer"></div>
-  <div class="topbar-badge">A4 · 4×12 · 48 LABELS</div>
+  <div class="topbar-badge">A4 · 4×12 · 48 PER PAGE</div>
 </div>
 
 <div class="app-body">
@@ -502,28 +456,15 @@
   <aside class="sidebar">
     <div class="sidebar-scroll">
 
-      <!-- TEMPLATES -->
       <div class="card">
-        <div class="card-title"><div class="dot"></div>Templates</div>
-        <div class="template-grid">
-          <div class="template-item" onclick="loadPremade('WFI_TUBING_LABELS')">
-            <div>
-              <div class="template-name">WFI Tubing</div>
-              <div class="template-desc">4-col · left-align · size 11</div>
-            </div>
-            <div class="template-arrow">→</div>
-          </div>
-          <div class="template-item" onclick="loadPremade('MAS_HEAD_LABELS')">
-            <div>
-              <div class="template-name">MAS Heads</div>
-              <div class="template-desc">all · left-align · size 11</div>
-            </div>
-            <div class="template-arrow">→</div>
-          </div>
+        <div class="card-title"><div class="dot" style="background: #7c3aed"></div>Page Management</div>
+        <div class="page-controls">
+            <button class="btn btn-ghost btn-sm btn-page-minus" id="btn-minus-page" onclick="changePageCount(-1)">− Page</button>
+            <div class="page-count-display"><span id="page-count-val">1</span> Sheet(s)</div>
+            <button class="btn btn-ghost btn-sm" onclick="changePageCount(1)">+ Page</button>
         </div>
       </div>
 
-      <!-- CONTENT LAYERS -->
       <div class="card">
         <div class="card-title"><div class="dot"></div>Content Layers</div>
         <div class="tab-row">
@@ -535,19 +476,28 @@
         <div class="layer-panel" id="layer-panel"></div>
       </div>
 
-      <!-- TEXT FORMAT -->
       <div class="card">
         <div class="card-title"><div class="dot"></div>Text Format</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:13px;">
           <div class="font-controls">
             <span class="size-label">Size</span>
-            <input type="number" id="fontSizeInput" value="12" class="inp sm" oninput="updateFontSize()">
+            <input type="number" id="fontSizeInput" value="12" class="inp sm" oninput="updateFontSize()" style="width:50px">
           </div>
           <button class="btn btn-ghost btn-sm" onclick="insertFormatting('b')"><b>B</b></button>
           <button class="btn btn-ghost btn-sm" onclick="insertFormatting('i')"><i>I</i></button>
           <button class="btn btn-ghost btn-sm" onclick="insertFormatting('u')"><u>U</u></button>
         </div>
-        <div class="toggle-row">
+        
+        <div style="border-top:1px solid var(--border); padding-top:12px; margin-top:5px;">
+            <div class="layer-sub-label">FIND & REPLACE</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:5px;">
+                <input type="text" id="findInput" class="inp sm" placeholder="Find...">
+                <input type="text" id="replaceInput" class="inp sm" placeholder="Replace...">
+            </div>
+            <button class="btn btn-ghost btn-full btn-sm" onclick="findAndReplace()">Apply to All Labels</button>
+        </div>
+
+        <div class="toggle-row" style="margin-top:12px;">
           <span class="toggle-label">Left Align</span>
           <label class="toggle"><input type="checkbox" id="alignToggle" onchange="setAlignment()"><div class="toggle-track"></div></label>
         </div>
@@ -555,13 +505,8 @@
           <span class="toggle-label">Grid Guides</span>
           <label class="toggle"><input type="checkbox" id="labelLinesToggle" checked onchange="toggleLabelLines()"><div class="toggle-track"></div></label>
         </div>
-        <div class="toggle-row">
-          <span class="toggle-label">Cut Lines</span>
-          <label class="toggle"><input type="checkbox" id="cutLinesToggle" onchange="toggleCutLines()"><div class="toggle-track"></div></label>
-        </div>
       </div>
 
-      <!-- SELECTION -->
       <div class="card" id="sel-card" style="display:none;">
         <div class="card-title"><div class="dot" style="background:#16a34a"></div>Selection</div>
         <div id="sel-info" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:10px;"></div>
@@ -571,7 +516,6 @@
         </div>
       </div>
 
-      <!-- PROJECT -->
       <div class="card">
         <div class="card-title"><div class="dot"></div>Project</div>
         <input type="text" id="docNameInput" class="inp" value="Avery_L6009_Labels" placeholder="Filename...">
@@ -583,74 +527,39 @@
         <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)">
       </div>
 
-      <!-- GRID CALIBRATION — PIN LOCKED -->
-      <div class="calib-section">
-        <div id="calib-locked">
-          <div class="pin-gate">
-            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">🔒 GRID CALIBRATION</div>
-            <div class="pin-row">
-              <input type="password" id="pinInput" class="inp sm" placeholder="Enter PIN..." maxlength="4" style="flex:1;" onkeydown="if(event.key==='Enter')checkPin()">
-              <button class="btn btn-ghost btn-sm" onclick="checkPin()">Unlock</button>
-            </div>
-            <div class="pin-error" id="pinError">Incorrect PIN</div>
-          </div>
-        </div>
-        <div id="calib-unlocked" style="display:none;">
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--sky);letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
-            <span>🔓 GRID CALIBRATION</span>
-            <button class="btn btn-ghost btn-sm" onclick="lockCalib()" style="padding:3px 8px;font-size:9px;">Lock</button>
-          </div>
-          <div class="calib-grid">
-            <div class="calib-field"><label>TOP MARGIN (mm)</label><input type="number" id="tMargin" value="16.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-            <div class="calib-field"><label>LEFT MARGIN (mm)</label><input type="number" id="lMargin" value="4.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-            <div class="calib-field"><label>LABEL WIDTH (mm)</label><input type="number" id="lblWidth" value="47" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-            <div class="calib-field"><label>LABEL HEIGHT (mm)</label><input type="number" id="lblHeight" value="22.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-            <div class="calib-field"><label>COL GAP (mm)</label><input type="number" id="colGap" value="4.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-            <div class="calib-field"><label>ROW GAP (mm)</label><input type="number" id="rowGap" value="0" step="0.1" class="inp sm" oninput="updateGrid()"></div>
-          </div>
-        </div>
-      </div>
-
     </div>
-    <!-- FOOTER -->
+    
     <div class="sidebar-footer">
       <button class="btn btn-sky btn-full" id="btn-pdf" onclick="downloadPDF()">↓ Export PDF</button>
       <button class="btn btn-danger btn-sm btn-full" onclick="resetApp()">↺ Reset All</button>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-align:center;letter-spacing:1px;">TECH-SPEC v3.0 · DARVIN MAGUNDAYAO</div>
     </div>
   </aside>
 
-  <!-- PREVIEW -->
   <div class="preview-area">
     <div class="preview-header">
-      <div class="preview-header-title">Sheet Preview</div>
-      <div class="preview-badge">L6009 · A4</div>
-      <div class="preview-info">210mm × 297mm &nbsp;·&nbsp; 4 cols × 12 rows</div>
+      <div class="label-counter" id="total-label-count">48 LABELS</div>
+      <div class="preview-header-title" style="margin-left:10px;">Sheet Preview</div>
       <div class="preview-header-spacer"></div>
-      <div class="zoom-controls">
-        <button class="zoom-btn" onclick="adjustZoom(-10)" title="Zoom Out">−</button>
-        <span class="zoom-level" id="zoom-label">100%</span>
-        <button class="zoom-btn" onclick="adjustZoom(10)" title="Zoom In">+</button>
-        <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom" style="width:auto;padding:0 8px;font-size:11px;">↺</button>
+      
+      <div style="display:flex; align-items:center; gap:10px; margin-right:20px;">
+          <button class="btn btn-ghost btn-sm" onclick="adjustZoom(-10)" style="padding:4px 8px;">−</button>
+          <span id="zoom-label" style="color:white; font-family:'DM Mono'; font-size:11px; min-width:35px;">100%</span>
+          <button class="btn btn-ghost btn-sm" onclick="adjustZoom(10)" style="padding:4px 8px;">+</button>
       </div>
-      <div id="preview-sel-badge" style="display:none;">
-        <span class="preview-badge" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.4);color:#4ade80;" id="sel-badge-text"></span>
-      </div>
-      <div class="preview-status"><div class="status-dot"></div><span>Ready</span></div>
+
+      <div class="preview-status"><div class="status-dot"></div><span>System Ready</span></div>
     </div>
+    
     <div class="preview-canvas">
-      <div class="sheet-wrapper">
-        <div class="sheet">
-          <div class="grid with-label-lines" id="grid"></div>
+      <div class="sheet-wrapper" id="master-sheet-wrapper">
         </div>
-      </div>
     </div>
   </div>
 
 </div>
 
 <script>
-const ROWS = 12, COLS = 4, TOTAL = ROWS * COLS;
+const ROWS = 12, COLS = 4, LABELS_PER_PAGE = ROWS * COLS;
 const PIN = '2003';
 
 let viewTab = 'col', alignment = 'center';
@@ -658,42 +567,42 @@ let selectedIndices = new Set(), lastFocusedInput = null;
 let colData = new Array(COLS).fill('');
 let rowData = new Array(ROWS).fill('');
 let allData = '';
-let overrides = new Array(TOTAL).fill(null);
-
-const PREMADE_TEMPLATES = {
-  WFI_TUBING_LABELS: {
-    colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''),
-    allData: "WFI, CYCLE#:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all'
-  },
-  MAS_HEAD_LABELS: {
-    colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''),
-    allData: "MAS HEADS, CYCLE#:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all'
-  }
-};
+let overrides = {}; // Changed to object for multi-page support
+let pageCount = 1;
+let zoomLevel = 80;
 
 initApp();
 
 function initApp() {
   renderLayerPanel();
   generate();
+  applyZoom();
   document.addEventListener('focusin', e => { if (e.target.classList.contains('inp')) lastFocusedInput = e.target; });
+}
+
+function changePageCount(delta) {
+    const newCount = pageCount + delta;
+    if (newCount < 1) return;
+    pageCount = newCount;
+    document.getElementById('page-count-val').textContent = pageCount;
+    document.getElementById('btn-minus-page').disabled = (pageCount === 1);
+    document.getElementById('total-label-count').textContent = (pageCount * LABELS_PER_PAGE) + " LABELS";
+    generate();
 }
 
 function resetApp() {
   if (!confirm('Clear all data and reset to defaults?')) return;
   viewTab = 'col'; alignment = 'center';
-  selectedIndices = new Set(); lastFocusedInput = null;
+  selectedIndices.clear(); 
   colData = new Array(COLS).fill('');
   rowData = new Array(ROWS).fill('');
-  allData = ''; overrides = new Array(TOTAL).fill(null);
+  allData = ''; overrides = {};
+  pageCount = 1;
+  document.getElementById('page-count-val').textContent = 1;
+  document.getElementById('btn-minus-page').disabled = true;
   document.getElementById('fontSizeInput').value = 12;
   updateFontSize();
   applyAlignment('center');
-  document.getElementById('labelLinesToggle').checked = true;
-  document.getElementById('cutLinesToggle').checked = false;
-  document.getElementById('grid').classList.add('with-label-lines');
-  document.getElementById('grid').classList.remove('with-cut-lines');
-  document.getElementById('docNameInput').value = 'Avery_L6009_Labels';
   setViewTab('col');
   generate();
 }
@@ -708,53 +617,44 @@ function renderLayerPanel() {
   const panel = document.getElementById('layer-panel');
   panel.innerHTML = '';
   const selCard = document.getElementById('sel-card');
-  const selBadge = document.getElementById('preview-sel-badge');
+  
   if (selectedIndices.size > 0) {
     selCard.style.display = 'block';
     document.getElementById('sel-info').textContent = `${selectedIndices.size} label(s) selected`;
-    selBadge.style.display = 'block';
-    document.getElementById('sel-badge-text').textContent = `${selectedIndices.size} selected`;
   } else {
     selCard.style.display = 'none';
-    selBadge.style.display = 'none';
   }
 
   if (viewTab === 'col') {
-    const sec = makeSection('col', 'Column Layer', 'Per column');
+    const sec = makeSection('col', 'Column Layer', 'Applied to every page');
     const sub = el('div', 'layer-sub-inputs');
     for (let c = 0; c < COLS; c++) {
       const w = el('div'); w.appendChild(lbl(`COL ${c+1}`));
-      const inp = makeInput('input', colData[c], 'Line1, Line2, ...');
+      const inp = makeInput('input', colData[c], 'Line1, Line2...');
       inp.oninput = e => { colData[c] = e.target.value; generate(); };
-      inp.addEventListener('focus', () => lastFocusedInput = inp);
       w.appendChild(inp); sub.appendChild(w);
     }
     sec.querySelector('.layer-body').appendChild(sub);
     panel.appendChild(sec);
-
   } else if (viewTab === 'row') {
-    const sec = makeSection('row', 'Row Layer', 'Per row');
+    const sec = makeSection('row', 'Row Layer', 'Applied to every page');
     const sub = el('div', 'layer-sub-inputs');
     for (let r = 0; r < ROWS; r++) {
       const w = el('div'); w.appendChild(lbl(`ROW ${r+1}`));
-      const inp = makeInput('input', rowData[r], 'Line1, Line2, ...');
+      const inp = makeInput('input', rowData[r], 'Line1, Line2...');
       inp.oninput = e => { rowData[r] = e.target.value; generate(); };
-      inp.addEventListener('focus', () => lastFocusedInput = inp);
       w.appendChild(inp); sub.appendChild(w);
     }
     sec.querySelector('.layer-body').appendChild(sub);
     panel.appendChild(sec);
-
   } else if (viewTab === 'all') {
-    const sec = makeSection('all', 'Global Layer', 'All labels');
+    const sec = makeSection('all', 'Global Layer', 'Base for all labels');
     const body = sec.querySelector('.layer-body');
     body.appendChild(lbl('ALL LABELS'));
-    const inp = makeInput('input', allData, 'Line1, Line2, ...');
+    const inp = makeInput('input', allData, 'Global content...');
     inp.oninput = e => { allData = e.target.value; generate(); };
-    inp.addEventListener('focus', () => lastFocusedInput = inp);
     body.appendChild(inp);
     panel.appendChild(sec);
-
   } else if (viewTab === 'sel') {
     if (selectedIndices.size === 0) {
       const hint = el('div');
@@ -762,19 +662,37 @@ function renderLayerPanel() {
       hint.textContent = 'Click labels on the sheet to select.';
       panel.appendChild(hint);
     } else {
-      const sec = makeSection('override', 'Override Layer', `${selectedIndices.size} label(s)`);
+      const sec = makeSection('override', 'Override Layer', `${selectedIndices.size} selected`);
       const body = sec.querySelector('.layer-body');
       body.appendChild(lbl('OVERRIDE CONTENT'));
-      const ta = makeInput('textarea', '', 'Override selected labels...');
-      ta.rows = 3; ta.style.resize = 'none';
+      const ta = makeInput('textarea', '', 'Override content...');
+      ta.rows = 3;
       const arr = Array.from(selectedIndices);
-      ta.value = overrides[arr[0]] !== null ? overrides[arr[0]] : '';
-      ta.oninput = e => { selectedIndices.forEach(i => overrides[i] = e.target.value || null); generate(); };
-      ta.addEventListener('focus', () => lastFocusedInput = ta);
+      ta.value = overrides[arr[0]] || '';
+      ta.oninput = e => { selectedIndices.forEach(i => { if(e.target.value) overrides[i] = e.target.value; else delete overrides[i]; }); generate(); };
       body.appendChild(ta);
       panel.appendChild(sec);
     }
   }
+}
+
+function findAndReplace() {
+    const f = document.getElementById('findInput').value;
+    const r = document.getElementById('replaceInput').value;
+    if (!f) return;
+
+    const rep = (str) => str.split(f).join(r);
+
+    allData = rep(allData);
+    colData = colData.map(rep);
+    rowData = rowData.map(rep);
+    for (let key in overrides) {
+        overrides[key] = rep(overrides[key]);
+    }
+    
+    generate();
+    renderLayerPanel();
+    alert('Find and Replace complete across all pages.');
 }
 
 function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
@@ -788,74 +706,58 @@ function makeSection(type, title, desc) {
   return sec;
 }
 
-function getLabelContent(r, c) {
-  const idx = r * COLS + c;
-  if (overrides[idx] !== null) return overrides[idx];
+function getLabelContent(absoluteIdx, r, c) {
+  if (overrides[absoluteIdx]) return overrides[absoluteIdx];
   if (colData[c]) return colData[c];
   if (rowData[r]) return rowData[r];
   return allData;
 }
 
 function generate() {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const idx = r * COLS + c;
-      const div = el('div', 'label');
-      if (selectedIndices.has(idx)) div.classList.add('selected');
-      div.onclick = e => {
-        if (!e.shiftKey && !e.ctrlKey) selectedIndices.clear();
-        selectedIndices.has(idx) ? selectedIndices.delete(idx) : selectedIndices.add(idx);
-        if (selectedIndices.size > 0) setViewTab('sel');
-        else renderLayerPanel();
-        generate();
-      };
-      const val = getLabelContent(r, c);
-      div.innerHTML = val ? val.split(',').map(l => l.trim()).filter(Boolean).join('<br>') : '';
-      grid.appendChild(div);
+  const wrapper = document.getElementById('master-sheet-wrapper');
+  wrapper.innerHTML = '';
+  
+  for (let p = 0; p < pageCount; p++) {
+    const sheet = el('div', 'sheet');
+    sheet.setAttribute('data-page', p + 1);
+    const grid = el('div', 'grid');
+    if (document.getElementById('labelLinesToggle').checked) grid.classList.add('with-label-lines');
+    if (alignment === 'left') grid.classList.add('align-left');
+    
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const absIdx = (p * LABELS_PER_PAGE) + (r * COLS + c);
+        const div = el('div', 'label');
+        if (selectedIndices.has(absIdx)) div.classList.add('selected');
+        
+        div.onclick = e => {
+          if (!e.shiftKey && !e.ctrlKey) selectedIndices.clear();
+          selectedIndices.has(absIdx) ? selectedIndices.delete(absIdx) : selectedIndices.add(absIdx);
+          if (selectedIndices.size > 0) setViewTab('sel');
+          else renderLayerPanel();
+          generate();
+        };
+        
+        const val = getLabelContent(absIdx, r, c);
+        div.innerHTML = val ? val.split(',').map(l => l.trim()).filter(Boolean).join('<br>') : '';
+        grid.appendChild(div);
+      }
     }
+    sheet.appendChild(grid);
+    wrapper.appendChild(sheet);
   }
 }
 
 function updateFontSize() { document.documentElement.style.setProperty('--font-size', document.getElementById('fontSizeInput').value + 'px'); }
-function toggleLabelLines() { document.getElementById('grid').classList.toggle('with-label-lines', document.getElementById('labelLinesToggle').checked); }
-function toggleCutLines() { document.getElementById('grid').classList.toggle('with-cut-lines', document.getElementById('cutLinesToggle').checked); }
+function toggleLabelLines() { generate(); }
 function setAlignment() { applyAlignment(document.getElementById('alignToggle').checked ? 'left' : 'center'); }
 function applyAlignment(val) {
   alignment = val;
   document.getElementById('alignToggle').checked = val === 'left';
-  document.getElementById('grid').classList.toggle('align-left', val === 'left');
+  generate();
 }
 
-function checkPin() {
-  if (document.getElementById('pinInput').value === PIN) {
-    document.getElementById('calib-locked').style.display = 'none';
-    document.getElementById('calib-unlocked').style.display = 'block';
-    document.getElementById('pinError').style.display = 'none';
-  } else {
-    document.getElementById('pinError').style.display = 'block';
-    document.getElementById('pinInput').value = '';
-  }
-}
-function lockCalib() {
-  document.getElementById('calib-locked').style.display = 'block';
-  document.getElementById('calib-unlocked').style.display = 'none';
-  document.getElementById('pinInput').value = '';
-  document.getElementById('pinError').style.display = 'none';
-}
-function updateGrid() {
-  const g = id => document.getElementById(id);
-  const r = document.documentElement;
-  if (g('tMargin'))   r.style.setProperty('--top-margin',   g('tMargin').value   + 'mm');
-  if (g('lMargin'))   r.style.setProperty('--left-margin',  g('lMargin').value   + 'mm');
-  if (g('lblWidth'))  r.style.setProperty('--label-width',  g('lblWidth').value  + 'mm');
-  if (g('lblHeight')) r.style.setProperty('--label-height', g('lblHeight').value + 'mm');
-  if (g('colGap'))    r.style.setProperty('--col-gap',      g('colGap').value    + 'mm');
-  if (g('rowGap'))    r.style.setProperty('--row-gap',      g('rowGap').value    + 'mm');
-}
-
-function clearSelectedOverrides() { selectedIndices.forEach(i => overrides[i] = null); generate(); renderLayerPanel(); }
+function clearSelectedOverrides() { selectedIndices.forEach(i => delete overrides[i]); generate(); renderLayerPanel(); }
 function clearSelection() { selectedIndices.clear(); renderLayerPanel(); generate(); }
 
 function insertFormatting(tag) {
@@ -865,25 +767,13 @@ function insertFormatting(tag) {
   lastFocusedInput.dispatchEvent(new Event('input'));
 }
 
-function loadPremade(key) {
-  const d = PREMADE_TEMPLATES[key];
-  colData   = d.colData ? [...d.colData] : new Array(COLS).fill('');
-  rowData   = d.rowData ? [...d.rowData] : new Array(ROWS).fill('');
-  allData   = d.allData || '';
-  overrides = new Array(TOTAL).fill(null);
-  applyAlignment(d.alignment || 'center');
-  document.getElementById('fontSizeInput').value = d.fontSize || '12';
-  updateFontSize();
-  setViewTab(d.defaultTab || 'col');
-  generate();
-}
-
 function saveProject() {
-  const data = { colData, rowData, allData, overrides, alignment, fontSize: document.getElementById('fontSizeInput').value };
+  const data = { colData, rowData, allData, overrides, alignment, fontSize: document.getElementById('fontSizeInput').value, pageCount };
   const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = document.getElementById('docNameInput').value + '.json'; a.click();
 }
+
 function loadProject(event) {
   const reader = new FileReader();
   reader.onload = e => {
@@ -891,35 +781,41 @@ function loadProject(event) {
     colData   = d.colData   || new Array(COLS).fill('');
     rowData   = d.rowData   || new Array(ROWS).fill('');
     allData   = d.allData   || '';
-    overrides = d.overrides || new Array(TOTAL).fill(null);
+    overrides = d.overrides || {};
+    pageCount = d.pageCount || 1;
     applyAlignment(d.alignment || 'center');
     document.getElementById('fontSizeInput').value = d.fontSize || 12;
-    updateFontSize(); setViewTab('col'); generate();
+    document.getElementById('page-count-val').textContent = pageCount;
+    updateFontSize(); generate();
   };
   reader.readAsText(event.target.files[0]);
 }
 
 async function downloadPDF() {
   const btn = document.getElementById('btn-pdf');
-  btn.innerHTML = '⟳ Generating...'; btn.disabled = true;
+  btn.innerHTML = '⟳ Processing...'; btn.disabled = true;
   try {
-    const canvas = await html2canvas(document.querySelector('.sheet'), {scale:3, useCORS:true, backgroundColor:'#ffffff'});
     const pdf = new jspdf.jsPDF({unit:'mm', format:'a4'});
-    pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,210,297);
+    const sheets = document.querySelectorAll('.sheet');
+    
+    for (let i = 0; i < sheets.length; i++) {
+        if (i > 0) pdf.addPage();
+        const canvas = await html2canvas(sheets[i], {scale:3, useCORS:true, backgroundColor:'#ffffff'});
+        pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,210,297);
+    }
+    
     pdf.save(document.getElementById('docNameInput').value + '.pdf');
   } finally { btn.innerHTML = '↓ Export PDF'; btn.disabled = false; }
 }
-let zoomLevel = 100;
-function applyZoom() {
-  const wrapper = document.querySelector('.sheet-wrapper');
-  wrapper.style.transform = `scale(${zoomLevel / 100})`;
-  document.getElementById('zoom-label').textContent = zoomLevel + '%';
-}
+
 function adjustZoom(delta) {
-  zoomLevel = Math.min(200, Math.max(30, zoomLevel + delta));
+  zoomLevel = Math.min(150, Math.max(20, zoomLevel + delta));
   applyZoom();
 }
-function resetZoom() { zoomLevel = 100; applyZoom(); }
+function applyZoom() {
+  document.getElementById('master-sheet-wrapper').style.transform = `scale(${zoomLevel / 100})`;
+  document.getElementById('zoom-label').textContent = zoomLevel + '%';
+}
 
 </script>
 </body>
