@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Avery L6009 | Pro Label Editor</title>
-  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
   <style>
     :root {
-      /* Avery L6009 Dimensions */
       --top-margin: 16.8mm;
       --left-margin: 4.8mm;
       --label-width: 47mm;
@@ -16,416 +16,864 @@
       --col-gap: 4.4mm;
       --row-gap: 0.0mm;
       --font-size: 12px;
-      
-      /* Tech Theme Colors */
-      --accent-orange: #f97316;
-      --accent-hover: #ea580c;
-      --dark-bg: #111827;
-      --panel-bg: #1f2937;
-      --text-main: #f3f4f6;
+
+      --navy:        #2b4590;
+      --navy-dark:   #1e3270;
+      --navy-light:  #3a57a8;
+      --sky:         #1da1d8;
+      --sky-dim:     #1585b5;
+      --sky-glow:    rgba(29,161,216,0.12);
+      --cream:       #fffef5;
+      --cream-dark:  #f0efe4;
+
+      --bg:          #eeeee4;
+      --surface:     #ffffff;
+      --border:      #d8d7c8;
+      --border-mid:  #c4c3b4;
+      --text:        #1a2540;
+      --text-mid:    #4a5680;
+      --muted:       #8a90a8;
+      --success:     #16a34a;
     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
+      font-family: 'Barlow', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      background: linear-gradient(135deg, #000000 0%, #1a1a1a 40%, #431407 100%);
-      color: var(--text-main);
+      overflow-x: hidden;
     }
-    
-    .main-layout {
+
+    .topbar {
+      background: var(--navy);
+      padding: 0 32px;
+      height: 52px;
       display: flex;
-      flex-direction: row;
-      gap: 40px;
-      justify-content: center;
-      align-items: flex-start;
-    }
-
-    /* UI Sidebar */
-    .ui-controls {
-      background: var(--panel-bg);
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      align-items: center;
+      gap: 20px;
       position: sticky;
-      top: 20px;
-      width: 350px;
-      max-height: 90vh;
-      overflow-y: auto;
-      border: 1px solid #374151;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 16px rgba(30,50,112,0.35);
     }
-
-    h2 {
-      color: var(--accent-orange);
+    .topbar-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
       font-size: 22px;
-      margin-bottom: 20px;
-      letter-spacing: -0.5px;
+      letter-spacing: 3px;
+      color: #fff;
+      text-transform: uppercase;
+    }
+    .topbar-logo span { color: var(--sky); }
+    .topbar-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 1px;
+    }
+    .topbar-spacer { flex: 1; }
+    .topbar-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 4px 10px;
+      border-radius: 4px;
+      color: rgba(255,255,255,0.5);
     }
 
-    .ui-controls button {
-      display: block;
-      width: 100%;
-      margin: 8px 0;
-      padding: 12px;
+    .app-body {
+      display: flex;
+      height: calc(100vh - 52px);
+      overflow: hidden;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 340px;
+      min-width: 340px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 2px 0 20px rgba(43,69,144,0.08);
+    }
+    .sidebar-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+    .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-scroll::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border);
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--cream);
+    }
+
+    .card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
+    }
+    .card-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--navy);
+      margin-bottom: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .dot {
+      width: 6px; height: 6px;
+      background: var(--sky);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .tab-row {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 13px;
+      background: var(--border);
+      padding: 3px;
+      border-radius: 7px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 7px 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      border-radius: 5px;
       cursor: pointer;
-      background-color: var(--accent-orange);
-      color: white;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { color: var(--text); background: var(--cream-dark); }
+    .tab-btn.active { background: var(--navy); color: #fff; }
+
+    .layer-panel { display: flex; flex-direction: column; gap: 10px; }
+    .layer-section {
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .layer-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      background: var(--cream-dark);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--text-mid);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .layer-indicator { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+    .layer-col .layer-indicator   { background: var(--navy); }
+    .layer-row .layer-indicator   { background: #7c3aed; }
+    .layer-all .layer-indicator   { background: var(--sky); }
+    .layer-override .layer-indicator { background: var(--success); }
+    .layer-body { padding: 10px; }
+    .layer-sub-inputs { display: flex; flex-direction: column; gap: 6px; }
+    .layer-sub-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+    }
+
+    .inp {
+      background: var(--surface);
+      border: 1px solid var(--border-mid);
+      border-radius: 5px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 8px 10px;
+      width: 100%;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      resize: none;
+    }
+    .inp:focus { outline: none; border-color: var(--sky); box-shadow: 0 0 0 3px var(--sky-glow); }
+    .inp::placeholder { color: var(--muted); }
+    .inp.sm { padding: 6px 8px; font-size: 11px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
       border: none;
       border-radius: 6px;
-      font-weight: 600;
-      transition: all 0.2s ease;
+      cursor: pointer;
+      transition: all 0.15s;
     }
-    
-    .ui-controls button:hover { 
-      background-color: var(--accent-hover);
-      transform: translateY(-1px);
+    .btn-primary { background: var(--navy); color: white; }
+    .btn-primary:hover { background: var(--navy-dark); }
+    .btn-sky { background: var(--sky); color: white; }
+    .btn-sky:hover { background: var(--sky-dim); box-shadow: 0 4px 14px rgba(29,161,216,0.35); }
+    .btn-ghost {
+      background: var(--cream-dark);
+      border: 1px solid var(--border-mid);
+      color: var(--text-mid);
+    }
+    .btn-ghost:hover { border-color: var(--sky); color: var(--navy); background: var(--sky-glow); }
+    .btn-danger { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
+    .btn-danger:hover { background: #fecaca; }
+    .btn-full { width: 100%; }
+    .btn-sm { padding: 6px 10px; font-size: 11px; }
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label { font-size: 13px; color: var(--text); }
+    .toggle { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--border-mid);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle input:checked + .toggle-track { background: var(--sky); }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+      background: white;
+      border-radius: 50%;
+      top: 3px; left: 3px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .toggle input:checked + .toggle-track::after { transform: translateX(16px); }
+
+    .font-controls { display: flex; align-items: center; gap: 8px; }
+    .font-controls .size-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+    .font-controls input { width: 56px; text-align: center; }
+
+    .template-grid { display: flex; flex-direction: column; gap: 6px; }
+    .template-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .template-item:hover { border-color: var(--sky); background: var(--sky-glow); }
+    .template-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 1px; color: var(--navy); }
+    .template-desc { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .template-arrow { color: var(--sky); font-size: 18px; }
+
+    /* PREVIEW */
+    .preview-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .preview-header {
+      background: var(--navy-dark);
+      padding: 0 28px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+    .preview-header-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+    }
+    .preview-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      background: rgba(29,161,216,0.18);
+      border: 1px solid rgba(29,161,216,0.35);
+      color: #7dd3fc;
+    }
+    .preview-info {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.28);
+    }
+    .preview-header-spacer { flex: 1; }
+    .preview-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 6px #4ade80;
     }
 
-    .ui-controls .secondary-btn { 
-      background-color: #374151; 
-      color: #d1d5db;
+    .preview-canvas {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px;
+      background: var(--bg);
     }
-    .ui-controls .secondary-btn:hover { background-color: #4b5563; }
+    .preview-canvas::-webkit-scrollbar { width: 8px; height: 8px; }
+    .preview-canvas::-webkit-scrollbar-track { background: transparent; }
+    .preview-canvas::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
 
-    .ui-controls .danger-btn { 
-      background-color: #7f1d1d; 
-    }
-    .ui-controls .danger-btn:hover { background-color: #991b1b; }
-
-    /* Inputs */
-    .data-input, .tool-input {
-      background: #111827;
-      border: 1px solid #374151;
-      color: white;
-      padding: 10px;
-      border-radius: 6px;
-      width: 100%;
-      box-sizing: border-box;
-      margin-bottom: 12px;
-    }
-
-    .data-input:focus {
-      outline: 2px solid var(--accent-orange);
-      border-color: transparent;
-    }
-
-    /* Label Page Container */
+    .sheet-wrapper { display: flex; flex-direction: column; align-items: center; }
     .sheet {
       width: 210mm;
       height: 297mm;
       background: white;
-      box-shadow: 0 0 40px rgba(0,0,0,0.6);
+      box-shadow: 0 8px 40px rgba(43,69,144,0.16), 0 2px 8px rgba(43,69,144,0.08);
       position: relative;
-      box-sizing: border-box; 
+      box-sizing: border-box;
       flex-shrink: 0;
     }
-
-    /* Grid Setup */
     .grid {
       position: absolute;
-      top: var(--top-margin);     
-      left: var(--left-margin);      
+      top: var(--top-margin);
+      left: var(--left-margin);
       display: grid;
-      grid-template-columns: repeat(4, var(--label-width)); 
-      grid-auto-rows: var(--label-height);                   
-      column-gap: var(--col-gap);                         
-      row-gap: var(--row-gap);                           
+      grid-template-columns: repeat(4, var(--label-width));
+      grid-auto-rows: var(--label-height);
+      column-gap: var(--col-gap);
+      row-gap: var(--row-gap);
     }
-
     .label {
       display: flex;
       flex-direction: column;
-      align-items: center;    
-      justify-content: center; 
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      color: #333;
-      box-sizing: border-box; 
+      color: #1a1a1a;
+      box-sizing: border-box;
       border: 1px solid transparent;
-      overflow: hidden; 
-      padding: 3.5mm; 
-      position: relative; 
+      overflow: hidden;
+      padding: 3.5mm;
+      position: relative;
       cursor: crosshair;
       font-size: var(--font-size);
+      transition: background 0.1s;
+      line-height: 1.4;
     }
-
-    .label:hover { background-color: #f0f9ff; }
-    .grid.with-label-lines .label { border: 1px solid #e5e7eb; }
+    .label:hover { background-color: #dff0f9; }
+    .grid.with-label-lines .label { border: 1px solid #cdd6e8; }
     .grid.align-left .label { align-items: flex-start; text-align: left; }
-
     .label.selected {
-      background-color: #fff7ed;
-      border: 2px solid var(--accent-orange) !important;
+      background-color: #dbeafe !important;
+      border: 1.5px solid var(--sky) !important;
       z-index: 10;
     }
-
     .grid.with-cut-lines .label::after {
       content: '';
       position: absolute;
       top: 1mm; left: 1mm; right: 1mm; bottom: 1mm;
-      border: 0.5px dashed #fb923c;
-      pointer-events: none; 
+      border: 0.5px dashed var(--sky);
+      pointer-events: none;
     }
 
-    /* Custom Scrollbar */
-    .ui-controls::-webkit-scrollbar { width: 8px; }
-    .ui-controls::-webkit-scrollbar-track { background: var(--panel-bg); }
-    .ui-controls::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+    .pin-gate { display: flex; flex-direction: column; gap: 8px; }
+    .pin-row { display: flex; gap: 8px; }
+    .pin-error { color: #dc2626; font-size: 11px; font-family: 'DM Mono', monospace; display: none; }
+
+    .calib-section {
+      border-top: 1px solid var(--border);
+      padding: 14px 18px;
+      background: var(--cream);
+    }
+    .calib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .calib-field label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      display: block;
+      margin-bottom: 3px;
+    }
 
     @media print {
       @page { size: A4; margin: 0; }
-      body { background: white; padding: 0; }
-      .ui-controls { display: none !important; }
-      .sheet { box-shadow: none; margin: 0; }
+      body { background: white; }
+      .sidebar, .topbar, .preview-header { display: none !important; }
+      .app-body { height: auto; }
+      .preview-area { overflow: visible; }
+      .preview-canvas { padding: 0; }
+      .sheet { box-shadow: none; }
     }
   </style>
 </head>
 <body>
 
-<div class="main-layout">
-  
-  <div class="sheet">
-    <div class="grid with-label-lines" id="grid"></div>
+<div class="topbar">
+  <div class="topbar-logo">L<span>6009</span></div>
+  <div class="topbar-sub">AVERY LABEL EDITOR</div>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-badge">A4 · 4×12 · 48 LABELS</div>
+</div>
+
+<div class="app-body">
+
+  <aside class="sidebar">
+    <div class="sidebar-scroll">
+
+      <!-- TEMPLATES -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Templates</div>
+        <div class="template-grid">
+          <div class="template-item" onclick="loadPremade('WFI_TUBING_LABELS')">
+            <div>
+              <div class="template-name">WFI Tubing</div>
+              <div class="template-desc">4-col · left-align · size 11</div>
+            </div>
+            <div class="template-arrow">→</div>
+          </div>
+          <div class="template-item" onclick="loadPremade('MAS_HEAD_LABELS')">
+            <div>
+              <div class="template-name">MAS Heads</div>
+              <div class="template-desc">all · left-align · size 11</div>
+            </div>
+            <div class="template-arrow">→</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENT LAYERS -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Content Layers</div>
+        <div class="tab-row">
+          <button class="tab-btn active" id="tab-col" onclick="setViewTab('col')">Cols</button>
+          <button class="tab-btn" id="tab-row" onclick="setViewTab('row')">Rows</button>
+          <button class="tab-btn" id="tab-all" onclick="setViewTab('all')">All</button>
+          <button class="tab-btn" id="tab-sel" onclick="setViewTab('sel')">Sel</button>
+        </div>
+        <div class="layer-panel" id="layer-panel"></div>
+      </div>
+
+      <!-- TEXT FORMAT -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Text Format</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:13px;">
+          <div class="font-controls">
+            <span class="size-label">Size</span>
+            <input type="number" id="fontSizeInput" value="12" class="inp sm" oninput="updateFontSize()">
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('b')"><b>B</b></button>
+          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('i')"><i>I</i></button>
+          <button class="btn btn-ghost btn-sm" onclick="insertFormatting('u')"><u>U</u></button>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Left Align</span>
+          <label class="toggle"><input type="checkbox" id="alignToggle" onchange="setAlignment()"><div class="toggle-track"></div></label>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Grid Guides</span>
+          <label class="toggle"><input type="checkbox" id="labelLinesToggle" checked onchange="toggleLabelLines()"><div class="toggle-track"></div></label>
+        </div>
+        <div class="toggle-row">
+          <span class="toggle-label">Cut Lines</span>
+          <label class="toggle"><input type="checkbox" id="cutLinesToggle" onchange="toggleCutLines()"><div class="toggle-track"></div></label>
+        </div>
+      </div>
+
+      <!-- SELECTION -->
+      <div class="card" id="sel-card" style="display:none;">
+        <div class="card-title"><div class="dot" style="background:#16a34a"></div>Selection</div>
+        <div id="sel-info" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:10px;"></div>
+        <button class="btn btn-ghost btn-full btn-sm" onclick="clearSelectedOverrides()">↺ Reset to Base</button>
+        <div style="margin-top:7px;">
+          <button class="btn btn-ghost btn-full btn-sm" onclick="clearSelection()">✕ Deselect All</button>
+        </div>
+      </div>
+
+      <!-- PROJECT -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Project</div>
+        <input type="text" id="docNameInput" class="inp" value="Avery_L6009_Labels" placeholder="Filename...">
+        <div style="height:8px;"></div>
+        <div class="btn-grid">
+          <button class="btn btn-ghost" onclick="saveProject()">Save JSON</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('loadProjectFile').click()">Load JSON</button>
+        </div>
+        <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)">
+      </div>
+
+    </div>
+
+    <!-- GRID CALIBRATION — PIN LOCKED -->
+    <div class="calib-section">
+      <div id="calib-locked">
+        <div class="pin-gate">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">🔒 GRID CALIBRATION</div>
+          <div class="pin-row">
+            <input type="password" id="pinInput" class="inp sm" placeholder="Enter PIN..." maxlength="4" style="flex:1;" onkeydown="if(event.key==='Enter')checkPin()">
+            <button class="btn btn-ghost btn-sm" onclick="checkPin()">Unlock</button>
+          </div>
+          <div class="pin-error" id="pinError">Incorrect PIN</div>
+        </div>
+      </div>
+      <div id="calib-unlocked" style="display:none;">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--sky);letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+          <span>🔓 GRID CALIBRATION</span>
+          <button class="btn btn-ghost btn-sm" onclick="lockCalib()" style="padding:3px 8px;font-size:9px;">Lock</button>
+        </div>
+        <div class="calib-grid">
+          <div class="calib-field"><label>TOP MARGIN (mm)</label><input type="number" id="tMargin" value="16.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+          <div class="calib-field"><label>LEFT MARGIN (mm)</label><input type="number" id="lMargin" value="4.8" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+          <div class="calib-field"><label>LABEL WIDTH (mm)</label><input type="number" id="lblWidth" value="47" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+          <div class="calib-field"><label>LABEL HEIGHT (mm)</label><input type="number" id="lblHeight" value="22.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+          <div class="calib-field"><label>COL GAP (mm)</label><input type="number" id="colGap" value="4.4" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+          <div class="calib-field"><label>ROW GAP (mm)</label><input type="number" id="rowGap" value="0" step="0.1" class="inp sm" oninput="updateGrid()"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="sidebar-footer">
+      <button class="btn btn-sky btn-full" id="btn-pdf" onclick="downloadPDF()">↓ Export PDF</button>
+      <button class="btn btn-danger btn-sm btn-full" onclick="resetApp()">↺ Reset All</button>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-align:center;letter-spacing:1px;">TECH-SPEC v3.0 · DARVIN MAGUNDAYAO</div>
+    </div>
+  </aside>
+
+  <!-- PREVIEW -->
+  <div class="preview-area">
+    <div class="preview-header">
+      <div class="preview-header-title">Sheet Preview</div>
+      <div class="preview-badge">L6009 · A4</div>
+      <div class="preview-info">210mm × 297mm &nbsp;·&nbsp; 4 cols × 12 rows</div>
+      <div class="preview-header-spacer"></div>
+      <div id="preview-sel-badge" style="display:none;">
+        <span class="preview-badge" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.4);color:#4ade80;" id="sel-badge-text"></span>
+      </div>
+      <div class="preview-status"><div class="status-dot"></div><span>Ready</span></div>
+    </div>
+    <div class="preview-canvas">
+      <div class="sheet-wrapper">
+        <div class="sheet">
+          <div class="grid with-label-lines" id="grid"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="ui-controls">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <h2>AVERY L6009 EDITOR</h2>
-      <button onclick="resetApp()" class="danger-btn" style="width: auto; margin: 0; padding: 6px 12px; font-size: 11px;">RESET</button>
-    </div>
-
-    <details style="margin-bottom: 20px; background: #2d3748; padding: 12px; border-radius: 8px;">
-      <summary style="cursor: pointer; font-size: 13px; font-weight: bold; color: var(--accent-orange);">PRESET TEMPLATES</summary>
-      <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
-        <button onclick="loadPremade('WFI_TUBING_LABELS')" class="secondary-btn" style="padding: 6px; font-size: 11px;">WFI</button>
-        <button onclick="loadPremade('MAS_HEAD_LABELS')" class="secondary-btn" style="padding: 6px; font-size: 11px;">MAS HEADS</button>
-      </div>
-    </details>
-
-    <label style="font-weight: bold; font-size: 12px; color: #9ca3af; text-transform: uppercase;">1. Layout Mode</label>
-    <div style="display: flex; gap: 8px; margin: 10px 0 20px 0;">
-      <button id="btn-col" class="secondary-btn" onclick="setBaseMode('column')">Cols</button>
-      <button id="btn-row" class="secondary-btn" onclick="setBaseMode('row')">Rows</button>
-      <button id="btn-all" class="secondary-btn" onclick="setBaseMode('all')">All</button>
-    </div>
-
-    <label style="font-weight: bold; font-size: 12px; color: #9ca3af; text-transform: uppercase;">2. Content</label>
-    <div style="display: flex; gap: 8px; margin: 10px 0; align-items: center;">
-      <span style="font-size: 14px;">Size:</span>
-      <input type="number" id="fontSizeInput" value="12" style="width: 60px;" class="tool-input" oninput="updateFontSize()">
-      <button class="secondary-btn" style="width: 40px;" onclick="insertFormatting('b')">B</button>
-      <button class="secondary-btn" style="width: 40px;" onclick="insertFormatting('i')">I</button>
-    </div>
-
-    <div id="dynamic-inputs"></div>
-
-    <hr style="border: 0; border-top: 1px solid #374151; margin: 20px 0;">
-
-    <button class="secondary-btn" onclick="toggleAlignment()">Toggle Center / Left</button>
-    
-    <div style="margin: 15px 0; padding: 12px; background: #111827; border-radius: 8px;">
-      <label style="cursor: pointer; font-size: 13px; display: block; margin-bottom: 8px;">
-        <input type="checkbox" id="labelLinesToggle" checked onchange="toggleLabelLines()"> Show Grid Guides
-      </label>
-      <label style="cursor: pointer; font-size: 13px; display: block;">
-        <input type="checkbox" id="cutLinesToggle" onchange="toggleCutLines()"> Show Cut Lines
-      </label>
-    </div>
-
-    <details style="margin-bottom: 20px;">
-      <summary style="cursor: pointer; font-size: 13px; color: #9ca3af;">Grid Calibration</summary>
-      <div style="padding-top: 10px; font-size: 12px;">
-        Top: <input type="number" id="tMargin" value="16.8" step="0.1" class="tool-input" oninput="updateGrid()">
-        Left: <input type="number" id="lMargin" value="4.8" step="0.1" class="tool-input" oninput="updateGrid()">
-      </div>
-    </details>
-
-    <input type="text" id="docNameInput" class="tool-input" value="Avery_L6009_Labels" placeholder="Filename...">
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-      <button onclick="saveProject()" class="secondary-btn">SAVE JSON</button>
-      <button onclick="document.getElementById('loadProjectFile').click()" class="secondary-btn">LOAD JSON</button>
-    </div>
-    <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)">
-
-    <button id="btn-pdf" onclick="downloadPDF()" style="margin-top: 15px; background: linear-gradient(to right, #f97316, #ea580c); font-size: 16px;">EXPORT PDF</button>
-
-    <div style="text-align: center; color: #FFFFFF; margin-top: 20px; font-size: 10px; letter-spacing: 1px;">
-      TECH-SPEC v2.0 | DARVIN MAGUNDAYAO
-    </div>
-  </div>
 </div>
 
 <script>
-const ROWS = 12; 
-const COLS = 4;
-const TOTAL_LABELS = ROWS * COLS;
+const ROWS = 12, COLS = 4, TOTAL = ROWS * COLS;
+const PIN = '2003';
 
-let baseMode = 'column'; 
-let alignment = 'center';
-let selectedIndices = new Set();
-let lastFocusedInput = null;
-
+let viewTab = 'col', alignment = 'center';
+let selectedIndices = new Set(), lastFocusedInput = null;
 let colData = new Array(COLS).fill('');
 let rowData = new Array(ROWS).fill('');
 let allData = '';
-let overrides = new Array(TOTAL_LABELS).fill(null);
+let overrides = new Array(TOTAL).fill(null);
 
 const PREMADE_TEMPLATES = {
-  'WFI_TUBING_LABELS': {
-    "baseMode": "column",
-    "alignment": "left",
-    "colData": ["WFI, CYCLE #:, DATE:, EXPIRY:", "WFI, CYCLE #:, DATE:, EXPIRY:", "WFI, CYCLE #:, DATE:, EXPIRY:", "WFI, CYCLE #:, DATE:, EXPIRY:"],
-    "textFormat": { "size": "11" }
+  WFI_TUBING_LABELS: {
+    colData: ["WFI, CYCLE #:, DATE:, EXPIRY:","WFI, CYCLE #:, DATE:, EXPIRY:","WFI, CYCLE #:, DATE:, EXPIRY:","WFI, CYCLE #:, DATE:, EXPIRY:"],
+    rowData: new Array(ROWS).fill(''), allData: '', alignment: 'left', fontSize: '11', defaultTab: 'col'
   },
-  'MAS_HEAD_LABELS': {
-    "baseMode": "all",
-    "alignment": "left",
-    "allData": "MAS HEADS, ITEM:, DATE:, EXPIRY:",
-    "textFormat": { "size": "11" }
+  MAS_HEAD_LABELS: {
+    colData: new Array(COLS).fill(''), rowData: new Array(ROWS).fill(''),
+    allData: "MAS HEADS, ITEM:, DATE:, EXPIRY:", alignment: 'left', fontSize: '11', defaultTab: 'all'
   }
 };
 
 initApp();
 
 function initApp() {
-  renderInputs();
+  renderLayerPanel();
   generate();
-  updateGrid();
-  document.addEventListener('focusin', e => {
-    if(e.target.classList.contains('data-input')) lastFocusedInput = e.target;
-  });
+  document.addEventListener('focusin', e => { if (e.target.classList.contains('inp')) lastFocusedInput = e.target; });
 }
 
-function renderInputs() {
-  const container = document.getElementById('dynamic-inputs');
-  container.innerHTML = '';
-  
+function resetApp() {
+  if (!confirm('Clear all data and reset to defaults?')) return;
+  viewTab = 'col'; alignment = 'center';
+  selectedIndices = new Set(); lastFocusedInput = null;
+  colData = new Array(COLS).fill('');
+  rowData = new Array(ROWS).fill('');
+  allData = ''; overrides = new Array(TOTAL).fill(null);
+  document.getElementById('fontSizeInput').value = 12;
+  updateFontSize();
+  applyAlignment('center');
+  document.getElementById('labelLinesToggle').checked = true;
+  document.getElementById('cutLinesToggle').checked = false;
+  document.getElementById('grid').classList.add('with-label-lines');
+  document.getElementById('grid').classList.remove('with-cut-lines');
+  document.getElementById('docNameInput').value = 'Avery_L6009_Labels';
+  setViewTab('col');
+  generate();
+}
+
+function setViewTab(tab) {
+  viewTab = tab;
+  ['col','row','all','sel'].forEach(t => document.getElementById('tab-'+t).classList.toggle('active', t === tab));
+  renderLayerPanel();
+}
+
+function renderLayerPanel() {
+  const panel = document.getElementById('layer-panel');
+  panel.innerHTML = '';
+  const selCard = document.getElementById('sel-card');
+  const selBadge = document.getElementById('preview-sel-badge');
   if (selectedIndices.size > 0) {
-    container.innerHTML = `<h4 style="color:var(--accent-orange); font-size:12px;">EDITING SELECTION (${selectedIndices.size})</h4>
-      <textarea id="ind_input" class="data-input" rows="3"></textarea>
-      <button class="secondary-btn" style="font-size:10px; padding:4px;" onclick="clearSelectedOverrides()">Reset to Base</button>`;
-    
-    const indInput = document.getElementById('ind_input');
-    let arr = Array.from(selectedIndices);
-    indInput.value = overrides[arr[0]] || '';
-    indInput.oninput = (e) => {
-      selectedIndices.forEach(idx => overrides[idx] = e.target.value);
-      generate();
-    };
+    selCard.style.display = 'block';
+    document.getElementById('sel-info').textContent = `${selectedIndices.size} label(s) selected`;
+    selBadge.style.display = 'block';
+    document.getElementById('sel-badge-text').textContent = `${selectedIndices.size} selected`;
   } else {
-    let inputs = baseMode === 'column' ? COLS : (baseMode === 'row' ? ROWS : 1);
-    for (let i = 0; i < inputs; i++) {
-      const input = document.createElement('input');
-      input.className = "data-input";
-      input.value = baseMode === 'all' ? allData : (baseMode === 'column' ? colData[i] : rowData[i]);
-      input.placeholder = `${baseMode.toUpperCase()} ${i+1} Text...`;
-      input.oninput = (e) => {
-        if (baseMode === 'all') allData = e.target.value;
-        else if (baseMode === 'column') colData[i] = e.target.value;
-        else rowData[i] = e.target.value;
-        generate();
-      };
-      container.appendChild(input);
+    selCard.style.display = 'none';
+    selBadge.style.display = 'none';
+  }
+
+  if (viewTab === 'col') {
+    const sec = makeSection('col', 'Column Layer', 'Per column');
+    const sub = el('div', 'layer-sub-inputs');
+    for (let c = 0; c < COLS; c++) {
+      const w = el('div'); w.appendChild(lbl(`COL ${c+1}`));
+      const inp = makeInput('input', colData[c], 'Line1, Line2, ...');
+      inp.oninput = e => { colData[c] = e.target.value; generate(); };
+      inp.addEventListener('focus', () => lastFocusedInput = inp);
+      w.appendChild(inp); sub.appendChild(w);
+    }
+    sec.querySelector('.layer-body').appendChild(sub);
+    panel.appendChild(sec);
+
+  } else if (viewTab === 'row') {
+    const sec = makeSection('row', 'Row Layer', 'Per row');
+    const sub = el('div', 'layer-sub-inputs');
+    for (let r = 0; r < ROWS; r++) {
+      const w = el('div'); w.appendChild(lbl(`ROW ${r+1}`));
+      const inp = makeInput('input', rowData[r], 'Line1, Line2, ...');
+      inp.oninput = e => { rowData[r] = e.target.value; generate(); };
+      inp.addEventListener('focus', () => lastFocusedInput = inp);
+      w.appendChild(inp); sub.appendChild(w);
+    }
+    sec.querySelector('.layer-body').appendChild(sub);
+    panel.appendChild(sec);
+
+  } else if (viewTab === 'all') {
+    const sec = makeSection('all', 'Global Layer', 'All labels');
+    const body = sec.querySelector('.layer-body');
+    body.appendChild(lbl('ALL LABELS'));
+    const inp = makeInput('input', allData, 'Line1, Line2, ...');
+    inp.oninput = e => { allData = e.target.value; generate(); };
+    inp.addEventListener('focus', () => lastFocusedInput = inp);
+    body.appendChild(inp);
+    panel.appendChild(sec);
+
+  } else if (viewTab === 'sel') {
+    if (selectedIndices.size === 0) {
+      const hint = el('div');
+      hint.style.cssText = 'font-family:"DM Mono",monospace;font-size:11px;color:var(--muted);padding:8px 0;';
+      hint.textContent = 'Click labels on the sheet to select.';
+      panel.appendChild(hint);
+    } else {
+      const sec = makeSection('override', 'Override Layer', `${selectedIndices.size} label(s)`);
+      const body = sec.querySelector('.layer-body');
+      body.appendChild(lbl('OVERRIDE CONTENT'));
+      const ta = makeInput('textarea', '', 'Override selected labels...');
+      ta.rows = 3; ta.style.resize = 'none';
+      const arr = Array.from(selectedIndices);
+      ta.value = overrides[arr[0]] !== null ? overrides[arr[0]] : '';
+      ta.oninput = e => { selectedIndices.forEach(i => overrides[i] = e.target.value || null); generate(); };
+      ta.addEventListener('focus', () => lastFocusedInput = ta);
+      body.appendChild(ta);
+      panel.appendChild(sec);
     }
   }
 }
 
+function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
+function lbl(text) { const d = el('div','layer-sub-label'); d.textContent = text; return d; }
+function makeInput(tag, val, ph) {
+  const i = el(tag, 'inp sm'); i.value = val; i.placeholder = ph; return i;
+}
+function makeSection(type, title, desc) {
+  const sec = el('div', `layer-section layer-${type}`);
+  sec.innerHTML = `<div class="layer-header"><div class="layer-indicator"></div><span>${title}</span><span style="margin-left:auto;opacity:0.5;font-size:9px;">${desc}</span></div><div class="layer-body"></div>`;
+  return sec;
+}
+
+function getLabelContent(r, c) {
+  const idx = r * COLS + c;
+  if (overrides[idx] !== null) return overrides[idx];
+  if (colData[c]) return colData[c];
+  if (rowData[r]) return rowData[r];
+  return allData;
+}
+
 function generate() {
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
-      let index = r * COLS + c;
-      const div = document.createElement("div");
-      div.className = "label";
-      if (selectedIndices.has(index)) div.classList.add('selected');
-      div.onclick = (e) => {
+      const idx = r * COLS + c;
+      const div = el('div', 'label');
+      if (selectedIndices.has(idx)) div.classList.add('selected');
+      div.onclick = e => {
         if (!e.shiftKey && !e.ctrlKey) selectedIndices.clear();
-        selectedIndices.has(index) ? selectedIndices.delete(index) : selectedIndices.add(index);
-        renderInputs(); generate();
+        selectedIndices.has(idx) ? selectedIndices.delete(idx) : selectedIndices.add(idx);
+        if (selectedIndices.size > 0) setViewTab('sel');
+        else renderLayerPanel();
+        generate();
       };
-      
-      let val = overrides[index] !== null ? overrides[index] : (baseMode === 'column' ? colData[c] : (baseMode === 'row' ? rowData[r] : allData));
-      div.innerHTML = val ? val.split(',').map(l => l.trim()).join('<br>') : '';
+      const val = getLabelContent(r, c);
+      div.innerHTML = val ? val.split(',').map(l => l.trim()).filter(Boolean).join('<br>') : '';
       grid.appendChild(div);
     }
   }
 }
 
 function updateFontSize() { document.documentElement.style.setProperty('--font-size', document.getElementById('fontSizeInput').value + 'px'); }
-function toggleLabelLines() { document.getElementById("grid").classList.toggle('with-label-lines', document.getElementById('labelLinesToggle').checked); }
-function toggleCutLines() { document.getElementById("grid").classList.toggle('with-cut-lines', document.getElementById('cutLinesToggle').checked); }
-function toggleAlignment() { 
-  alignment = alignment === 'center' ? 'left' : 'center';
-  document.getElementById("grid").classList.toggle('align-left', alignment === 'left');
+function toggleLabelLines() { document.getElementById('grid').classList.toggle('with-label-lines', document.getElementById('labelLinesToggle').checked); }
+function toggleCutLines() { document.getElementById('grid').classList.toggle('with-cut-lines', document.getElementById('cutLinesToggle').checked); }
+function setAlignment() { applyAlignment(document.getElementById('alignToggle').checked ? 'left' : 'center'); }
+function applyAlignment(val) {
+  alignment = val;
+  document.getElementById('alignToggle').checked = val === 'left';
+  document.getElementById('grid').classList.toggle('align-left', val === 'left');
+}
+
+function checkPin() {
+  if (document.getElementById('pinInput').value === PIN) {
+    document.getElementById('calib-locked').style.display = 'none';
+    document.getElementById('calib-unlocked').style.display = 'block';
+    document.getElementById('pinError').style.display = 'none';
+  } else {
+    document.getElementById('pinError').style.display = 'block';
+    document.getElementById('pinInput').value = '';
+  }
+}
+function lockCalib() {
+  document.getElementById('calib-locked').style.display = 'block';
+  document.getElementById('calib-unlocked').style.display = 'none';
+  document.getElementById('pinInput').value = '';
+  document.getElementById('pinError').style.display = 'none';
 }
 function updateGrid() {
-  const root = document.documentElement;
-  root.style.setProperty('--top-margin', document.getElementById('tMargin').value + 'mm');
-  root.style.setProperty('--left-margin', document.getElementById('lMargin').value + 'mm');
+  const g = id => document.getElementById(id);
+  const r = document.documentElement;
+  if (g('tMargin'))   r.style.setProperty('--top-margin',   g('tMargin').value   + 'mm');
+  if (g('lMargin'))   r.style.setProperty('--left-margin',  g('lMargin').value   + 'mm');
+  if (g('lblWidth'))  r.style.setProperty('--label-width',  g('lblWidth').value  + 'mm');
+  if (g('lblHeight')) r.style.setProperty('--label-height', g('lblHeight').value + 'mm');
+  if (g('colGap'))    r.style.setProperty('--col-gap',      g('colGap').value    + 'mm');
+  if (g('rowGap'))    r.style.setProperty('--row-gap',      g('rowGap').value    + 'mm');
 }
 
-function setBaseMode(mode) {
-  baseMode = mode;
-  selectedIndices.clear();
-  renderInputs();
-  generate();
-}
-
-function clearSelectedOverrides() {
-  selectedIndices.forEach(idx => overrides[idx] = null);
-  generate(); renderInputs();
-}
+function clearSelectedOverrides() { selectedIndices.forEach(i => overrides[i] = null); generate(); renderLayerPanel(); }
+function clearSelection() { selectedIndices.clear(); renderLayerPanel(); generate(); }
 
 function insertFormatting(tag) {
-  if(!lastFocusedInput) return;
-  const start = lastFocusedInput.selectionStart, end = lastFocusedInput.selectionEnd, text = lastFocusedInput.value;
-  lastFocusedInput.value = text.substring(0, start) + `<${tag}>` + text.substring(start, end) + `</${tag}>` + text.substring(end);
+  if (!lastFocusedInput) return;
+  const s = lastFocusedInput.selectionStart, e = lastFocusedInput.selectionEnd, t = lastFocusedInput.value;
+  lastFocusedInput.value = t.substring(0,s) + `<${tag}>` + t.substring(s,e) + `</${tag}>` + t.substring(e);
   lastFocusedInput.dispatchEvent(new Event('input'));
-}
-
-function resetApp() { if(confirm("Clear all?")) location.reload(); }
-
-function saveProject() {
-  const data = { colData, rowData, allData, overrides, baseMode, alignment, fontSize: document.getElementById('fontSizeInput').value };
-  const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = document.getElementById('docNameInput').value + ".json";
-  a.click();
-}
-
-function loadProject(event) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    const d = JSON.parse(e.target.result);
-    colData = d.colData; rowData = d.rowData; allData = d.allData; overrides = d.overrides;
-    baseMode = d.baseMode; alignment = d.alignment;
-    document.getElementById('fontSizeInput').value = d.fontSize || 12;
-    updateFontSize(); setBaseMode(baseMode);
-  };
-  reader.readAsText(event.target.files[0]);
 }
 
 function loadPremade(key) {
   const d = PREMADE_TEMPLATES[key];
-  if(d.colData) colData = d.colData;
-  if(d.allData) allData = d.allData;
-  baseMode = d.baseMode; alignment = d.alignment;
-  document.getElementById('fontSizeInput').value = d.textFormat.size;
-  updateFontSize(); setBaseMode(baseMode);
+  colData   = d.colData ? [...d.colData] : new Array(COLS).fill('');
+  rowData   = d.rowData ? [...d.rowData] : new Array(ROWS).fill('');
+  allData   = d.allData || '';
+  overrides = new Array(TOTAL).fill(null);
+  applyAlignment(d.alignment || 'center');
+  document.getElementById('fontSizeInput').value = d.fontSize || '12';
+  updateFontSize();
+  setViewTab(d.defaultTab || 'col');
+  generate();
+}
+
+function saveProject() {
+  const data = { colData, rowData, allData, overrides, alignment, fontSize: document.getElementById('fontSizeInput').value };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = document.getElementById('docNameInput').value + '.json'; a.click();
+}
+function loadProject(event) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const d = JSON.parse(e.target.result);
+    colData   = d.colData   || new Array(COLS).fill('');
+    rowData   = d.rowData   || new Array(ROWS).fill('');
+    allData   = d.allData   || '';
+    overrides = d.overrides || new Array(TOTAL).fill(null);
+    applyAlignment(d.alignment || 'center');
+    document.getElementById('fontSizeInput').value = d.fontSize || 12;
+    updateFontSize(); setViewTab('col'); generate();
+  };
+  reader.readAsText(event.target.files[0]);
 }
 
 async function downloadPDF() {
   const btn = document.getElementById('btn-pdf');
-  btn.innerHTML = "GENERATING...";
-  const sheet = document.querySelector(".sheet");
-  const canvas = await html2canvas(sheet, { scale: 3 });
-  const pdf = new jspdf.jsPDF({ unit: "mm", format: "a4" });
-  pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, 297);
-  pdf.save(document.getElementById('docNameInput').value + ".pdf");
-  btn.innerHTML = "EXPORT PDF";
+  btn.innerHTML = '⟳ Generating...'; btn.disabled = true;
+  try {
+    const canvas = await html2canvas(document.querySelector('.sheet'), {scale:3, useCORS:true, backgroundColor:'#ffffff'});
+    const pdf = new jspdf.jsPDF({unit:'mm', format:'a4'});
+    pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,210,297);
+    pdf.save(document.getElementById('docNameInput').value + '.pdf');
+  } finally { btn.innerHTML = '↓ Export PDF'; btn.disabled = false; }
 }
 </script>
 </body>
