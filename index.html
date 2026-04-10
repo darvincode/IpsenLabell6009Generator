@@ -255,18 +255,264 @@
       .label.selected { border: 1px solid transparent !important; background-color: transparent !important; }
       .label.overridden::before { display: none; } 
     }
+
+    /* SCREEN CONTAINERS */
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .screen.active {
+      display: flex;
+    }
+
+    /* LOGIN SCREEN */
+    #loginScreen {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+    .login-container {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .login-container h1 {
+      text-align: center;
+      color: #333;
+      margin: 0 0 30px 0;
+      font-size: 28px;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .login-container button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .login-container button:hover {
+      background-color: #0056b3;
+    }
+    .login-container .secondary-btn {
+      background-color: #6c757d;
+    }
+    .login-container .secondary-btn:hover {
+      background-color: #5a6268;
+    }
+    .login-divider {
+      text-align: center;
+      margin: 20px 0;
+      color: #999;
+      font-size: 13px;
+    }
+    .login-message {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* PROJECT SCREEN */
+    #projectScreen {
+      flex-direction: column;
+      background: #f5f5f5;
+    }
+    .project-header {
+      background: white;
+      padding: 20px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #333;
+    }
+    .project-header button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .project-header button:hover {
+      background-color: #0056b3;
+    }
+    .project-grid-container {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .project-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .project-card-preview {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 36px;
+    }
+    .project-card-info {
+      padding: 15px;
+    }
+    .project-card-name {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    .project-card-date {
+      font-size: 12px;
+      color: #999;
+    }
+    .new-project-card {
+      background: white;
+      border-radius: 8px;
+      border: 2px dashed #ddd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 220px;
+    }
+    .new-project-card:hover {
+      border-color: #007bff;
+      background: #f9f9f9;
+    }
+    .new-project-card-content {
+      text-align: center;
+      color: #666;
+    }
+    .new-project-card-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    .new-project-card-text {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .no-projects-message {
+      text-align: center;
+      color: #999;
+      padding: 40px;
+      font-size: 16px;
+    }
+
+    /* EDITOR SCREEN */
+    #editorScreen {
+      flex-direction: row;
+    }
+    #editorScreen .sheet {
+      flex: 1;
+    }
+    #editorScreen .ui-controls {
+      position: sticky;
+    }
+
+    /* BACK BUTTON */
+    .back-button {
+      background-color: #6c757d;
+      padding: 10px 16px;
+      font-size: 13px;
+      width: auto;
+      margin-right: auto;
+    }
+    .back-button:hover {
+      background-color: #5a6268;
+    }
   </style>
 </head>
 <body>
 
-<div class="main-layout">
-  
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="screen active">
+  <div class="login-container">
+    <h1>Avery L6009 Label Editor</h1>
+    <input id="authEmail" type="email" placeholder="Email address">
+    <input id="authPassword" type="password" placeholder="Password">
+    <button onclick="signInWithEmail()">Sign In</button>
+    <button onclick="signUpWithEmail()" class="secondary-btn">Create Account</button>
+    <div class="login-divider">or</div>
+    <button onclick="signInWithGoogle()" class="secondary-btn">Sign In with Google</button>
+    <div id="loginMessage" class="login-message"></div>
+  </div>
+</div>
+
+<!-- PROJECT SELECTION SCREEN -->
+<div id="projectScreen" class="screen">
+  <div class="project-header">
+    <h1>My Projects</h1>
+    <div style="display: flex; gap: 10px;">
+      <button onclick="createNewProject()">+ New Project</button>
+      <button onclick="signOutFromProjects()" class="danger-btn" style="background-color: #dc3545; width: auto;">Sign Out</button>
+    </div>
+  </div>
+  <div class="project-grid-container">
+    <div id="projectList" class="project-grid"></div>
+    <div id="noProjectsMsg" class="no-projects-message" style="display:none;">No projects yet. Create your first project!</div>
+  </div>
+</div>
+
+<!-- EDITOR SCREEN -->
+<div id="editorScreen" class="screen">
   <div class="sheet">
     <div class="grid with-label-lines" id="grid"></div>
   </div>
 
   <div class="ui-controls">
     
+    <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+      <button onclick="backToProjects()" class="back-button">← Back</button>
+      <h2 style="margin: 0; font-size: 18px; color: #333; flex: 1;">Edit Project</h2>
+      <button onclick="resetApp()" class="danger-btn" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">Reset</button>
+    </div>
+
     <details style="margin-bottom: 15px; background: #e3f2fd; padding: 10px; border-radius: 6px; border: 1px solid #90caf9;">
       <summary style="cursor: pointer; font-size: 13px; font-weight: bold; color: #0056b3;">📂 Premade Templates</summary>
       <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
@@ -274,36 +520,7 @@
         <button onclick="loadPremade('MAS_HEAD_LABELS')" style="margin: 0; padding: 6px 10px; font-size: 12px; width: auto; background-color: #0056b3; border: none; color: white; border-radius: 4px;">MAS_HEAD_LABELS</button>
       </div>
     </details>
-
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-      <h2 style="margin: 0; font-size: 20px; color: #333;">Avery L6009 Label Editor</h2>
-      <button onclick="resetApp()" class="danger-btn" style="width: auto; margin: 0; padding: 6px 12px; font-size: 12px;">Reset</button>
-    </div>
-
-    <div id="authSection" class="auth-panel">
-      <h3>Sign in</h3>
-      <input id="authEmail" type="email" placeholder="Email address">
-      <input id="authPassword" type="password" placeholder="Password">
-      <button onclick="signInWithEmail()">Sign in with email</button>
-      <button onclick="signUpWithEmail()" class="secondary-btn">Create account</button>
-      <button onclick="signInWithGoogle()" class="secondary-btn">Sign in with Google</button>
-      <div id="authMessage" class="auth-message">You must sign in to load and save cloud projects.</div>
-    </div>
-
-    <div id="projectSection" class="project-panel" style="display:none;">
-      <h3>Project selection</h3>
-      <select id="projectSelect"></select>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
-        <button onclick="loadSelectedProject()" class="secondary-btn" style="flex: 1;">Open project</button>
-        <button onclick="createNewProject()" class="secondary-btn" style="flex: 1;">New project</button>
-      </div>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button onclick="saveProjectToServer()" style="flex: 2; background-color: #17a2b8;">Save project to cloud</button>
-        <button onclick="signOutUser()" class="danger-btn" style="flex: 1;">Sign out</button>
-      </div>
-      <div id="projectMessage" class="auth-message"></div>
-    </div>
-
+    
     <label style="font-weight: bold; font-size: 13px; color: #555;">1. Choose Base Layout:</label>
     <div class="mode-group">
       <button id="btn-col" class="mode-btn active" onclick="setBaseMode('column')">Columns</button>
@@ -363,8 +580,9 @@
 
     <div class="action-box" style="background-color: #d1ecf1;">
       <h4 style="margin-top: 0; font-size: 14px;">Save / Load Work</h4>
-      <button onclick="saveProject()" style="background-color: #17a2b8; margin-bottom: 5px;">💾 Save Project</button>
-      <button onclick="document.getElementById('loadProjectFile').click()" style="background-color: #17a2b8;">📂 Load Project</button>
+      <button onclick="saveProjectToServer()" style="background-color: #17a2b8; margin-bottom: 5px;">☁️ Save to Cloud</button>
+      <button onclick="saveProject()" style="background-color: #17a2b8; margin-bottom: 5px;">💾 Download as JSON</button>
+      <button onclick="document.getElementById('loadProjectFile').click()" style="background-color: #17a2b8;">📂 Load from File</button>
       <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)">
     </div>
 
@@ -375,7 +593,6 @@
       made by Darvin Magundayao
     </div>
   </div>
-
 </div>
 
 <script>
@@ -461,6 +678,12 @@ const PREMADE_TEMPLATES = {
 // Initialize
 initApp();
 
+// SCREEN MANAGEMENT
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+}
+
 // Focus Tracker for targeted text formatting
 document.addEventListener('focusin', function(e) {
   if(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') && e.target.classList.contains('data-input')) {
@@ -495,32 +718,22 @@ async function checkSession() {
   }
 }
 
-function showAuthMessage(message, isError = false) {
-  const msg = document.getElementById('authMessage');
+function showLoginMessage(message, isError = false) {
+  const msg = document.getElementById('loginMessage');
   msg.textContent = message;
-  msg.style.color = isError ? '#b02a37' : '#155724';
-}
-
-function showProjectMessage(message, isError = false) {
-  const msg = document.getElementById('projectMessage');
-  msg.textContent = message;
-  msg.style.color = isError ? '#b02a37' : '#155724';
+  msg.style.color = isError ? '#dc3545' : '#28a745';
 }
 
 function onUserLogout() {
   currentUser = null;
   currentProjectId = null;
-  document.getElementById('authSection').style.display = 'block';
-  document.getElementById('projectSection').style.display = 'none';
-  renderProjectList();
-  showAuthMessage('You must sign in to load and save cloud projects.', false);
+  showScreen('loginScreen');
+  showLoginMessage('Signed out. Sign in to access your projects.', false);
 }
 
 async function onUserLogin(user) {
   currentUser = user;
-  document.getElementById('authSection').style.display = 'none';
-  document.getElementById('projectSection').style.display = 'block';
-  showAuthMessage(`Signed in as ${user.email}`, false);
+  showScreen('projectScreen');
   await renderProjectList();
 }
 
@@ -528,14 +741,16 @@ async function signInWithEmail() {
   const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
   if (!email || !password) {
-    showAuthMessage('Enter a valid email and password.', true);
+    showLoginMessage('Enter a valid email and password.', true);
     return;
   }
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) {
-    showAuthMessage(error.message, true);
+    showLoginMessage(error.message, true);
     return;
   }
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPassword').value = '';
   await onUserLogin(data.user);
 }
 
@@ -543,15 +758,15 @@ async function signUpWithEmail() {
   const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
   if (!email || !password) {
-    showAuthMessage('Enter a valid email and password.', true);
+    showLoginMessage('Enter a valid email and password.', true);
     return;
   }
   const { data, error } = await supabaseClient.auth.signUp({ email, password });
   if (error) {
-    showAuthMessage(error.message, true);
+    showLoginMessage(error.message, true);
     return;
   }
-  showAuthMessage('Account created! Please check your email to confirm.', false);
+  showLoginMessage('Account created! Please check your email to confirm.', false);
 }
 
 async function signInWithGoogle() {
@@ -562,23 +777,22 @@ async function signInWithGoogle() {
     }
   });
   if (error) {
-    showAuthMessage(error.message, true);
+    showLoginMessage(error.message, true);
   }
 }
 
-async function signOutUser() {
+async function signOutFromProjects() {
   await supabaseClient.auth.signOut();
   onUserLogout();
 }
 
 async function renderProjectList() {
-  const select = document.getElementById('projectSelect');
-  select.innerHTML = '';
+  const container = document.getElementById('projectList');
+  const noMsg = document.getElementById('noProjectsMsg');
+  container.innerHTML = '';
+  
   if (!currentUser) {
-    const option = document.createElement('option');
-    option.text = 'Sign in to view projects';
-    option.disabled = true;
-    select.appendChild(option);
+    noMsg.style.display = 'block';
     return;
   }
 
@@ -588,41 +802,52 @@ async function renderProjectList() {
     .order('updated_at', { ascending: false });
 
   if (error) {
-    showProjectMessage('Unable to load projects from Supabase.', true);
-    console.warn(error);
+    console.warn('Failed to load projects:', error);
+    noMsg.textContent = 'Unable to load projects. Please try again.';
+    noMsg.style.display = 'block';
     return;
   }
 
-  const defaultOption = document.createElement('option');
-  defaultOption.value = '';
-  defaultOption.text = 'Select a project to open';
-  defaultOption.disabled = true;
-  defaultOption.selected = true;
-  select.appendChild(defaultOption);
+  // Add "New Project" card
+  const newCard = document.createElement('div');
+  newCard.className = 'new-project-card';
+  newCard.onclick = () => createNewProject();
+  newCard.innerHTML = `
+    <div class="new-project-card-content">
+      <div class="new-project-card-icon">+</div>
+      <div class="new-project-card-text">New Project</div>
+      <div style="font-size: 12px; color: #999;">Blank project</div>
+    </div>
+  `;
+  container.appendChild(newCard);
 
-  data.forEach(project => {
-    const option = document.createElement('option');
-    option.value = project.id;
-    option.text = `${project.name} — ${new Date(project.updated_at).toLocaleString()}`;
-    select.appendChild(option);
-  });
-
-  if (data.length === 0) {
-    const option = document.createElement('option');
-    option.text = 'No saved projects yet';
-    option.disabled = true;
-    select.appendChild(option);
+  // Add existing projects
+  if (data && data.length > 0) {
+    data.forEach(project => {
+      const card = document.createElement('div');
+      card.className = 'project-card';
+      card.onclick = () => loadProjectById(project.id);
+      
+      const dateStr = new Date(project.updated_at).toLocaleDateString();
+      card.innerHTML = `
+        <div class="project-card-preview">📄</div>
+        <div class="project-card-info">
+          <div class="project-card-name">${escapeHtml(project.name)}</div>
+          <div class="project-card-date">Updated: ${dateStr}</div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+    noMsg.style.display = 'none';
+  } else {
+    noMsg.style.display = 'block';
   }
 }
 
-async function loadSelectedProject() {
-  const select = document.getElementById('projectSelect');
-  const projectId = select.value;
-  if (!projectId) {
-    showProjectMessage('Please select a project from the list.', true);
-    return;
-  }
-  await loadProjectById(projectId);
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 async function loadProjectById(id) {
@@ -633,26 +858,32 @@ async function loadProjectById(id) {
     .single();
 
   if (error) {
-    showProjectMessage('Failed to load the selected project.', true);
+    alert('Failed to load the project. Please try again.');
     console.warn(error);
     return;
   }
 
   applyProjectData(data.data);
   currentProjectId = id;
-  showProjectMessage('Project loaded successfully.', false);
+  showScreen('editorScreen');
 }
 
 async function createNewProject() {
   currentProjectId = null;
   resetApp();
-  document.getElementById('docNameInput').value = 'Avery_L6009_Labels';
-  showProjectMessage('New project ready. Save to cloud when finished.', false);
+  document.getElementById('docNameInput').value = 'New Project';
+  showScreen('editorScreen');
+}
+
+async function backToProjects() {
+  currentProjectId = null;
+  showScreen('projectScreen');
+  await renderProjectList();
 }
 
 async function saveProjectToServer() {
   if (!currentUser) {
-    showProjectMessage('Sign in first to save a project.', true);
+    alert('Sign in first to save a project.');
     return;
   }
 
@@ -692,17 +923,16 @@ async function saveProjectToServer() {
   }
 
   if (result.error) {
-    showProjectMessage('Failed to save project to cloud.', true);
+    alert('Failed to save project. Please try again.');
     console.warn(result.error);
     return;
   }
 
-  if (!currentProjectId) {
+  if (!currentProjectId && result.data && result.data.length > 0) {
     currentProjectId = result.data[0].id;
   }
 
-  await renderProjectList();
-  showProjectMessage('Project saved to cloud successfully.', false);
+  alert('Project saved successfully!');
 }
 
 function insertFormatting(tag) {
