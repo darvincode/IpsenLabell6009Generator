@@ -5,7 +5,7 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://unpkg.com/@supabase/supabase-js@2/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -730,7 +730,7 @@
     <button onclick="signInWithEmail()">Sign In</button>
     <button onclick="signUpWithEmail()" class="secondary-btn">Create Account</button>
     <div class="login-divider">or</div>
-    <button onclick="signInWithGoogle(event)" class="secondary-btn">Sign In with Google</button>
+    <button onclick="signInWithGoogle()" class="secondary-btn">Sign In with Google</button>
     <div id="loginMessage" class="login-message"></div>
   </div>
 </div>
@@ -1021,29 +1021,14 @@ async function signUpWithEmail() {
 }
 
 async function signInWithGoogle() {
-  const btn = event.target; // The button you clicked
-  const originalText = btn.innerHTML;
-  
-  try {
-    btn.innerHTML = "Redirecting...";
-    btn.disabled = true;
-
-    const { data, error } = await supabaseClient.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        // Use your ACTUAL GitHub Pages URL here
-        redirectTo: window.location.origin + window.location.pathname,
-      }
-    });
-
-    if (error) throw error;
-    
-    // If successful, the browser will automatically redirect to Google
-  } catch (error) {
-    console.error("Login Error:", error);
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.href
+    }
+  });
+  if (error) {
     showLoginMessage(error.message, true);
-    btn.innerHTML = originalText;
-    btn.disabled = false;
   }
 }
 
