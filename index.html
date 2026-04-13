@@ -10,6 +10,7 @@
   />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     :root {
       --top-margin: 16.8mm;
@@ -46,7 +47,6 @@
       overflow-x: hidden;
     }
 
-    /* ── TOP BAR ── */
     .topbar {
       background: var(--navy);
       padding: 0 32px;
@@ -61,7 +61,6 @@
     }
     .topbar-logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 24px; letter-spacing: 3px; color: #fff; text-transform: uppercase; }
     .topbar-logo span { color: var(--sky); }
-    /* Project name centered in topbar */
     .topbar-project {
       position: absolute;
       left: 50%;
@@ -82,7 +81,6 @@
 
     .app-body { display: flex; height: calc(100vh - 56px); overflow: hidden; }
 
-    /* ── SIDEBAR ── */
     .sidebar { width: 370px; min-width: 370px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; box-shadow: 2px 0 20px rgba(43,69,144,0.08); }
     .sidebar-scroll { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .sidebar-scroll::-webkit-scrollbar { width: 4px; }
@@ -100,7 +98,6 @@
     .card-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--navy); margin-bottom: 11px; display: flex; align-items: center; gap: 8px; }
     .card-title .dot { width: 7px; height: 7px; background: var(--sky); border-radius: 50%; flex-shrink: 0; }
 
-    /* ── DROPDOWN TOGGLE (shared pattern) ── */
     .dropdown-toggle-btn {
       width: 100%; display: flex; align-items: center; justify-content: space-between;
       padding: 10px 13px;
@@ -116,7 +113,6 @@
     .toggle-caret { font-size: 10px; transition: transform 0.2s; display: inline-block; color: var(--sky); }
     .dropdown-toggle-btn.open .toggle-caret { transform: rotate(180deg); }
 
-    /* Templates panel */
     .templates-panel {
       display: none; flex-direction: column; gap: 6px;
       background: var(--cream); border: 1px solid var(--border); border-top: none;
@@ -128,7 +124,6 @@
     .template-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 1px; color: var(--navy); }
     .template-arrow { color: var(--sky); font-size: 20px; }
 
-    /* Text Format panel */
     .textformat-panel {
       display: none; flex-direction: column; gap: 8px;
       background: var(--cream); border: 1px solid var(--border); border-top: none;
@@ -140,13 +135,11 @@
     .fmt-row input { width: 60px; text-align: center; }
     .fmt-align-row { display: flex; gap: 5px; }
 
-    /* Tabs */
     .tab-row { display: flex; gap: 3px; margin-bottom: 11px; background: var(--border); padding: 3px; border-radius: 7px; }
     .tab-btn { flex: 1; padding: 7px 4px; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; background: transparent; border: none; color: var(--muted); border-radius: 5px; cursor: pointer; transition: all 0.15s; }
     .tab-btn:hover { color: var(--text); background: var(--cream-dark); }
     .tab-btn.active { background: var(--navy); color: #fff; }
 
-    /* Layer Panel */
     .layer-panel { display: flex; flex-direction: column; gap: 10px; }
     .layer-section { border: 1px solid var(--border); border-radius: 7px; overflow: hidden; background: var(--surface); }
     .layer-header { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--cream-dark); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; color: var(--text-mid); text-transform: uppercase; border-bottom: 1px solid var(--border); }
@@ -159,12 +152,10 @@
     .layer-sub-inputs { display: flex; flex-direction: column; gap: 6px; }
     .layer-sub-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 2px; }
 
-    /* Inputs */
     .inp { background: var(--surface); border: 1px solid var(--border-mid); border-radius: 5px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; padding: 8px 10px; width: 100%; transition: border-color 0.15s, box-shadow 0.15s; resize: none; }
     .inp:focus { outline: none; border-color: var(--sky); box-shadow: 0 0 0 3px var(--sky-glow); }
     .inp.sm { padding: 6px 8px; font-size: 12px; }
 
-    /* Buttons */
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 14px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; border: none; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
     .btn-primary { background: var(--navy); color: white; }
     .btn-primary:hover { background: var(--navy-dark); }
@@ -178,7 +169,6 @@
     .btn-sm { padding: 6px 10px; font-size: 12px; }
     .btn-xs { padding: 5px 9px; font-size: 11px; }
 
-    /* Toggle switches (small inline) */
     .toggle { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
     .toggle-track { position: absolute; inset: 0; background: var(--border-mid); border-radius: 20px; cursor: pointer; transition: background 0.2s; }
@@ -186,7 +176,6 @@
     .toggle-track::after { content: ''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
     .toggle input:checked + .toggle-track::after { transform: translateX(16px); }
 
-    /* ── Footer toggles inline row ── */
     .footer-guide-row {
       display: flex;
       align-items: center;
@@ -209,14 +198,12 @@
     }
     .guide-divider { width: 1px; height: 18px; background: var(--border-mid); flex-shrink: 0; }
 
-    /* Find & Replace Box */
     .find-replace-box { display: flex; flex-direction: column; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 10px; margin-top: 10px; }
     .find-replace-row { display: flex; gap: 6px; align-items: center; }
     .find-replace-row label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; width: 52px; flex-shrink: 0; }
     .find-replace-row .inp { flex: 1; }
     .fr-status { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--success); min-height: 15px; }
 
-    /* Page controls */
     .page-controls { display: flex; align-items: center; justify-content: space-between; background: var(--cream-dark); border: 1px solid var(--border); border-radius: 7px; padding: 7px 11px; margin-bottom: 4px; }
     .page-count-label { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-mid); letter-spacing: 1px; }
     .page-btn-group { display: flex; align-items: center; gap: 6px; }
@@ -225,7 +212,6 @@
     .page-btn:disabled { opacity: 0.3; cursor: not-allowed; background: var(--border); color: var(--muted); border-color: var(--border); }
     .page-total-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: var(--navy); color: #fff; padding: 3px 9px; border-radius: 4px; letter-spacing: 1px; }
 
-    /* PIN / calibration */
     .pin-gate { display: flex; flex-direction: column; gap: 8px; }
     .pin-row { display: flex; gap: 8px; }
     .pin-error { color: #dc2626; font-size: 12px; font-family: 'DM Mono', monospace; display: none; }
@@ -233,10 +219,8 @@
     .calib-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .calib-field label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; display: block; margin-bottom: 3px; }
 
-    /* Project card grid */
     .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 
-    /* ── PREVIEW AREA ── */
     .preview-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
     .preview-header { background: var(--navy-dark); padding: 0 28px; height: 44px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
     .preview-header-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.8); }
@@ -255,7 +239,6 @@
     .preview-canvas::-webkit-scrollbar-track { background: transparent; }
     .preview-canvas::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 4px; }
 
-    /* Floating selection */
     .floating-sel-wrap { position: absolute; top: 56px; right: 18px; z-index: 150; }
     .sel-dropdown-btn { display: flex; align-items: center; gap: 8px; padding: 7px 13px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; background: var(--navy); border: 1px solid rgba(29,161,216,0.5); border-radius: 8px; color: #7dd3fc; cursor: pointer; transition: all 0.15s; white-space: nowrap; box-shadow: 0 4px 18px rgba(27,50,112,0.35); }
     .sel-dropdown-btn:hover { background: var(--navy-light); border-color: rgba(29,161,216,0.8); color: #bae6fd; }
@@ -273,7 +256,6 @@
     .sel-menu-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 1px; font-weight: 400; letter-spacing: 0; text-transform: none; }
     .sel-menu-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 2px 0; }
 
-    /* Sheet and label styles */
     .sheets-container { display: flex; flex-direction: column; align-items: center; gap: 28px; transform-origin: top center; transition: transform 0.2s; }
     .sheet-wrapper { position: relative; }
     .sheet-label-count { position: absolute; top: -22px; left: 0; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-mid); display: flex; align-items: center; gap: 6px; }
@@ -295,7 +277,6 @@
 <div class="topbar">
   <div class="topbar-logo">L<span>6009</span></div>
   <div class="topbar-sub">AVERY EDITOR · DARVIN MAGUNDAYAO</div>
-  <!-- Centered project name in topbar -->
   <div class="topbar-project" id="topbar-project-display">
     <span id="topbar-project-text">Avery_L6009_Labels</span>
   </div>
@@ -307,7 +288,6 @@
   <aside class="sidebar">
     <div class="sidebar-scroll">
 
-      <!-- TEMPLATES DROPDOWN -->
       <div>
         <button class="dropdown-toggle-btn" id="tpl-toggle-btn" onclick="toggleTemplates()">
           <div class="toggle-label-row"><div class="toggle-dot"></div>Templates</div>
@@ -323,10 +303,12 @@
           <div class="template-item" onclick="loadPremade('EM_TURNTABLE')">
             <div class="template-name">EM Turntable</div><div class="template-arrow">→</div>
           </div>
+          <div class="template-item" onclick="loadPremade('TRAY_END_LOAD')">
+            <div class="template-name">Tray End Load</div><div class="template-arrow">→</div>
+          </div>
         </div>
       </div>
 
-      <!-- CONTENT LAYERS -->
       <div class="card">
         <div class="card-title"><div class="dot"></div>Content Layers</div>
         <div class="page-controls">
@@ -346,7 +328,6 @@
         <div class="layer-panel" id="layer-panel"></div>
       </div>
 
-      <!-- SELECTION CARD -->
       <div class="card" id="sel-card" style="display:none;">
         <div class="card-title"><div class="dot" style="background:#16a34a"></div>Selection</div>
         <div id="sel-info" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:10px;"></div>
@@ -356,7 +337,6 @@
         </div>
       </div>
 
-      <!-- TEXT FORMAT DROPDOWN -->
       <div>
         <button class="dropdown-toggle-btn" id="textformat-toggle-btn" onclick="toggleTextFormat()">
           <div class="toggle-label-row"><div class="toggle-dot toggle-dot-fmt"></div>Text Format</div>
@@ -391,7 +371,6 @@
         </div>
       </div>
 
-      <!-- PROJECT -->
       <div class="card">
         <div class="card-title"><div class="dot"></div>Project</div>
         <input type="text" id="docNameInput" class="inp" value="Avery_L6009_Labels" placeholder="Filename..." oninput="updateProjectTitle()" />
@@ -402,10 +381,9 @@
         </div>
         <input type="file" id="loadProjectFile" style="display:none" accept=".json" onchange="loadProject(event)" />
         <div style="height:6px;"></div>
-        <button class="btn btn-primary btn-full btn-sm" onclick="exportDocx()">⬇ Export Word Doc</button>
+        <button class="btn btn-primary btn-full btn-sm" id="btn-docx" onclick="exportDocx()">⬇ Export Word Doc (.docx)</button>
       </div>
 
-      <!-- GRID CALIBRATION -->
       <div class="calib-section">
         <div id="calib-locked">
           <div class="pin-gate">
@@ -452,7 +430,6 @@
       </div>
     </div>
 
-    <!-- Footer: grid/cut toggles + export on SAME LINE -->
     <div class="sidebar-footer">
       <div class="footer-guide-row">
         <div class="guide-toggle-item">
@@ -472,7 +449,7 @@
         ↺ Reset All
       </button>
       <div style="font-family:'DM Mono', monospace;font-size:10px;color:var(--muted);text-align:center;letter-spacing:1px;">
-        TECH-SPEC v3.5 · DARVIN MAGUNDAYAO
+        TECH-SPEC v4.0 · DARVIN MAGUNDAYAO
       </div>
     </div>
   </aside>
@@ -497,7 +474,6 @@
       </div>
     </div>
 
-    <!-- FLOATING SELECTION BUTTON -->
     <div class="floating-sel-wrap" id="floating-sel-wrap">
       <button class="sel-dropdown-btn" id="sel-dropdown-btn" onclick="toggleSelDropdown()">
         ◈ Selection <span class="caret">▾</span>
@@ -543,7 +519,6 @@
       </div>
     </div>
 
-    <!-- Sheet Preview Canvas -->
     <div class="preview-canvas">
       <div class="sheets-container" id="sheets-container"></div>
     </div>
@@ -576,6 +551,13 @@ const PREMADE_TEMPLATES = {
     colData: new Array(COLS).fill(''),
     rowData: new Array(ROWS).fill(''),
     allData: 'EM Turntable\nBatch No.\nCycle No.\nDate:',
+    overrides: new Array(TOTAL).fill(null),
+    alignment: 'left', fontSize: '11', defaultTab: 'all'
+  },
+  TRAY_END_LOAD: {
+    colData: new Array(COLS).fill(''),
+    rowData: new Array(ROWS).fill(''),
+    allData: 'Tray End\nBatch No.\nCycle No.\nDate:',
     overrides: new Array(TOTAL).fill(null),
     alignment: 'left', fontSize: '11', defaultTab: 'all'
   }
@@ -928,9 +910,7 @@ function applyAlignment(mode) {
   generateSheets();
 }
 
-function insertFormatting(tag) {
-  // Placeholder for future formatting insertion
-}
+function insertFormatting(tag) {}
 
 // ═══════════════════════════════════════════════════════════
 //  FIND & REPLACE
@@ -1076,7 +1056,7 @@ function resetApp() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  EXPORT PDF (html2canvas per sheet)
+//  EXPORT PDF
 // ═══════════════════════════════════════════════════════════
 async function downloadPDF() {
   const btn = document.getElementById('btn-pdf');
@@ -1100,85 +1080,218 @@ async function downloadPDF() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  EXPORT WORD DOC — populates the 48-label template
-//  Uses the docx.js library loaded via CDN
+//  EXPORT DOCX — Exact match to Tray_Ends_Load_Labels.docx
+//  Measurements extracted from the original template:
+//    Page:   A4 (11906 × 16838 DXA)
+//    Margin: top=1217, right=552, bottom=0, left=552
+//    Grid:   4 label cols (2592 DXA each) + 3 gap cols (144 DXA each)
+//    Row:    12 rows, each 1200 DXA exact height
+//    Cell:   no borders, margins left/right=15 DXA
+//    Para:   indent left=65 right=65, spacing before=92 (first para only)
 // ═══════════════════════════════════════════════════════════
 async function exportDocx() {
-  // Collect all label texts from page 1 (and page 2 if exists)
-  const labelTexts = [];
-  for (let pi = 0; pi < Math.min(pages.length, 2); pi++) {
-    for (let i = 0; i < TOTAL; i++) {
-      labelTexts.push(getLabelText(pi, i));
+  const btn = document.getElementById('btn-docx');
+  btn.textContent = 'Generating…';
+  btn.disabled = true;
+
+  try {
+    // Collect all label texts across all pages
+    const allLabelTexts = [];
+    for (let pi = 0; pi < pages.length; pi++) {
+      for (let i = 0; i < TOTAL; i++) {
+        allLabelTexts.push(getLabelText(pi, i));
+      }
     }
-  }
-  // Pad to 48 if only one page
-  while (labelTexts.length < TOTAL) labelTexts.push('');
 
-  // We'll generate an HTML table formatted to match Avery L6009
-  // then trigger download as .docx via a Blob
-  // Since we can't use docx.js from CDN easily without module bundler,
-  // we'll generate a rich HTML file that opens in Word instead
-  const colW = 186; // approx pt for ~47mm label width
-  const sepW = 10;
-
-  let tableRows = '';
-  for (let row = 0; row < ROWS; row++) {
-    const cells = [];
-    for (let col = 0; col < COLS; col++) {
-      const idx = row * COLS + col;
-      const text = labelTexts[idx] || '';
-      const lines = text.split('\n').map(l => `<p style="margin:0;padding:0;font-size:9pt;font-family:Arial,sans-serif;">${escHtml(l)}</p>`).join('');
-      cells.push(col < COLS - 1
-        ? `<td style="width:${colW}pt;border:none;padding:3pt 4pt;vertical-align:top;">${lines}</td><td style="width:${sepW}pt;border:none;padding:0;"></td>`
-        : `<td style="width:${colW}pt;border:none;padding:3pt 4pt;vertical-align:top;">${lines}</td>`);
+    // XML helpers
+    function escXml(s) {
+      return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
     }
-    tableRows += `<tr style="height:64pt;">${cells.join('')}</tr>`;
+
+    // Build one label cell XML (content column, 2592 DXA wide)
+    function makeLabelCell(text) {
+      const lines = (text || '').split('\n');
+      const paras = lines.map((line, idx) => {
+        const spacingAttr = idx === 0 ? '<w:spacing w:before="92"/>' : '';
+        return `<w:p>
+          <w:pPr>
+            ${spacingAttr}
+            <w:ind w:left="65" w:right="65"/>
+            <w:rPr><w:lang w:val="en-GB"/></w:rPr>
+          </w:pPr>
+          <w:r>
+            <w:rPr><w:lang w:val="en-GB"/></w:rPr>
+            <w:t xml:space="preserve">${escXml(line)}</w:t>
+          </w:r>
+        </w:p>`;
+      });
+      // Ensure at least one paragraph
+      if (paras.length === 0) {
+        paras.push(`<w:p><w:pPr><w:ind w:left="65" w:right="65"/></w:pPr></w:p>`);
+      }
+      return `<w:tc>
+        <w:tcPr>
+          <w:tcW w:w="2592" w:type="dxa"/>
+          <w:tcBorders>
+            <w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+            <w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+            <w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+            <w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+          </w:tcBorders>
+        </w:tcPr>
+        ${paras.join('\n')}
+      </w:tc>`;
+    }
+
+    // Gap cell (144 DXA, spacer column)
+    function makeGapCell() {
+      return `<w:tc>
+        <w:tcPr>
+          <w:tcW w:w="144" w:type="dxa"/>
+          <w:tcBorders>
+            <w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+            <w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+            <w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+            <w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+          </w:tcBorders>
+        </w:tcPr>
+        <w:p><w:pPr><w:ind w:left="65" w:right="65"/></w:pPr></w:p>
+      </w:tc>`;
+    }
+
+    // Build all table rows for all pages
+    let allRows = '';
+    for (let pi = 0; pi < pages.length; pi++) {
+      for (let r = 0; r < ROWS; r++) {
+        const cells = [];
+        for (let c = 0; c < COLS; c++) {
+          const labelIdx = r * COLS + c;
+          const globalIdx = pi * TOTAL + labelIdx;
+          cells.push(makeLabelCell(allLabelTexts[globalIdx] || ''));
+          if (c < COLS - 1) cells.push(makeGapCell());
+        }
+        allRows += `<w:tr>
+          <w:trPr>
+            <w:cantSplit/>
+            <w:trHeight w:hRule="exact" w:val="1200"/>
+          </w:trPr>
+          ${cells.join('\n')}
+        </w:tr>`;
+      }
+    }
+
+    // Full document XML — mirrors Tray_Ends_Load_Labels.docx exactly
+    const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+  xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
+  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblStyle w:val="TableGrid"/>
+        <w:tblW w:w="0" w:type="auto"/>
+        <w:tblInd w:w="-15" w:type="dxa"/>
+        <w:tblBorders>
+          <w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+          <w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+          <w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+          <w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+          <w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+          <w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+        </w:tblBorders>
+        <w:tblLayout w:type="fixed"/>
+        <w:tblCellMar>
+          <w:left w:w="15" w:type="dxa"/>
+          <w:right w:w="15" w:type="dxa"/>
+        </w:tblCellMar>
+        <w:tblLook w:val="0000" w:firstRow="0" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="0" w:noVBand="0"/>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="2592"/>
+        <w:gridCol w:w="144"/>
+        <w:gridCol w:w="2592"/>
+        <w:gridCol w:w="144"/>
+        <w:gridCol w:w="2592"/>
+        <w:gridCol w:w="144"/>
+        <w:gridCol w:w="2592"/>
+      </w:tblGrid>
+      ${allRows}
+    </w:tbl>
+    <w:sectPr>
+      <w:pgSz w:w="11906" w:h="16838"/>
+      <w:pgMar w:top="1217" w:right="552" w:bottom="0" w:left="552" w:header="720" w:footer="720" w:gutter="0"/>
+    </w:sectPr>
+  </w:body>
+</w:document>`;
+
+    const relsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>`;
+
+    const stylesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+          xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml">
+  <w:docDefaults>
+    <w:rPrDefault>
+      <w:rPr>
+        <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
+        <w:sz w:val="20"/>
+        <w:lang w:val="en-GB"/>
+      </w:rPr>
+    </w:rPrDefault>
+  </w:docDefaults>
+  <w:style w:type="table" w:styleId="TableGrid">
+    <w:name w:val="Table Grid"/>
+    <w:tblPr>
+      <w:tblBorders>
+        <w:top w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+        <w:left w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+        <w:bottom w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+        <w:right w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+        <w:insideH w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+        <w:insideV w:val="single" w:sz="4" w:space="0" w:color="auto"/>
+      </w:tblBorders>
+    </w:tblPr>
+  </w:style>
+</w:styles>`;
+
+    const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+</Types>`;
+
+    const rootRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+
+    // Build zip
+    const zip = new JSZip();
+    zip.file('[Content_Types].xml', contentTypesXml);
+    zip.file('_rels/.rels', rootRelsXml);
+    zip.file('word/document.xml', documentXml);
+    zip.file('word/styles.xml', stylesXml);
+    zip.file('word/_rels/document.xml.rels', relsXml);
+
+    const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    const name = document.getElementById('docNameInput').value || 'Avery_L6009_Labels';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name + '.docx';
+    a.click();
+  } catch (err) {
+    console.error('Export error:', err);
+    alert('Export failed: ' + err.message);
+  } finally {
+    btn.textContent = '⬇ Export Word Doc (.docx)';
+    btn.disabled = false;
   }
-
-  const html = `<!DOCTYPE html>
-<html xmlns:o="urn:schemas-microsoft-com:office:office"
-      xmlns:w="urn:schemas-microsoft-com:office:word"
-      xmlns="http://www.w3.org/TR/REC-html40">
-<head>
-<meta charset="UTF-8">
-<title>Labels</title>
-<!--[if gte mso 9]>
-<xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml>
-<![endif]-->
-<style>
-  @page { size:A4; margin:12mm 3.4mm 10mm 3.4mm; }
-  body { font-family:Arial,sans-serif; font-size:9pt; }
-  table { border-collapse:collapse; width:100%; table-layout:fixed; }
-  td { vertical-align:top; }
-  p { margin:0; line-height:1.3; }
-</style>
-</head>
-<body>
-<table>
-  <colgroup>
-    <col style="width:${colW}pt">
-    <col style="width:${sepW}pt">
-    <col style="width:${colW}pt">
-    <col style="width:${sepW}pt">
-    <col style="width:${colW}pt">
-    <col style="width:${sepW}pt">
-    <col style="width:${colW}pt">
-  </colgroup>
-  ${tableRows}
-</table>
-</body>
-</html>`;
-
-  const blob = new Blob([html], { type: 'application/msword' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  const name = document.getElementById('docNameInput').value || 'labels';
-  a.download = name + '.doc';
-  a.click();
-}
-
-function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ═══════════════════════════════════════════════════════════
