@@ -1080,14 +1080,13 @@ async function downloadPDF() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  EXPORT DOCX — Exact match to Tray_Ends_Load_Labels.docx
-//  Measurements extracted from the original template:
-//    Page:   A4 (11906 × 16838 DXA)
-//    Margin: top=1217, right=552, bottom=0, left=552
-//    Grid:   4 label cols (2592 DXA each) + 3 gap cols (144 DXA each)
-//    Row:    12 rows, each 1200 DXA exact height
-//    Cell:   no borders, margins left/right=15 DXA
-//    Para:   indent left=65 right=65, spacing before=92 (first para only)
+//  EXPORT DOCX
+//  FIX 1: Line spacing now matches the original docx exactly:
+//         line=259, lineRule=auto, after=160 (Word default spacing)
+//         first paragraph also gets before=92 (matches original)
+//  FIX 2: Alignment (w:jc) now reflects the current UI alignMode:
+//         center → w:jc center, left → no w:jc (Word default = left)
+//         right → w:jc right
 // ═══════════════════════════════════════════════════════════
 async function exportDocx() {
   const btn = document.getElementById('btn-docx');
@@ -1108,15 +1107,29 @@ async function exportDocx() {
       return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
     }
 
+    // Determine alignment element based on current UI alignMode
+    // left = Word default so no w:jc needed; center and right need explicit w:jc
+    function getJcXml() {
+      if (alignMode === 'center') return '<w:jc w:val="center"/>';
+      if (alignMode === 'right') return '<w:jc w:val="right"/>';
+      return ''; // left is Word's default, no element needed
+    }
+
     // Build one label cell XML (content column, 2592 DXA wide)
+    // Line spacing: matches original docx (line=259 auto = ~1.08× line height, after=160)
     function makeLabelCell(text) {
       const lines = (text || '').split('\n');
+      const jcXml = getJcXml();
       const paras = lines.map((line, idx) => {
-        const spacingAttr = idx === 0 ? '<w:spacing w:before="92"/>' : '';
+        // First paragraph: before=92 (top padding) + full spacing; subsequent: just line spacing
+        const spacingXml = idx === 0
+          ? '<w:spacing w:before="92" w:after="160" w:line="259" w:lineRule="auto"/>'
+          : '<w:spacing w:after="160" w:line="259" w:lineRule="auto"/>';
         return `<w:p>
           <w:pPr>
-            ${spacingAttr}
+            ${spacingXml}
             <w:ind w:left="65" w:right="65"/>
+            ${jcXml}
             <w:rPr><w:lang w:val="en-GB"/></w:rPr>
           </w:pPr>
           <w:r>
@@ -1127,7 +1140,7 @@ async function exportDocx() {
       });
       // Ensure at least one paragraph
       if (paras.length === 0) {
-        paras.push(`<w:p><w:pPr><w:ind w:left="65" w:right="65"/></w:pPr></w:p>`);
+        paras.push(`<w:p><w:pPr><w:spacing w:after="160" w:line="259" w:lineRule="auto"/><w:ind w:left="65" w:right="65"/>${jcXml}</w:pPr></w:p>`);
       }
       return `<w:tc>
         <w:tcPr>
@@ -1155,7 +1168,7 @@ async function exportDocx() {
             <w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>
           </w:tcBorders>
         </w:tcPr>
-        <w:p><w:pPr><w:ind w:left="65" w:right="65"/></w:pPr></w:p>
+        <w:p><w:pPr><w:spacing w:after="160" w:line="259" w:lineRule="auto"/><w:ind w:left="65" w:right="65"/></w:pPr></w:p>
       </w:tc>`;
     }
 
@@ -1231,6 +1244,10 @@ async function exportDocx() {
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
 </Relationships>`;
 
+    // Styles XML: matches original docx defaults exactly
+    // - Default font: Calibri 11pt (sz=22)
+    // - Default paragraph spacing: after=160, line=259, lineRule=auto
+    //   (this is Word's "Normal" style default — matches original docx styles.xml)
     const stylesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
           xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml">
@@ -1238,10 +1255,16 @@ async function exportDocx() {
     <w:rPrDefault>
       <w:rPr>
         <w:rFonts w:ascii="Calibri" w:hAnsi="Calibri"/>
-        <w:sz w:val="20"/>
+        <w:sz w:val="22"/>
+        <w:szCs w:val="22"/>
         <w:lang w:val="en-GB"/>
       </w:rPr>
     </w:rPrDefault>
+    <w:pPrDefault>
+      <w:pPr>
+        <w:spacing w:after="160" w:line="259" w:lineRule="auto"/>
+      </w:pPr>
+    </w:pPrDefault>
   </w:docDefaults>
   <w:style w:type="table" w:styleId="TableGrid">
     <w:name w:val="Table Grid"/>
