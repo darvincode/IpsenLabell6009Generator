@@ -534,18 +534,18 @@ const CALIB_PIN = '1234';
 
 const PREMADE_TEMPLATES = {
   WFI_TUBING_LABELS: {
-    colData: ['WFI Tubing', 'WFI Tubing', 'WFI Tubing', 'WFI Tubing'],
+    colData: new Array(COLS).fill(''),
     rowData: new Array(ROWS).fill(''),
-    allData: '',
+    allData: 'WFI\nCYCLE #:\nDATE:\nEXPIRY:',
     overrides: new Array(TOTAL).fill(null),
-    alignment: 'center', fontSize: '11', defaultTab: 'col'
+    alignment: 'left', fontSize: '11', defaultTab: 'all'
   },
   MAS_HEAD_LABELS: {
-    colData: ['MAS Head A', 'MAS Head B', 'MAS Head C', 'MAS Head D'],
+    colData: new Array(COLS).fill(''),
     rowData: new Array(ROWS).fill(''),
-    allData: '',
+    allData: 'MAS HEADS\nITEM:\nDATE:\nEXPIRY:',
     overrides: new Array(TOTAL).fill(null),
-    alignment: 'left', fontSize: '12', defaultTab: 'col'
+    alignment: 'left', fontSize: '11', defaultTab: 'all'
   },
   EM_TURNTABLE: {
     colData: new Array(COLS).fill(''),
