@@ -47,6 +47,15 @@
       overflow-x: hidden;
     }
 
+    /* ── CONFETTI ─────────────────────────────────────── */
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
     .topbar {
       background: var(--navy);
       padding: 0 32px;
@@ -289,6 +298,9 @@
   </style>
 </head>
 <body>
+
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas"></canvas>
 
 <div class="topbar">
   <div class="topbar-logo">L<span>6009</span></div>
@@ -558,14 +570,108 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-//  CONSTANTS & STATE
-// ═══════════════════════════════════════════════════════════
+
+(function() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let animId = null;
+
+  const BLUE_PALETTE = [
+    '#1da1d8', '#2b4590', '#3a57a8', '#7dd3fc', '#bae6fd',
+    '#0ea5e9', '#38bdf8', '#0369a1', '#075985', '#e0f2fe',
+    '#1585b5', '#60a5fa', '#93c5fd', '#dbeafe', '#1e3a8a'
+  ];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function randomBetween(a, b) { return a + Math.random() * (b - a); }
+
+  function spawnParticles(count) {
+    for (let i = 0; i < count; i++) {
+      const side = Math.random() < 0.5 ? 0.3 : 0.7;
+      particles.push({
+        x: randomBetween(canvas.width * 0.1, canvas.width * 0.9),
+        y: randomBetween(-30, -canvas.height * 0.1),
+        vx: randomBetween(-3.5, 3.5),
+        vy: randomBetween(3, 9),
+        rotation: randomBetween(0, Math.PI * 2),
+        rotSpeed: randomBetween(-0.12, 0.12),
+        w: randomBetween(7, 14),
+        h: randomBetween(4, 9),
+        color: BLUE_PALETTE[Math.floor(Math.random() * BLUE_PALETTE.length)],
+        shape: Math.random() < 0.5 ? 'rect' : 'circle',
+        alpha: 1,
+        gravity: randomBetween(0.08, 0.18),
+        wobble: randomBetween(0, Math.PI * 2),
+        wobbleSpeed: randomBetween(0.05, 0.12),
+        wobbleAmt: randomBetween(1, 3)
+      });
+    }
+  }
+
+  function drawParticle(p) {
+    ctx.save();
+    ctx.globalAlpha = p.alpha;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rotation);
+    ctx.fillStyle = p.color;
+    if (p.shape === 'rect') {
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    } else {
+      ctx.beginPath();
+      ctx.ellipse(0, 0, p.w / 2, p.h / 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const bottom = canvas.height + 40;
+    particles = particles.filter(p => p.alpha > 0.01 && p.y < bottom);
+
+    for (const p of particles) {
+      p.vy += p.gravity;
+      p.wobble += p.wobbleSpeed;
+      p.x += p.vx + Math.sin(p.wobble) * p.wobbleAmt;
+      p.y += p.vy;
+      p.rotation += p.rotSpeed;
+      if (p.y > canvas.height * 0.7) {
+        p.alpha -= 0.012;
+      }
+      drawParticle(p);
+    }
+
+    if (particles.length > 0) {
+      animId = requestAnimationFrame(tick);
+    } else {
+      animId = null;
+    }
+  }
+
+  window.launchConfetti = function() {
+    spawnParticles(180);
+    if (!animId) {
+      animId = requestAnimationFrame(tick);
+    }
+    // Second wave for extra impact
+    setTimeout(() => {
+      spawnParticles(100);
+    }, 200);
+  };
+})();
+
+
 const COLS = 4, ROWS = 12, TOTAL = 48;
 const CALIB_PIN = '1234';
 
 const PREMADE_TEMPLATES = {
-  // ── EM Labels from JSON files ──────────────────────────
   EM_CLU1_L1G: {
     pages: [
       {
@@ -666,7 +772,6 @@ const PREMADE_TEMPLATES = {
     alignMode: "center", fontSize: "12"
   },
 
-  // ── General templates ──────────────────────────────────
   WFI_TUBING_LABELS: {
     colData: new Array(COLS).fill(''),
     rowData: new Array(ROWS).fill(''),
@@ -717,17 +822,11 @@ let zoomLevel = 100;
 let alignMode = 'center';
 let calibLocked = true;
 
-// ═══════════════════════════════════════════════════════════
-//  PROJECT TITLE
-// ═══════════════════════════════════════════════════════════
 function updateProjectTitle() {
   const val = document.getElementById('docNameInput').value.trim() || 'Avery_L6009_Labels';
   document.getElementById('topbar-project-text').textContent = val;
 }
 
-// ═══════════════════════════════════════════════════════════
-//  TOGGLE DROPDOWNS
-// ═══════════════════════════════════════════════════════════
 function toggleTemplates() {
   templatesOpen = !templatesOpen;
   document.getElementById('tpl-panel').classList.toggle('open', templatesOpen);
@@ -754,9 +853,7 @@ document.addEventListener('click', (e) => {
   if (!e.target.closest('.floating-sel-wrap')) closeSelDropdown();
 });
 
-// ═══════════════════════════════════════════════════════════
-//  PAGE MANAGEMENT
-// ═══════════════════════════════════════════════════════════
+
 function addPage() {
   pages.push(mkPage());
   currentPage = pages.length - 1;
@@ -774,9 +871,7 @@ function updatePageBadge() {
   document.getElementById('btn-remove-page').disabled = n <= 1;
 }
 
-// ═══════════════════════════════════════════════════════════
-//  LABEL TEXT COMPUTATION
-// ═══════════════════════════════════════════════════════════
+
 function getLabelText(pageIdx, labelIdx) {
   const p = pages[pageIdx];
   if (p.overrides[labelIdx] !== null) return p.overrides[labelIdx];
@@ -797,9 +892,7 @@ function countFilledLabels(pageIdx) {
   return count;
 }
 
-// ═══════════════════════════════════════════════════════════
-//  RENDERING
-// ═══════════════════════════════════════════════════════════
+
 function renderAll() {
   updatePageBadge();
   buildLayerPanel();
@@ -856,9 +949,7 @@ function updateTopbarCount() {
   document.getElementById('topbar-label-count').textContent = `A4 · 4×12 · ${totalLabels} LABELS`;
 }
 
-// ═══════════════════════════════════════════════════════════
-//  LAYER PANEL
-// ═══════════════════════════════════════════════════════════
+
 function setViewTab(tab) {
   viewTab = tab;
   ['col', 'row', 'all', 'sel'].forEach(t => {
@@ -956,9 +1047,6 @@ function buildSelInput() {
   return wrap;
 }
 
-// ═══════════════════════════════════════════════════════════
-//  SELECTION
-// ═══════════════════════════════════════════════════════════
 function onLabelClick(e, pageIdx, labelIdx) {
   const key = `${pageIdx}-${labelIdx}`;
   if (e.shiftKey || e.ctrlKey || e.metaKey) {
@@ -1031,9 +1119,6 @@ function clearSelectedOverrides() {
   buildLayerPanel();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  FONT & ALIGNMENT
-// ═══════════════════════════════════════════════════════════
 function updateFontSize() {
   const sz = document.getElementById('fontSizeInput').value;
   document.documentElement.style.setProperty('--font-size', sz + 'px');
@@ -1046,9 +1131,7 @@ function applyAlignment(mode) {
 
 function insertFormatting(tag) {}
 
-// ═══════════════════════════════════════════════════════════
-//  FIND & REPLACE
-// ═══════════════════════════════════════════════════════════
+
 function doFindReplace() {
   const find = document.getElementById('frFind').value;
   const replace = document.getElementById('frReplace').value;
@@ -1071,15 +1154,10 @@ function doFindReplace() {
   renderAll();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  GRID TOGGLES
-// ═══════════════════════════════════════════════════════════
 function toggleLabelLines() { generateSheets(); }
 function toggleCutLines() { generateSheets(); }
 
-// ═══════════════════════════════════════════════════════════
-//  GRID CALIBRATION
-// ═══════════════════════════════════════════════════════════
+
 function checkPin() {
   const pin = document.getElementById('pinInput').value;
   if (pin === CALIB_PIN) {
@@ -1113,9 +1191,7 @@ function updateGrid() {
   root.style.setProperty('--row-gap', rG + 'mm');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  ZOOM
-// ═══════════════════════════════════════════════════════════
+
 function adjustZoom(delta) {
   zoomLevel = Math.max(30, Math.min(200, zoomLevel + delta));
   applyZoom();
@@ -1126,14 +1202,11 @@ function applyZoom() {
   document.getElementById('zoom-label').textContent = zoomLevel + '%';
 }
 
-// ═══════════════════════════════════════════════════════════
-//  TEMPLATES
-// ═══════════════════════════════════════════════════════════
+
 function loadPremade(key) {
   const d = PREMADE_TEMPLATES[key];
   if (!d) return;
 
-  // EM-style templates have a full `pages` array
   if (d.pages) {
     pages = d.pages.map(p => ({
       colData: [...(p.colData || new Array(COLS).fill(''))],
@@ -1153,7 +1226,6 @@ function loadPremade(key) {
     return;
   }
 
-  // Legacy flat-style templates
   pages.forEach(page => {
     page.colData = d.colData ? [...d.colData] : new Array(COLS).fill('');
     page.rowData = d.rowData ? [...d.rowData] : new Array(ROWS).fill('');
@@ -1170,9 +1242,6 @@ function loadPremade(key) {
   renderAll();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  SAVE / LOAD PROJECT
-// ═══════════════════════════════════════════════════════════
 function saveProject() {
   const data = { pages, alignMode, fontSize: document.getElementById('fontSizeInput').value };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -1180,7 +1249,9 @@ function saveProject() {
   a.href = URL.createObjectURL(blob);
   a.download = (document.getElementById('docNameInput').value || 'project') + '.json';
   a.click();
+  launchConfetti();
 }
+
 function loadProject(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -1199,9 +1270,7 @@ function loadProject(event) {
   event.target.value = '';
 }
 
-// ═══════════════════════════════════════════════════════════
-//  RESET
-// ═══════════════════════════════════════════════════════════
+
 function resetApp() {
   if (!confirm('Reset all label data?')) return;
   pages = [mkPage()];
@@ -1211,9 +1280,7 @@ function resetApp() {
   renderAll();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  EXPORT PDF
-// ═══════════════════════════════════════════════════════════
+
 async function downloadPDF() {
   const btn = document.getElementById('btn-pdf');
   btn.textContent = 'Generating…';
@@ -1229,15 +1296,13 @@ async function downloadPDF() {
     }
     const name = document.getElementById('docNameInput').value || 'labels';
     pdf.save(name + '.pdf');
+    launchConfetti();
   } finally {
     btn.textContent = '↓ Export PDF';
     btn.disabled = false;
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  EXPORT DOCX
-// ═══════════════════════════════════════════════════════════
 async function exportDocx() {
   const btn = document.getElementById('btn-docx');
   btn.textContent = 'Generating…';
@@ -1349,7 +1414,7 @@ async function exportDocx() {
           <w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/>
           <w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/>
           <w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/>
-          <w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/>
+          <w:right w:val="none" w:sz="0" w:color="auto"/>
           <w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/>
           <w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/>
         </w:tblBorders>
@@ -1442,6 +1507,7 @@ async function exportDocx() {
     a.href = URL.createObjectURL(blob);
     a.download = name + '.docx';
     a.click();
+    launchConfetti();
   } catch (err) {
     console.error('Export error:', err);
     alert('Export failed: ' + err.message);
@@ -1451,9 +1517,6 @@ async function exportDocx() {
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════════════════
 renderAll();
 </script>
 </body>
