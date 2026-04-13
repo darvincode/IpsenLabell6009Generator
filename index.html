@@ -119,10 +119,26 @@
       border-radius: 0 0 8px 8px; padding: 10px;
     }
     .templates-panel.open { display: flex; }
+
+    .tpl-group-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      padding: 4px 2px 2px;
+      margin-top: 4px;
+    }
+    .tpl-group-label:first-child { margin-top: 0; }
+
     .template-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; transition: all 0.15s; }
     .template-item:hover { border-color: var(--sky); background: var(--sky-glow); }
+    .template-item.em { border-left: 3px solid #f59e0b; }
+    .template-item.em:hover { border-color: #f59e0b; background: rgba(245,158,11,0.07); }
     .template-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 1px; color: var(--navy); }
+    .template-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 1px; }
     .template-arrow { color: var(--sky); font-size: 20px; }
+    .template-item.em .template-arrow { color: #f59e0b; }
 
     .textformat-panel {
       display: none; flex-direction: column; gap: 8px;
@@ -294,14 +310,30 @@
           <span class="toggle-caret">▾</span>
         </button>
         <div class="templates-panel" id="tpl-panel">
+
+          <div class="tpl-group-label">EM Labels</div>
+          <div class="template-item em" onclick="loadPremade('EM_CLU1_L1G')">
+            <div class="template-name">EM CLU1 (L1G)</div><div class="template-arrow">→</div>
+          </div>
+          <div class="template-item em" onclick="loadPremade('EM_CLU2')">
+            <div class="template-name">EM CLU2</div><div class="template-arrow">→</div>
+          </div>
+          <div class="template-item em" onclick="loadPremade('EM_CAPPING')">
+            <div class="template-name">EM Capping</div><div class="template-arrow">→</div>
+          </div>
+          <div class="template-item em" onclick="loadPremade('EM_FILLER')">
+            <div class="template-name">EM Filler</div><div class="template-arrow">→</div>
+          </div>
+          <div class="template-item em" onclick="loadPremade('EM_TURNTABLE')">
+            <div class="template-name">EM Turntable</div><div class="template-arrow">→</div>
+          </div>
+
+          <div class="tpl-group-label">General</div>
           <div class="template-item" onclick="loadPremade('WFI_TUBING_LABELS')">
             <div class="template-name">WFI Tubing</div><div class="template-arrow">→</div>
           </div>
           <div class="template-item" onclick="loadPremade('MAS_HEAD_LABELS')">
             <div class="template-name">MAS Heads</div><div class="template-arrow">→</div>
-          </div>
-          <div class="template-item" onclick="loadPremade('EM_TURNTABLE')">
-            <div class="template-name">EM Turntable</div><div class="template-arrow">→</div>
           </div>
           <div class="template-item" onclick="loadPremade('TRAY_END_LOAD')">
             <div class="template-name">Tray End Load</div><div class="template-arrow">→</div>
@@ -533,6 +565,108 @@ const COLS = 4, ROWS = 12, TOTAL = 48;
 const CALIB_PIN = '1234';
 
 const PREMADE_TEMPLATES = {
+  // ── EM Labels from JSON files ──────────────────────────
+  EM_CLU1_L1G: {
+    pages: [
+      {
+        colData: ["","","",""],
+        rowData: ["","","","","","","","","","","",""],
+        allData: "CLU1\nL1G",
+        overrides: [
+          "CLU1\nL1G1\nA","CLU1\nL1G7\nA","CLU1\n2051.A5\nEnd","",
+          "CLU1\nL1G1\nB","CLU1\nL1G7\nB","CLU1\n2051.E1\n1st","",
+          "CLU1\nL1G2\nA","CLU1\nL1G8\nA","CLU1\n2051.E1\n2nd","",
+          "CLU1\nL1G2\nB","CLU1\nL1G8\nB","CLU1\n2051.E1\n3rd","",
+          "CLU1\nL1G3\nA","CLU1\nL1G9\nA","CLU1\n2051.E1\n4th","",
+          "CLU1\nL1G3\nB","CLU1\nL1G9\nB","","",
+          "CLU1\nL1G4\nA","CLU1\nL1G10\nA","","",
+          "CLU1\nL1G4\nB","CLU1\nL1G10\nB","","",
+          "CLU1\nL1G5\nA","CLU1\nL1G11\nA","","",
+          "CLU1\nL1G5\nB","CLU1\nL1G11\nB","","",
+          "CLU1\nL1G6\nA","CLU1\n2051.A5\nStart","","",
+          "CLU1\nL1G6\nB","CLU1\n2051.A5\n","",""
+        ]
+      }
+    ],
+    alignMode: "center", fontSize: "12"
+  },
+
+  EM_CLU2: {
+    pages: [
+      {
+        colData: ["","","",""],
+        rowData: ["","","","","","","","","","","",""],
+        allData: "CLU2\nL2G",
+        overrides: [
+          "CLU2\nL2G1\nA","CLU2\nL2G7\nA","CLU2\n2051.A5\nEnd","",
+          "CLU2\nL2G1\nB","CLU2\nL2G7\nB","CLU2\n2051.E1\n1st","",
+          "CLU2\nL2G2\nA","CLU2\nL2G8\nA","CLU2\n2051.E1\n2nd","",
+          "CLU2\nL2G2\nB","CLU2\nL2G8\nB","CLU2\n2051.E1\n3rd","",
+          "CLU2\nL2G3\nA","CLU2\nL2G9\nA","CLU2\n2051.E1\n4th","",
+          "CLU2\nL2G3\nB","CLU2\nL2G9\nB","","",
+          "CLU2\nL2G4\nA","CLU2\nL2G10\nA","","",
+          "CLU2\nL2G4\nB","CLU2\nL2G10\nB","","",
+          "CLU2\nL2G5\nA","CLU2\nL2G11\nA","","",
+          "CLU2\nL2G5\nB","CLU2\nL2G11\nB","","",
+          "CLU2\nL2G6\nA","CLU2\n2051.A5\nStart","","",
+          "CLU2\nL2G6\nB","CLU2\n2051.A5\n","",""
+        ]
+      }
+    ],
+    alignMode: "center", fontSize: "12"
+  },
+
+  EM_CAPPING: {
+    pages: [
+      {
+        colData: ["","","",""],
+        rowData: ["","","","","","","","","","","",""],
+        allData: "",
+        overrides: [
+          "Finger Checks \nFG15\nA","Finger Checks \nFG21\nA","CAPPING\n2051.A6\nEnd",null,
+          "Finger Checks \nFG15\nB","Finger Checks \nFG21\nB","CAPPING\n2051.E?\n1st",null,
+          "Finger Checks \nFG16\nA","Finger Checks \nFG22\nA","CAPPING\n2051.E?\n2nd",null,
+          "Finger Checks \nFG16\nB","Finger Checks \nFG22\nB","CAPPING\n2051.E?\n3rd",null,
+          "Finger Checks \nFG17\nA","Finger Checks \nFG23\nA","CAPPING\n2051.E?\n4th",null,
+          "Finger Checks \nFG17\nB","Finger Checks \nFG23\nB","CAPPING\n2051.E?\n1st",null,
+          "Finger Checks \nFG18\nA","Finger Checks \nFG24\nA","CAPPING\n2051.E?\n2nd",null,
+          "Finger Checks \nFG18\nB","Finger Checks \nFG24\nB","CAPPING\n2051.E?\n3rd",null,
+          "Finger Checks \nFG19\nA","Finger Checks \nFG25\nA","CAPPING\n2051.E?\n4th",null,
+          "Finger Checks \nFG19\nB","Finger Checks \nFG25\nB",null,null,
+          "Finger Checks \nFG20\nA","CAPPING\n2051.A6\nStart",null,null,
+          "Finger Checks \nFG20\nB","CAPPING\n2051.A6\nMiddle",null,null
+        ]
+      }
+    ],
+    alignMode: "center", fontSize: "12"
+  },
+
+  EM_FILLER: {
+    pages: [
+      {
+        colData: ["","","",""],
+        rowData: ["","","","","","","","","","","",""],
+        allData: "Finger Checks\nFG",
+        overrides: [
+          "Finger Checks\nFG1\nA","Finger Checks\nFG7\nA","Finger Checks\nFG13\nA","Finger Checks\nFG31\nA",
+          "Finger Checks\nFG1\nB","Finger Checks\nFG7\nB","Finger Checks\nFG13\nB","Finger Checks\nFG31\nB",
+          "Finger Checks\nFG2\nA","Finger Checks\nFG8\nA","Finger Checks\nFG14\nA","Finger Checks\nFG32\nA",
+          "Finger Checks\nFG2\nB","Finger Checks\nFG8\nB","Finger Checks\nFG14\nB","Finger Checks\nFG32\nB",
+          "Finger Checks\nFG3\nA","Finger Checks\nFG9\nA","Finger Checks\nFG27\nA","Finger Checks\nFG33\nA",
+          "Finger Checks\nFG3\nB","Finger Checks\nFG9\nB","Finger Checks\nFG27\nB","Finger Checks\nFG33\nB",
+          "Finger Checks\nFG4\nA","Finger Checks\nFG10\nA","Finger Checks\nFG28\nA","Finger Checks\nFG34\nA",
+          "Finger Checks\nFG4\nB","Finger Checks\nFG10\nB","Finger Checks\nFG28\nB","Finger Checks\nFG34\nB",
+          "Finger Checks\nFG5\nA","Finger Checks\nFG11\nA","Finger Checks\nFG29\nA","",
+          "Finger Checks\nFG5\nB","Finger Checks\nFG11\nB","Finger Checks\nFG29\nB","",
+          "Finger Checks\nFG6\nA","Finger Checks\nFG12\nA","Finger Checks\nFG30\nA","",
+          "Finger Checks\nFG6\nB","Finger Checks\nFG12\nB","Finger Checks\nFG30\nB",""
+        ]
+      }
+    ],
+    alignMode: "center", fontSize: "12"
+  },
+
+  // ── General templates ──────────────────────────────────
   WFI_TUBING_LABELS: {
     colData: new Array(COLS).fill(''),
     rowData: new Array(ROWS).fill(''),
@@ -998,6 +1132,28 @@ function applyZoom() {
 function loadPremade(key) {
   const d = PREMADE_TEMPLATES[key];
   if (!d) return;
+
+  // EM-style templates have a full `pages` array
+  if (d.pages) {
+    pages = d.pages.map(p => ({
+      colData: [...(p.colData || new Array(COLS).fill(''))],
+      rowData: [...(p.rowData || new Array(ROWS).fill(''))],
+      allData: p.allData || '',
+      overrides: [...(p.overrides || new Array(TOTAL).fill(null))]
+    }));
+    currentPage = 0;
+    applyAlignment(d.alignMode || 'center');
+    document.getElementById('fontSizeInput').value = d.fontSize || '12';
+    updateFontSize();
+    templatesOpen = false;
+    document.getElementById('tpl-panel').classList.remove('open');
+    document.getElementById('tpl-toggle-btn').classList.remove('open');
+    setViewTab('col');
+    renderAll();
+    return;
+  }
+
+  // Legacy flat-style templates
   pages.forEach(page => {
     page.colData = d.colData ? [...d.colData] : new Array(COLS).fill('');
     page.rowData = d.rowData ? [...d.rowData] : new Array(ROWS).fill('');
@@ -1081,12 +1237,6 @@ async function downloadPDF() {
 
 // ═══════════════════════════════════════════════════════════
 //  EXPORT DOCX
-//  FIX 1: Line spacing now matches the original docx exactly:
-//         line=259, lineRule=auto, after=160 (Word default spacing)
-//         first paragraph also gets before=92 (matches original)
-//  FIX 2: Alignment (w:jc) now reflects the current UI alignMode:
-//         center → w:jc center, left → no w:jc (Word default = left)
-//         right → w:jc right
 // ═══════════════════════════════════════════════════════════
 async function exportDocx() {
   const btn = document.getElementById('btn-docx');
@@ -1094,7 +1244,6 @@ async function exportDocx() {
   btn.disabled = true;
 
   try {
-    // Collect all label texts across all pages
     const allLabelTexts = [];
     for (let pi = 0; pi < pages.length; pi++) {
       for (let i = 0; i < TOTAL; i++) {
@@ -1102,26 +1251,20 @@ async function exportDocx() {
       }
     }
 
-    // XML helpers
     function escXml(s) {
       return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
     }
 
-    // Determine alignment element based on current UI alignMode
-    // left = Word default so no w:jc needed; center and right need explicit w:jc
     function getJcXml() {
       if (alignMode === 'center') return '<w:jc w:val="center"/>';
       if (alignMode === 'right') return '<w:jc w:val="right"/>';
-      return ''; // left is Word's default, no element needed
+      return '';
     }
 
-    // Build one label cell XML (content column, 2592 DXA wide)
-    // Line spacing: matches original docx (line=259 auto = ~1.08× line height, after=160)
     function makeLabelCell(text) {
       const lines = (text || '').split('\n');
       const jcXml = getJcXml();
       const paras = lines.map((line, idx) => {
-        // First paragraph: before=92 (top padding) + full spacing; subsequent: just line spacing
         const spacingXml = idx === 0
           ? '<w:spacing w:before="92" w:after="0" w:line="259" w:lineRule="auto"/>'
           : '<w:spacing w:after="0" w:line="259" w:lineRule="auto"/>';
@@ -1138,7 +1281,6 @@ async function exportDocx() {
           </w:r>
         </w:p>`;
       });
-      // Ensure at least one paragraph
       if (paras.length === 0) {
         paras.push(`<w:p><w:pPr><w:spacing w:after="0" w:line="259" w:lineRule="auto"/><w:ind w:left="65" w:right="65"/>${jcXml}</w:pPr></w:p>`);
       }
@@ -1156,7 +1298,6 @@ async function exportDocx() {
       </w:tc>`;
     }
 
-    // Gap cell (144 DXA, spacer column)
     function makeGapCell() {
       return `<w:tc>
         <w:tcPr>
@@ -1172,7 +1313,6 @@ async function exportDocx() {
       </w:tc>`;
     }
 
-    // Build all table rows for all pages
     let allRows = '';
     for (let pi = 0; pi < pages.length; pi++) {
       for (let r = 0; r < ROWS; r++) {
@@ -1193,7 +1333,6 @@ async function exportDocx() {
       }
     }
 
-    // Full document XML — mirrors Tray_Ends_Load_Labels.docx exactly
     const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -1244,10 +1383,6 @@ async function exportDocx() {
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
 </Relationships>`;
 
-    // Styles XML: matches original docx defaults exactly
-    // - Default font: Calibri 11pt (sz=22)
-    // - Default paragraph spacing: after=160, line=259, lineRule=auto
-    //   (this is Word's "Normal" style default — matches original docx styles.xml)
     const stylesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
           xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml">
@@ -1294,7 +1429,6 @@ async function exportDocx() {
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
 </Relationships>`;
 
-    // Build zip
     const zip = new JSZip();
     zip.file('[Content_Types].xml', contentTypesXml);
     zip.file('_rels/.rels', rootRelsXml);
